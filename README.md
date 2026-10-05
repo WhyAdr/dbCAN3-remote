@@ -4,7 +4,7 @@
 
 ## Test the package
 
-Run these commands from `repository/dbcan-workflow/`:
+Run these commands from `dbcan-workflow/` in this repository:
 
 ```bash
 python3 -m unittest discover -s tests -v
