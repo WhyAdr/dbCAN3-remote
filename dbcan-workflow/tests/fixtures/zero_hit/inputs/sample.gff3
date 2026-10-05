@@ -1,0 +1,4 @@
+##gff-version 3
+##sequence-region ctg 1 1000
+ctg	Bakta	region	1	1000	.	+	.	ID=ctg;Is_circular=false
+ctg	Bakta	CDS	100	399	.	+	0	ID=p1;Name=synthetic

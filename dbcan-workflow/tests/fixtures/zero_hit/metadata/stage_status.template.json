@@ -1,0 +1,9 @@
+{
+  "status": "complete",
+  "stages": {
+    "CAZyme_annotation": {"status": "completed", "exit_code": 0},
+    "gff_process": {"status": "completed", "exit_code": 0},
+    "cgc_finder": {"status": "completed", "exit_code": 0},
+    "substrate_prediction": {"status": "completed", "exit_code": 0}
+  }
+}

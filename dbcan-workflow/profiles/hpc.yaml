@@ -1,0 +1,10 @@
+profile: hpc
+threads_default: null
+thread_source: SLURM_CPUS_PER_TASK or explicit scheduler allocation
+pass_threads_explicitly: true
+enforce_detected_cpu_allocation: true
+stage_resource_records: before_and_after_snapshots
+peak_process_tree_ram: not_measured
+results_directory: fresh_and_empty
+metadata_directory: fresh_and_separate
+database_policy: verify_full_manifest_before_search

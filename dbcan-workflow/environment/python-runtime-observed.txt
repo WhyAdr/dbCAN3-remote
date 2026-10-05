@@ -1,0 +1,3 @@
+Python: 3.12.14
+Architecture: Linux x86_64 (archived run record)
+Evidence: the preserved JN4/JN1B case bundle's metadata/software_and_run_settings.txt; this runtime record describes that archived case and is not inferred from the interpreter running the portable checks.

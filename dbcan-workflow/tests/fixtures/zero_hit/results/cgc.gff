@@ -1,0 +1,2 @@
+##gff-version 3
+ctg	run_dbcan	CDS	100	399	.	+	0	ID=ctg_1;protein_id=p1;CGC_annotation=null
