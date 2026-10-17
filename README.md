@@ -7,8 +7,8 @@
 Run these commands from `dbcan-workflow/` in this repository:
 
 ```bash
-python3 -m unittest discover -s tests -v
-python3 -m py_compile scripts/*.py
+python3 -B -m unittest discover -s tests -v
+PYTHONDONTWRITEBYTECODE=1 python3 -c "import ast,pathlib; [ast.parse(p.read_text()) for p in pathlib.Path('scripts').glob('*.py')]"
 bash -n scripts/run_dbcan_workflow.sh
 ```
 
