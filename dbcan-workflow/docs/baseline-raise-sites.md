@@ -151,10 +151,10 @@ Maintainer review: the implementation request authorizes proceeding with the sup
 | `exact_cgc_categories.py:140` | `summary_rows` | ValueError | negative | `STRUCTURE_INVALID` | `ValueError(f"CGC spans multiple contigs: {cid}")` |
 | `run_dbcan_threadcap.py:74` | `<module>` | SystemExit | projection | `EXIT_PROJECTION` | `SystemExit(main())` |
 | `run_dbcan_threadcap.py:22` | `cap_os_cpu_count` | ValueError | refused | `ENV_UNMET` | `ValueError("CPU budget must be positive")` |
-| `run_dbcan_threadcap.py:31` | `main` | SystemExit | projection | `EXIT_PROJECTION` | `SystemExit("usage: run_dbcan_threadcap.py THREADS <run_dbcan subcommand and options>")` |
-| `run_dbcan_threadcap.py:34` | `main` | SystemExit | projection | `EXIT_PROJECTION` | `SystemExit("THREADS must be a positive integer")` |
-| `run_dbcan_threadcap.py:41` | `main` | SystemExit | projection | `EXIT_PROJECTION` | `SystemExit(f"CPU-count compatibility wrapper is tested only for dbcan {SUPPORTED_VERSION}; found {version}")` |
-| `run_dbcan_threadcap.py:43` | `main` | SystemExit | projection | `EXIT_PROJECTION` | `SystemExit("a run_dbcan subcommand is required")` |
-| `run_dbcan_threadcap.py:45` | `main` | SystemExit | projection | `EXIT_PROJECTION` | `SystemExit("use a native --threads option instead of the compatibility wrapper when available")` |
-| `run_dbcan_threadcap.py:49` | `main` | SystemExit | projection | `EXIT_PROJECTION` | `SystemExit(f"expected one run_dbcan console entry point, found {len(candidates)}")` |
-| `run_dbcan_threadcap.py:39` | `main` | SystemExit | projection | `EXIT_PROJECTION` | `SystemExit("dbcan is not installed in the selected Python environment")` |
+| `run_dbcan_threadcap.py:31` | `main` | SystemExit | refused (internal shim) | `ENV_UNMET` | `SystemExit("usage: run_dbcan_threadcap.py THREADS <run_dbcan subcommand and options>")` |
+| `run_dbcan_threadcap.py:34` | `main` | SystemExit | refused (internal shim) | `ENV_UNMET` | `SystemExit("THREADS must be a positive integer")` |
+| `run_dbcan_threadcap.py:41` | `main` | SystemExit | refused (internal shim) | `ENV_UNMET` | `SystemExit(f"CPU-count compatibility wrapper is tested only for dbcan {SUPPORTED_VERSION}; found {version}")` |
+| `run_dbcan_threadcap.py:43` | `main` | SystemExit | refused (internal shim) | `ENV_UNMET` | `SystemExit("a run_dbcan subcommand is required")` |
+| `run_dbcan_threadcap.py:45` | `main` | SystemExit | refused (internal shim) | `ENV_UNMET` | `SystemExit("use a native --threads option instead of the compatibility wrapper when available")` |
+| `run_dbcan_threadcap.py:49` | `main` | SystemExit | refused (internal shim) | `ENV_UNMET` | `SystemExit(f"expected one run_dbcan console entry point, found {len(candidates)}")` |
+| `run_dbcan_threadcap.py:39` | `main` | SystemExit | refused (internal shim) | `ENV_UNMET` | `SystemExit("dbcan is not installed in the selected Python environment")` |

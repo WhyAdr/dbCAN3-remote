@@ -165,6 +165,15 @@ class ContractTests(unittest.TestCase):
             for remedy in info['remediation']:
                 self.assertTrue(set(remedy['claim_effects']) <= set(CLAIMS))
 
+    def test_registry_covers_typed_raise_sites_and_docs_stay_in_sync(self):
+        typed = {'Refusal','MissingPathRefusal','ExistingPathRefusal','RuntimeRefusal','NegativeResult','MissingDataResult','StageFailure','UsageError'}
+        for path in (ROOT/'scripts').glob('*.py'):
+            for node in ast.walk(ast.parse(path.read_text())):
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in typed:
+                    if node.args and isinstance(node.args[0], ast.Constant):
+                        self.assertIn(node.args[0].value, REGISTRY, (path, node.lineno))
+        subprocess.run([sys.executable, '-B', str(ROOT/'scripts/gen_docs.py'), '--check'], check=True)
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:
