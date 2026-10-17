@@ -102,6 +102,8 @@ For detailed interpretation, resource, and provenance rules, read `references/re
 | `verify-db` | Compare a supplied cache with every expected path and digest. | --observed-manifest, --diff-out (optional), --envelope-out (optional) |
 | `preflight` | Check input, runtime, resource and database requirements. | --envelope-out (optional) |
 | `run` | Run four stages only after confirmed preflight into fresh roots. | native results, logs/*, inputs/*, stage_status.json, output_validation.json, results_observed.sha256, scientific_summary/*, completion.json, workflow_summary.json, envelope.run.json, --envelope-out (optional) |
+| `audit-circular` | Audit circular terminal windows against original topology. | --out-json, --out-tsv, --envelope-out (optional) |
+| `cgc-overlay` | Write a derived exact-category comparison without modifying native tables. | --corrected-members, --corrected-summary, --changes, --report, --envelope-out (optional) |
 | `describe` | Describe arguments, effects and the contract without executing work. | --envelope-out (optional) |
 
 Required database assets for a new search:

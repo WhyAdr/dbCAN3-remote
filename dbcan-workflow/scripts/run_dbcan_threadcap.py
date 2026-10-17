@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Invoke run_dbcan 5.2.9 with an explicit CPU-count cap for CLI gaps.
+"""Internal shim, not an agent entry point. Invoke run_dbcan 5.2.9 with an explicit CPU-count cap for CLI gaps.
 
 In 5.2.9, substrate_prediction has no --threads CLI option; its internal
 default is os.cpu_count(). This version-guarded entry-point wrapper makes that

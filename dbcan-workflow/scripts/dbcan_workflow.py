@@ -1353,6 +1353,8 @@ COMMAND_METADATA = {
     'verify-db': {'summary': 'Compare a supplied cache with every expected path and digest.', 'writes': ['--observed-manifest', '--diff-out (optional)']},
     'preflight': {'summary': 'Check input, runtime, resource and database requirements.', 'writes': []},
     'run': {'summary': 'Run four stages only after confirmed preflight into fresh roots.', 'writes': ['native results', 'logs/*', 'inputs/*', 'stage_status.json', 'output_validation.json', 'results_observed.sha256', 'scientific_summary/*', 'completion.json', 'workflow_summary.json', 'envelope.run.json']},
+    'audit-circular': {'summary': 'Audit circular terminal windows against original topology.', 'writes': ['--out-json', '--out-tsv']},
+    'cgc-overlay': {'summary': 'Write a derived exact-category comparison without modifying native tables.', 'writes': ['--corrected-members', '--corrected-summary', '--changes', '--report']},
     'describe': {'summary': 'Describe arguments, effects and the contract without executing work.', 'writes': []},
 }
 
@@ -1414,9 +1416,30 @@ def build_parser():
     run.add_argument("--threads", type=int, required=True, help='positive CPU budget within the detected allocation')
     run.add_argument("--profile", choices=("sandbox", "hpc"), required=True, help='explicit resource profile')
 
+    audit = sub.add_parser('audit-circular', parents=[parent], help='audit original topology and terminal signature windows')
+    audit.add_argument('--gff', type=Path, required=True, help='original Bakta GFF3 with topology (input path)')
+    audit.add_argument('--processed-gff', type=Path, required=True, help='native dbCAN cgc.gff (input path)')
+    audit.add_argument('--out-json', '--json', dest='out_json', type=Path, required=True, help='circular audit JSON (output path); --json is deprecated')
+    audit.add_argument('--out-tsv', '--tsv', dest='out_tsv', type=Path, required=True, help='circular audit TSV (output path); --tsv is deprecated')
+    overlay = sub.add_parser('cgc-overlay', parents=[parent], help='write a version-guarded exact-category overlay')
+    for flag, help_text in (
+        ('--processed-gff', 'native dbCAN cgc.gff (input path)'),
+        ('--native-members', 'native CGC membership table (input path)'),
+        ('--native-summary', 'native CGC summary table (input path)'),
+        ('--corrected-members', 'derived membership table (output path)'),
+        ('--corrected-summary', 'derived summary table (output path)'),
+        ('--changes', 'membership and boundary differences (output path)'),
+        ('--report', 'overlay report JSON (output path)'),
+    ):
+        overlay.add_argument(flag, type=Path, required=True, help=help_text)
+    overlay.add_argument('--dbcan-version', required=True, help='caller-supplied compatibility guard, not runtime evidence (must be 5.2.9)')
+    overlay.add_argument('--use-distance', action='store_true', help='enable the mirrored 15000 bp distance rule')
+
     desc = sub.add_parser('describe', parents=[parent], help=COMMAND_METADATA['describe']['summary'])
     desc.add_argument('--format', choices=('json', 'markdown'), default='json', help='include JSON metadata or a Markdown rendering inside result')
     examples = {
+        'audit-circular': 'audit-circular --gff inputs/sample.gff3 --processed-gff native/cgc.gff --out-json derived/circular.json --out-tsv derived/circular.tsv',
+        'cgc-overlay': 'cgc-overlay --processed-gff native/cgc.gff --native-members native/cgc_standard_out.tsv --native-summary native/cgc_standard_out_summary.tsv --corrected-members derived/members.tsv --corrected-summary derived/summary.tsv --changes derived/changes.tsv --report derived/report.json --dbcan-version 5.2.9',
         'describe': 'describe --format json',
         'prepare': 'prepare --faa inputs/sample.faa --gff inputs/sample.gff3 --out-gff derived/sample.gff --report derived/adapter.json',
         'validate': 'validate --faa inputs/sample.faa --gff inputs/sample.gff3 --results-dir native/sample --metadata-dir diagnostics/sample --allow-unattested',

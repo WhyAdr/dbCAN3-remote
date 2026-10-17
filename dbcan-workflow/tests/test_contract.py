@@ -198,6 +198,37 @@ class ContractTests(unittest.TestCase):
         data = self.call(args+['--max-listed', '-1'])
         self.assertEqual(data['outcome']['kind'], 'usage')
 
+    def test_sibling_shims_match_subcommands_and_warn_for_aliases(self):
+        audit_args = ['--gff',str(self.fx/'inputs/sample.gff3'),'--processed-gff',str(self.fx/'results/cgc.gff'),
+            '--out-json',str(self.root/'audit/data.json'),'--out-tsv',str(self.root/'audit/data.tsv')]
+        public = self.call(['audit-circular', *audit_args])
+        shim = subprocess.run([sys.executable,'-B',str(ROOT/'scripts/audit_circular_windows.py'), *audit_args], capture_output=True,text=True)
+        self.assertEqual(public['result'], json.loads(shim.stdout)['result'])
+        alias = self.call(['audit-circular', *[x.replace('--out-json','--json').replace('--out-tsv','--tsv') for x in audit_args]])
+        self.assertEqual(len([x for x in alias['warnings'] if x['code']=='DEPRECATED_FLAG']), 2)
+        args = ['--processed-gff',str(self.fx/'results/cgc.gff'),'--native-members',str(self.fx/'results/cgc_standard_out.tsv'),
+            '--native-summary',str(self.fx/'results/cgc_standard_out_summary.tsv'),
+            '--corrected-members',str(self.root/'overlay/members.tsv'),'--corrected-summary',str(self.root/'overlay/summary.tsv'),
+            '--changes',str(self.root/'overlay/changes.tsv'),'--report',str(self.root/'overlay/report.json'),'--dbcan-version','5.2.9']
+        public = self.call(['cgc-overlay', *args])
+        shim = subprocess.run([sys.executable,'-B',str(ROOT/'scripts/exact_cgc_categories.py'), *args], capture_output=True,text=True)
+        self.assertEqual(public['result'], json.loads(shim.stdout)['result'])
+        before = self.tree()
+        refused = self.call(['cgc-overlay', *args[:-1], '5.3.0'])
+        self.assertEqual(refused['outcome']['code'], 'VERSION_UNSUPPORTED')
+        self.assertEqual(self.tree(), before)
+
+    def test_describe_matches_parser_wrapper_and_safety_metadata(self):
+        import re
+        data = self.call(['describe'])['result']
+        self.assertEqual(set(data['commands']), set(w.COMMAND_METADATA))
+        for name, meta in data['commands'].items():
+            self.assertEqual(meta['requires_user_confirmation'], name=='run')
+            self.assertFalse(meta['needs_network'])
+        usage = re.search(r'<([^>]+)>', (ROOT/'scripts/run_dbcan_workflow.sh').read_text()).group(1)
+        self.assertEqual(set(usage.split('|')), set(data['commands']))
+        self.assertEqual(data['database_stage_assets'], {key: list(value) for key,value in w.DB_ASSETS_BY_STAGE.items()})
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:

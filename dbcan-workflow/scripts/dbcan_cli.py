@@ -34,6 +34,18 @@ def dispatch(r):
         env = r.env_dir.resolve()
         data = w.run_preflight(r.faa, r.gff, env/'bin/python', env/'bin/run_dbcan', env/'bin/diamond',
             r.db_dir, r.expected_manifest, r.threads, r.profile, r.results_dir, r.metadata_dir)
+    elif r.command == 'audit-circular':
+        from audit_circular_windows import audit
+        data = audit(r.gff, r.processed_gff)
+        w.write_json_atomic(r.out_json, data)
+        fields = ['contig', 'length_bp', 'is_circular', 'cds_count', 'CAZyme_core_count', 'TC_signature_count',
+            'first_terminal_signature', 'last_terminal_signature', 'null_CDS_between_last_and_first',
+            'terminal_window_CAZyme_count', 'terminal_window_TC_count', 'default_wraparound_CGC_indicated']
+        w.write_tsv_atomic(r.out_tsv, fields, data['contigs'])
+    elif r.command == 'cgc-overlay':
+        from exact_cgc_categories import rebuild
+        data = rebuild(r.processed_gff, r.native_members, r.native_summary, r.corrected_members,
+            r.corrected_summary, r.changes, r.report, r.dbcan_version, use_distance=r.use_distance)
     else:
         data = w.run_workflow(r.input_dir, r.results_dir, r.metadata_dir, r.db_dir,
             r.expected_manifest, r.env_dir, r.samples, r.threads, r.profile)
@@ -90,6 +102,10 @@ def planned_outputs(r):
         add(r.observed_manifest or r.metadata_dir/'results_observed.sha256', 'observed_manifest')
     elif r.command == 'verify-db':
         add(r.observed_manifest, 'observed_manifest'); add(getattr(r, 'diff_out', None), 'database_diff')
+    if r.command == 'audit-circular':
+        add(r.out_json, 'circular_audit'); add(r.out_tsv, 'circular_table')
+    if r.command == 'cgc-overlay':
+        for key in ('corrected_members', 'corrected_summary', 'changes', 'report'): add(getattr(r, key), key)
     if r.command in {'validate', 'summarize', 'run'}:
         add(r.metadata_dir/('envelope.%s.json' % r.command), 'envelope')
     add(getattr(r, 'envelope_out', None), 'envelope')
@@ -100,13 +116,16 @@ def protected_paths(r):
     roots = [getattr(r, key) for key in ('input_dir', 'db_dir', 'env_dir') if getattr(r, key, None)]
     if r.command != 'run' and getattr(r, 'results_dir', None): roots.append(r.results_dir)
     roots += [getattr(r, key).resolve().parent for key in ('faa', 'gff') if getattr(r, key, None)]
-    files = [getattr(r, key) for key in ('faa', 'gff', 'expected_manifest', 'status_file') if getattr(r, key, None)]
+    files = [getattr(r, key) for key in ('faa', 'gff', 'expected_manifest', 'status_file', 'processed_gff', 'native_members', 'native_summary') if getattr(r, key, None)]
+    roots += [getattr(r, key).resolve().parent for key in ('processed_gff', 'native_members', 'native_summary') if getattr(r, key, None)]
     return roots, files
 
 
 def guard_cli_outputs(r):
     roots, files = protected_paths(r)
     paths = planned_outputs(r)
+    if r.command == 'audit-circular': w._guard_output_files([r.out_json, r.out_tsv], files)
+    if r.command == 'cgc-overlay': w._guard_output_files([r.corrected_members, r.corrected_summary, r.changes, r.report], files)
     if r.command == 'verify-db' and r.diff_out:
         w._guard_output_files([r.diff_out, r.observed_manifest], files)
     # File guards protect explicitly selected manifests as well as input roots.
@@ -195,7 +214,15 @@ def main(argv=None):
         if getattr(r, 'metadata_dir', None) and r.metadata_dir.exists():
             paths.update({str(p.resolve()): 'metadata' for p in r.metadata_dir.rglob('*') if p.is_file()})
         before = {p: (Path(p).stat().st_mtime_ns, Path(p).stat().st_size) for p in paths if Path(p).is_file()}
+        for name in ('processed_gff', 'native_members', 'native_summary'):
+            path = getattr(r, name, None)
+            if path is not None and not path.is_file():
+                from dbcan_outcomes import MissingPathRefusal
+                raise MissingPathRefusal('INPUT_MISSING', 'The selected input file does not exist.', details={'path': str(path)})
         cr = dispatch(r)
+        for flag in ('--json', '--tsv'):
+            if any(token.split('=', 1)[0] == flag for token in argv):
+                cr.warnings.append({'code': 'DEPRECATED_FLAG', 'message': flag+' is deprecated; use --out-'+flag[2:]+'.', 'location': None})
     except WorkflowOutcome as exc:
         cr = CommandResult.from_exception(exc)
     except Exception:
@@ -229,6 +256,7 @@ def describe_commands():
         codes = ['OK', 'USAGE_INVALID', 'PATHS_OVERLAP', 'INTERNAL_ERROR']
         if name not in {'describe', 'verify-db'}: codes += ['INPUT_MISSING', 'STRUCTURE_INVALID']
         if name in {'validate', 'summarize'}: codes += ['RESULTS_DIR_MISSING', 'INPUT_MISMATCH']
+        if name == 'cgc-overlay': codes += ['VERSION_UNSUPPORTED']
         if name == 'validate': codes += ['ATTESTATION_REQUIRED', 'ATTESTATION_REJECTED']
         if name in {'verify-db', 'preflight', 'run'}: codes += ['MANIFEST_PATH_UNSAFE']
         if name == 'verify-db': codes += ['DB_MISMATCH']

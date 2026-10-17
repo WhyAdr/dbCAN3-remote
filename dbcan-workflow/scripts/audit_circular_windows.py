@@ -103,21 +103,12 @@ def audit(faa_gff: Path, processed_gff: Path) -> dict[str, Any]:
         "contigs": rows, "origin_spanning_cds": origins}
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--gff", type=Path, required=True, help="original Bakta GFF3 with region topology")
-    parser.add_argument("--processed-gff", type=Path, required=True, help="dbCAN cgc.gff output")
-    parser.add_argument("--json", type=Path, required=True)
-    parser.add_argument("--tsv", type=Path, required=True)
-    args = parser.parse_args()
-    data = audit(args.gff, args.processed_gff)
-    write_json_atomic(args.json, data)
-    fields = ["contig", "length_bp", "is_circular", "cds_count", "CAZyme_core_count", "TC_signature_count",
-        "first_terminal_signature", "last_terminal_signature", "null_CDS_between_last_and_first",
-        "terminal_window_CAZyme_count", "terminal_window_TC_count", "default_wraparound_CGC_indicated"]
-    write_tsv_atomic(args.tsv, fields, data["contigs"])
-    print(json.dumps(data, indent=2, sort_keys=True))
+def main(argv=None):
+    import sys
+    from dbcan_cli import main as workflow_main
+    return workflow_main(['audit-circular', *(sys.argv[1:] if argv is None else argv)])
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    import sys
+    sys.exit(main())

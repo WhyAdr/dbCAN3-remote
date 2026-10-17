@@ -9,7 +9,7 @@ if [[ -z "${DBCAN_PYTHON:-}" ]]; then
   exit 2
 fi
 if [[ "$#" -eq 0 ]]; then
-  printf '%s\n' 'Usage: run_dbcan_workflow.sh <prepare|validate|summarize|verify-db|preflight|run> [options]' >&2
+  printf '%s\n' 'Usage: run_dbcan_workflow.sh <prepare|validate|summarize|verify-db|preflight|run|audit-circular|cgc-overlay|describe> [options]' >&2
   exit 2
 fi
 if [[ ! -x "$DBCAN_PYTHON" ]]; then

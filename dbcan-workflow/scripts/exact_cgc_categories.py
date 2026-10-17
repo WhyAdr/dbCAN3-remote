@@ -192,22 +192,12 @@ def rebuild(processed_gff: Path, native_members_file: Path, native_summary_file:
     return report
 
 
-def main() -> None:
-    p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--processed-gff",type=Path,required=True)
-    p.add_argument("--native-members",type=Path,required=True)
-    p.add_argument("--native-summary",type=Path,required=True)
-    p.add_argument("--corrected-members",type=Path,required=True)
-    p.add_argument("--corrected-summary",type=Path,required=True)
-    p.add_argument("--changes",type=Path,required=True)
-    p.add_argument("--report",type=Path,required=True)
-    p.add_argument("--dbcan-version",required=True)
-    p.add_argument("--use-distance",action="store_true")
-    a=p.parse_args()
-    result=rebuild(a.processed_gff,a.native_members,a.native_summary,a.corrected_members,a.corrected_summary,
-        a.changes,a.report,a.dbcan_version,use_distance=a.use_distance)
-    print(json.dumps(result,indent=2,sort_keys=True))
+def main(argv=None):
+    import sys
+    from dbcan_cli import main as workflow_main
+    return workflow_main(['cgc-overlay', *(sys.argv[1:] if argv is None else argv)])
 
 
-if __name__=="__main__":
-    main()
+if __name__ == '__main__':
+    import sys
+    sys.exit(main())
