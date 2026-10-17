@@ -265,6 +265,13 @@ class ContractTests(unittest.TestCase):
             data = json.loads(result.stdout); check_envelope(self,data)
             self.assertEqual(data['outcome']['kind'], 'usage')
 
+    def test_json_atomic_mode_respects_umask(self):
+        old = os.umask(0o022)
+        try:
+            path = self.root/'mode.json'; w.write_json_atomic(path, {'ok': True})
+            self.assertEqual(path.stat().st_mode & 0o777, 0o644)
+        finally: os.umask(old)
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:
