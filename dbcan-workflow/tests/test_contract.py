@@ -51,6 +51,7 @@ class ContractTests(unittest.TestCase):
         data = json.loads(result.stdout)
         check_envelope(self, data)
         self.assertEqual(result.returncode, data['exit']['code'])
+        self.assertIn(data['outcome']['code'], cli.describe_commands()['commands'][data['command']]['outcome_codes'])
         if data['outcome']['kind'] != 'error': self.assertNotIn('Traceback', result.stderr)
         return data
 
@@ -316,6 +317,33 @@ class ContractTests(unittest.TestCase):
         status=json.loads((self.root/'run_meta/sample/stage_status.json').read_text())
         self.assertEqual(status['run']['state'],'failed')
         self.assertEqual(status['schema_version'],2)
+
+    def test_output_ancestors_and_directory_targets_refuse_before_writes(self):
+        existing = self.root/'directory'; existing.mkdir()
+        for json_path,tsv_path in [(existing,self.root/'other.tsv'), (self.root/'parent',self.root/'parent/child.tsv')]:
+            before=self.tree()
+            env=self.call(['audit-circular','--gff',str(self.fx/'inputs/sample.gff3'),'--processed-gff',str(self.fx/'results/cgc.gff'),
+                '--out-json',str(json_path),'--out-tsv',str(tsv_path)])
+            self.assertEqual(env['outcome']['code'],'PATHS_OVERLAP')
+            self.assertEqual(before,self.tree())
+
+    def test_actual_preconditions_emit_registered_refusal_codes(self):
+        db=self.root/'db';db.mkdir()
+        manifest=self.root/'unsafe.sha256';manifest.write_text('0'*64+'  ../escape\n')
+        env=self.call(['verify-db','--db-dir',str(db),'--expected-manifest',str(manifest),'--observed-manifest',str(self.root/'obs.sha256')])
+        self.assertEqual(env['outcome']['code'],'MANIFEST_PATH_UNSAFE')
+        env=self.call(['verify-db','--db-dir',str(self.root/'missingdb'),'--expected-manifest',str(manifest),'--observed-manifest',str(self.root/'obs.sha256')])
+        self.assertEqual(env['outcome']['code'],'DB_UNVERIFIED')
+        pre=['preflight',*self.common,'--env-dir',str(self.root/'env'),'--db-dir',str(db),'--expected-manifest',str(manifest),
+            '--threads','1','--profile','sandbox','--results-dir',str(self.root/'future-results'),'--metadata-dir',str(self.root/'future-metadata')]
+        env=self.call(pre);self.assertEqual(env['outcome']['code'],'ENV_UNMET')
+        with patch.object(w,'effective_resources',return_value={'effective_cpu_allocation':1}),self.assertRaises(Refusal) as caught:
+            w.run_preflight(self.fx/'inputs/sample.faa',self.fx/'inputs/sample.gff3',self.root/'env/bin/python', self.root/'env/bin/run_dbcan',self.root/'env/bin/diamond',db,manifest,2,'sandbox',self.root/'r',self.root/'m')
+        self.assertEqual(caught.exception.code,'THREADS_EXCEED_ALLOCATION')
+        path=self.fx/'inputs/sample.gff3';path.write_text(path.read_text().replace('ID=p1','ID=other'))
+        env=self.call(self.args+['--allow-unattested']);self.assertEqual(env['outcome']['code'],'INPUT_MISMATCH')
+        env=self.call(self.args+['--faa',str(self.root/'missinginputs/nonexistent.faa'),'--allow-unattested'])
+        self.assertEqual(env['outcome']['code'],'INPUT_MISSING')
 
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():

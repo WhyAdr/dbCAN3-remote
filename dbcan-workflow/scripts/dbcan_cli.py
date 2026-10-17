@@ -2,8 +2,14 @@
 from __future__ import annotations
 import json
 from pathlib import Path
+import argparse
+import os
+import sys
+import traceback
 import dbcan_workflow as w
-from dbcan_outcomes import CommandResult, Refusal
+from dbcan_outcomes import (CommandResult, Refusal, MissingPathRefusal, EXIT_CODES,
+                            REGISTRY, WorkflowOutcome, UsageError)
+from dbcan_claims import derive_claims
 
 
 def dispatch(r):
@@ -84,11 +90,6 @@ def dispatch(r):
     return cr
 
 # The stdout contract is emitted once, after execution and guarded persistence.
-import argparse
-import os
-import sys
-import traceback
-from dbcan_outcomes import EXIT_CODES, REGISTRY, WorkflowOutcome, UsageError
 
 
 class ContractParser(argparse.ArgumentParser):
@@ -155,12 +156,16 @@ def guard_cli_outputs(r):
     if default_envelope is not None and default_envelope not in selected: selected.append(default_envelope)
     if explicit is not None and (default_envelope is None or explicit.resolve() != default_envelope.resolve()): selected.append(explicit)
     w._guard_output_files(selected, files)
+    w._guard_output_directories(selected, [])
+    for path in selected:
+        if path.exists() and not path.is_file():
+            raise Refusal('PATHS_OVERLAP', 'A selected output file path is a directory.', details={'path': str(path)})
+        parent = path.parent
+        while not parent.exists() and parent != parent.parent: parent = parent.parent
+        if not parent.is_dir():
+            raise Refusal('PATHS_OVERLAP', 'An output parent path is not a directory.', details={'path': str(parent)})
     if explicit is not None and getattr(r, 'results_dir', None):
         w._guard_output_directories([explicit], [r.results_dir])
-    if r.command == 'audit-circular' : w._guard_output_files([r.out_json, r.out_tsv], files)
-    if r.command == 'cgc-overlay': w._guard_output_files([r.corrected_members, r.corrected_summary, r.changes, r.report], files)
-    if r.command == 'verify-db' and r.diff_out:
-        w._guard_output_files([r.diff_out, r.observed_manifest], files)
     # File guards protect explicitly selected manifests as well as input roots.
     w._guard_output_files([Path(p) for p in paths], files)
     for p in paths:
@@ -189,9 +194,6 @@ def observed_artifacts(r, before):
     return artifacts
 
 
-from dbcan_claims import derive_claims
-
-
 def build_envelope(command, cr, policy):
     code = EXIT_CODES[cr.kind]
     if policy == 'semantic-zero' and cr.kind in {'ok', 'negative', 'refused', 'failed'}: code = 0
@@ -206,7 +208,7 @@ def build_envelope(command, cr, policy):
 
 def persist_envelope(env, r, explicit_safe):
     destinations = []
-    if r is not None and env['outcome']['kind'] not in {'refused', 'usage'} and r.command in {'validate', 'summarize', 'run'}:
+    if explicit_safe and r is not None and env['outcome']['kind'] not in {'refused', 'usage'} and r.command in {'validate', 'summarize', 'run'}:
         destinations.append(r.metadata_dir/('envelope.%s.json' % r.command))
     if explicit_safe and r is not None and getattr(r, 'envelope_out', None): destinations.append(r.envelope_out)
     # Self-hashes are null on disk to avoid circular content hashes. Stdout hashes
@@ -250,7 +252,6 @@ def main(argv=None):
         for name in ('processed_gff', 'native_members', 'native_summary'):
             path = getattr(r, name, None)
             if path is not None and not path.is_file():
-                from dbcan_outcomes import MissingPathRefusal
                 raise MissingPathRefusal('INPUT_MISSING', 'The selected input file does not exist.', details={'path': str(path)})
         cr = dispatch(r)
         for flag in ('--json', '--tsv'):
@@ -289,15 +290,16 @@ def describe_commands():
             if action.dest == 'help': continue
             arguments.append({'flags': action.option_strings, 'required': action.required,
                 'help': action.help, 'choices': list(action.choices) if action.choices is not None else None,
-                'default': None if action.default is argparse.SUPPRESS else action.default,
+                'default': None if action.default == argparse.SUPPRESS else action.default,
                 'nargs': action.nargs})
         codes = ['OK', 'USAGE_INVALID', 'PATHS_OVERLAP', 'INTERNAL_ERROR']
         if name not in {'describe', 'verify-db'}: codes += ['INPUT_MISSING', 'STRUCTURE_INVALID']
+        if name in {'prepare', 'validate', 'summarize'}: codes += ['INPUT_MISMATCH']
         if name in {'validate', 'summarize'}: codes += ['RESULTS_DIR_MISSING', 'INPUT_MISMATCH']
         if name == 'cgc-overlay': codes += ['VERSION_UNSUPPORTED']
         if name == 'validate': codes += ['ATTESTATION_REQUIRED', 'ATTESTATION_REJECTED']
         if name in {'verify-db', 'preflight', 'run'}: codes += ['MANIFEST_PATH_UNSAFE']
-        if name == 'verify-db': codes += ['DB_MISMATCH']
+        if name == 'verify-db': codes += ['DB_MISMATCH', 'DB_UNVERIFIED', 'INPUT_MISSING']
         if name in {'preflight', 'run'}: codes += ['ENV_UNMET', 'DB_UNVERIFIED', 'THREADS_EXCEED_ALLOCATION', 'INPUT_MISMATCH']
         if name == 'run': codes += ['SAMPLE_ID_UNSAFE', 'STAGE_FAILED']
         commands[name] = {**w.COMMAND_METADATA[name], 'args': arguments,
