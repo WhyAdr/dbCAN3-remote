@@ -7,7 +7,10 @@ from dbcan_outcomes import CommandResult, Refusal
 
 
 def dispatch(r):
-    if r.command == 'prepare':
+    if r.command == 'describe':
+        data = describe_commands()
+        if r.format == 'markdown': data['markdown'] = commands_markdown(data)
+    elif r.command == 'prepare':
         data = w.prepare_local_gff(r.faa, r.gff, r.out_gff, r.report)
     elif r.command == 'validate':
         results, metadata = r.results_dir.resolve(), r.metadata_dir.resolve()
@@ -199,3 +202,42 @@ def main(argv=None):
         env = build_envelope(command, cr, policy)
     sys.stdout.write(json.dumps(env, indent=2, sort_keys=True, allow_nan=False) + '\n')
     return env['exit']['code']
+
+
+def describe_commands():
+    parser = w.build_parser()
+    choices = parser._subparsers._group_actions[0].choices
+    assert set(choices) == set(w.COMMAND_METADATA)
+    commands = {}
+    for name, subparser in choices.items():
+        arguments = []
+        for action in subparser._actions:
+            if action.dest == 'help': continue
+            arguments.append({'flags': action.option_strings, 'required': action.required,
+                'help': action.help, 'choices': list(action.choices) if action.choices is not None else None,
+                'default': None if action.default is argparse.SUPPRESS else action.default,
+                'nargs': action.nargs})
+        codes = ['OK', 'USAGE_INVALID', 'PATHS_OVERLAP', 'INTERNAL_ERROR']
+        if name not in {'describe', 'verify-db'}: codes += ['INPUT_MISSING', 'STRUCTURE_INVALID']
+        if name in {'validate', 'summarize'}: codes += ['RESULTS_DIR_MISSING', 'INPUT_MISMATCH']
+        if name == 'validate': codes += ['ATTESTATION_REQUIRED', 'ATTESTATION_REJECTED']
+        if name in {'verify-db', 'preflight', 'run'}: codes += ['MANIFEST_PATH_UNSAFE']
+        if name == 'verify-db': codes += ['DB_MISMATCH']
+        if name in {'preflight', 'run'}: codes += ['ENV_UNMET', 'DB_UNVERIFIED', 'THREADS_EXCEED_ALLOCATION', 'INPUT_MISMATCH']
+        if name == 'run': codes += ['SAMPLE_ID_UNSAFE', 'STAGE_FAILED']
+        commands[name] = {**w.COMMAND_METADATA[name], 'args': arguments,
+            'writes': w.COMMAND_METADATA[name]['writes']+['--envelope-out (optional)'],
+            'reads_db': name in {'verify-db','preflight','run'}, 'requires_user_confirmation': name=='run',
+            'needs_network': False, 'outcome_codes': sorted(set(codes))}
+    return {'commands': commands, 'exit_codes': EXIT_CODES,
+        'database_stage_assets': {k: list(v) for k,v in w.DB_ASSETS_BY_STAGE.items()}}
+
+
+def commands_markdown(description):
+    rows = ['| Command | Purpose | Writes |', '|---|---|---|']
+    for name, meta in description['commands'].items():
+        rows.append('| `%s` | %s | %s |' % (name, meta['summary'], ', '.join(meta['writes'])))
+    rows += ['', 'Required database assets for a new search:']
+    for stage, assets in description['database_stage_assets'].items():
+        rows.append('- `%s`: %s.' % (stage, ', '.join('`%s`' % a for a in assets) or 'none'))
+    return '\n'.join(rows)

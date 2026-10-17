@@ -89,6 +89,24 @@ Use `profiles/sandbox.yaml` or `profiles/hpc.yaml` to choose an explicit thread 
 
 ## Respect database and runtime boundaries
 
-The validation, report, and fixture tests need only Python's standard library. Do not install dbCAN or fetch databases for those tasks. A new sequence-search run requires the exact stage assets listed in `scripts/dbcan_workflow.py` and must pass `verify-db` against a preserved manifest. The supplied database files are not bundled; the checksum manifest alone does not prove the absent bytes. Explain the database snapshot and reported storage requirement before any new download.
+The validation, report, and fixture tests need only Python's standard library. Do not install dbCAN or fetch databases for those tasks. A new sequence-search run requires the exact stage assets listed by `describe` and in the generated command reference below and must pass `verify-db` against a preserved manifest. The supplied database files are not bundled; the checksum manifest alone does not prove the absent bytes. Explain the database snapshot and reported storage requirement before any new download.
 
 For detailed interpretation, resource, and provenance rules, read `references/reporting.md`, `references/provenance.md`, and the selected profile.
+
+<!-- BEGIN GENERATED:commands -->
+| Command | Purpose | Writes |
+|---|---|---|
+| `prepare` | Validate paired inputs and prepare standalone CDS GFF. | --out-gff, --report, --envelope-out (optional) |
+| `validate` | Validate the exact native results and optional execution attestation. | output_validation.json, results_observed.sha256 (or --observed-manifest), envelope.validate.json, --envelope-out (optional) |
+| `summarize` | Write overlap-aware scientific evidence tables. | summary.json, protein_family_associations.tsv, domain_instances.tsv, method_agreement.tsv, family_protein_counts.tsv, class_family_comparison.tsv, candidate_evidence.tsv, envelope.summarize.json, --envelope-out (optional) |
+| `verify-db` | Compare a supplied cache with every expected path and digest. | --observed-manifest, --envelope-out (optional) |
+| `preflight` | Check input, runtime, resource and database requirements. | --envelope-out (optional) |
+| `run` | Run four stages only after confirmed preflight into fresh roots. | native results, logs/*, inputs/*, stage_status.json, output_validation.json, results_observed.sha256, scientific_summary/*, completion.json, workflow_summary.json, envelope.run.json, --envelope-out (optional) |
+| `describe` | Describe arguments, effects and the contract without executing work. | --envelope-out (optional) |
+
+Required database assets for a new search:
+- `CAZyme_annotation`: `CAZy.dmnd`, `dbCAN.hmm`, `dbCAN-sub.hmm`, `fam-substrate-mapping.tsv`.
+- `gff_process`: `TCDB.dmnd`, `TF.hmm`, `TF.dmnd`, `STP.hmm`, `peptidase_db.dmnd`, `sulfatlas_db.dmnd`.
+- `cgc_finder`: none.
+- `substrate_prediction`: `PUL.dmnd`, `dbCAN-PUL.xlsx`, `dbCAN-PUL`.
+<!-- END GENERATED:commands -->

@@ -1345,6 +1345,18 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
     return overall
 
 
+# Public command metadata lives beside the parser; describe and docs share it.
+COMMAND_METADATA = {
+    'prepare': {'summary': 'Validate paired inputs and prepare standalone CDS GFF.', 'writes': ['--out-gff', '--report']},
+    'validate': {'summary': 'Validate the exact native results and optional execution attestation.', 'writes': ['output_validation.json', 'results_observed.sha256 (or --observed-manifest)', 'envelope.validate.json']},
+    'summarize': {'summary': 'Write overlap-aware scientific evidence tables.', 'writes': ['summary.json', 'protein_family_associations.tsv', 'domain_instances.tsv', 'method_agreement.tsv', 'family_protein_counts.tsv', 'class_family_comparison.tsv', 'candidate_evidence.tsv', 'envelope.summarize.json']},
+    'verify-db': {'summary': 'Compare a supplied cache with every expected path and digest.', 'writes': ['--observed-manifest']},
+    'preflight': {'summary': 'Check input, runtime, resource and database requirements.', 'writes': []},
+    'run': {'summary': 'Run four stages only after confirmed preflight into fresh roots.', 'writes': ['native results', 'logs/*', 'inputs/*', 'stage_status.json', 'output_validation.json', 'results_observed.sha256', 'scientific_summary/*', 'completion.json', 'workflow_summary.json', 'envelope.run.json']},
+    'describe': {'summary': 'Describe arguments, effects and the contract without executing work.', 'writes': []},
+}
+
+
 def build_parser():
     from dbcan_cli import ContractParser, global_parent
     parent = global_parent()
@@ -1399,7 +1411,10 @@ def build_parser():
     run.add_argument("--threads", type=int, required=True, help='positive CPU budget within the detected allocation')
     run.add_argument("--profile", choices=("sandbox", "hpc"), required=True, help='explicit resource profile')
 
+    desc = sub.add_parser('describe', parents=[parent], help=COMMAND_METADATA['describe']['summary'])
+    desc.add_argument('--format', choices=('json', 'markdown'), default='json', help='include JSON metadata or a Markdown rendering inside result')
     examples = {
+        'describe': 'describe --format json',
         'prepare': 'prepare --faa inputs/sample.faa --gff inputs/sample.gff3 --out-gff derived/sample.gff --report derived/adapter.json',
         'validate': 'validate --faa inputs/sample.faa --gff inputs/sample.gff3 --results-dir native/sample --metadata-dir diagnostics/sample --allow-unattested',
         'summarize': 'summarize --faa inputs/sample.faa --gff inputs/sample.gff3 --results-dir native/sample --metadata-dir diagnostics/summary',
