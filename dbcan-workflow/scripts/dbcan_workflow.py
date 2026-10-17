@@ -1350,7 +1350,7 @@ COMMAND_METADATA = {
     'prepare': {'summary': 'Validate paired inputs and prepare standalone CDS GFF.', 'writes': ['--out-gff', '--report']},
     'validate': {'summary': 'Validate the exact native results and optional execution attestation.', 'writes': ['output_validation.json', 'results_observed.sha256 (or --observed-manifest)', 'envelope.validate.json']},
     'summarize': {'summary': 'Write overlap-aware scientific evidence tables.', 'writes': ['summary.json', 'protein_family_associations.tsv', 'domain_instances.tsv', 'method_agreement.tsv', 'family_protein_counts.tsv', 'class_family_comparison.tsv', 'candidate_evidence.tsv', 'envelope.summarize.json']},
-    'verify-db': {'summary': 'Compare a supplied cache with every expected path and digest.', 'writes': ['--observed-manifest']},
+    'verify-db': {'summary': 'Compare a supplied cache with every expected path and digest.', 'writes': ['--observed-manifest', '--diff-out (optional)']},
     'preflight': {'summary': 'Check input, runtime, resource and database requirements.', 'writes': []},
     'run': {'summary': 'Run four stages only after confirmed preflight into fresh roots.', 'writes': ['native results', 'logs/*', 'inputs/*', 'stage_status.json', 'output_validation.json', 'results_observed.sha256', 'scientific_summary/*', 'completion.json', 'workflow_summary.json', 'envelope.run.json']},
     'describe': {'summary': 'Describe arguments, effects and the contract without executing work.', 'writes': []},
@@ -1388,6 +1388,9 @@ def build_parser():
     verify.add_argument("--db-dir", type=Path, required=True, help='supplied database cache (input path); never downloaded')
     verify.add_argument("--expected-manifest", type=Path, required=True, help='preserved expected SHA256 manifest (input path)')
     verify.add_argument("--observed-manifest", type=Path, required=True, help='observed SHA256 manifest (output path)')
+
+    verify.add_argument('--max-listed', type=int, default=20, help='maximum listed differences per category (default 20; counts remain complete)')
+    verify.add_argument('--diff-out', type=Path, help='complete database difference lists (output path)')
 
     pre = sub.add_parser("preflight", parents=[parent], help="check runtime, input identity, resource budget, and reference assets")
     pre.add_argument("--faa", type=Path, required=True, help='source protein FASTA (input path)')

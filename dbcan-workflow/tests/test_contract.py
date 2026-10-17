@@ -183,6 +183,21 @@ class ContractTests(unittest.TestCase):
                     for sub in action.choices.values(): walk(sub)
         walk(w.build_parser())
 
+    def test_database_difference_is_bounded_and_complete_diff_is_guarded(self):
+        db = self.root/'emptydb'; db.mkdir()
+        args = ['verify-db','--db-dir',str(db),'--expected-manifest', str(ROOT/'environment/database_v5-2-9_5-5-2026.expected.sha256'), '--observed-manifest', str(self.root/'observed.sha256')]
+        data = self.call(args+['--diff-out',str(self.root/'diff.json')])
+        self.assertEqual(data['outcome']['kind'], 'negative')
+        self.assertEqual(data['result']['missing_count'], 646)
+        self.assertEqual(len(data['result']['listed']['missing']), 20)
+        self.assertEqual(len(json.loads((self.root/'diff.json').read_text())['missing']), 646)
+        without_diff = self.call(args)
+        self.assertLess(len(json.dumps(without_diff, indent=2).encode()), 4096)
+        data = self.call(args+['--diff-out', str(db/'overwrite.json')])
+        self.assertEqual(data['outcome']['code'], 'PATHS_OVERLAP')
+        data = self.call(args+['--max-listed', '-1'])
+        self.assertEqual(data['outcome']['kind'], 'usage')
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:

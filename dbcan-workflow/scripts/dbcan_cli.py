@@ -22,7 +22,14 @@ def dispatch(r):
     elif r.command == 'summarize':
         data = w.summarize_results(r.faa, r.gff, r.results_dir, r.metadata_dir)
     elif r.command == 'verify-db':
+        if r.max_listed < 0: raise UsageError('USAGE_INVALID', '--max-listed must be nonnegative.')
         data = w.verify_database(r.db_dir, r.expected_manifest, r.observed_manifest)
+        differences = {key: data.pop(key) for key in ('missing', 'unexpected', 'mismatched')}
+        if r.diff_out: w.write_json_atomic(r.diff_out, differences)
+        data.update({key+'_count': len(value) for key, value in differences.items()})
+        data['listed'] = {key: value[:r.max_listed] for key, value in differences.items()}
+        data['listed_truncated'] = any(len(value)>r.max_listed for value in differences.values())
+        data['max_listed'] = r.max_listed
     elif r.command == 'preflight':
         env = r.env_dir.resolve()
         data = w.run_preflight(r.faa, r.gff, env/'bin/python', env/'bin/run_dbcan', env/'bin/diamond',
@@ -82,7 +89,7 @@ def planned_outputs(r):
         add(r.metadata_dir/'output_validation.json', 'output_validation')
         add(r.observed_manifest or r.metadata_dir/'results_observed.sha256', 'observed_manifest')
     elif r.command == 'verify-db':
-        add(r.observed_manifest, 'observed_manifest')
+        add(r.observed_manifest, 'observed_manifest'); add(getattr(r, 'diff_out', None), 'database_diff')
     if r.command in {'validate', 'summarize', 'run'}:
         add(r.metadata_dir/('envelope.%s.json' % r.command), 'envelope')
     add(getattr(r, 'envelope_out', None), 'envelope')
@@ -100,10 +107,12 @@ def protected_paths(r):
 def guard_cli_outputs(r):
     roots, files = protected_paths(r)
     paths = planned_outputs(r)
+    if r.command == 'verify-db' and r.diff_out:
+        w._guard_output_files([r.diff_out, r.observed_manifest], files)
     # File guards protect explicitly selected manifests as well as input roots.
     w._guard_output_files([Path(p) for p in paths], files)
     for p in paths:
-        w._guard_output_directories([Path(p).parent], roots)
+        w._guard_output_directories([Path(p)], roots)
         for source in files:
             if Path(p).resolve() in source.resolve().parents:
                 raise Refusal('PATHS_OVERLAP', 'An output path contains a protected source file.')
