@@ -1303,15 +1303,17 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(description=__doc__)
+    from dbcan_cli import ContractParser, global_parent
+    parent = global_parent()
+    parser = ContractParser(description=__doc__, parents=[parent])
     sub = parser.add_subparsers(dest="command", required=True)
-    prep = sub.add_parser("prepare", help="validate a Bakta FAA/GFF3 pair and prepare local flat-CDS GFF")
+    prep = sub.add_parser("prepare", parents=[parent], help="validate a Bakta FAA/GFF3 pair and prepare local flat-CDS GFF")
     prep.add_argument("--faa", type=Path, required=True)
     prep.add_argument("--gff", type=Path, required=True)
     prep.add_argument("--out-gff", type=Path, required=True)
     prep.add_argument("--report", type=Path, required=True)
 
-    val = sub.add_parser("validate", help="validate one exact results directory and write separate metadata")
+    val = sub.add_parser("validate", parents=[parent], help="validate one exact results directory and write separate metadata")
     val.add_argument("--faa", type=Path, required=True)
     val.add_argument("--gff", type=Path, required=True)
     val.add_argument("--results-dir", type=Path, required=True)
@@ -1321,18 +1323,18 @@ def build_parser():
                      help="accept structural validation without claiming successful stage execution")
     val.add_argument("--observed-manifest", type=Path)
 
-    summ = sub.add_parser("summarize", help="write overlap-aware family/domain tables to separate metadata")
+    summ = sub.add_parser("summarize", parents=[parent], help="write overlap-aware family/domain tables to separate metadata")
     summ.add_argument("--faa", type=Path, required=True)
     summ.add_argument("--gff", type=Path, required=True)
     summ.add_argument("--results-dir", type=Path, required=True)
     summ.add_argument("--metadata-dir", type=Path, required=True)
 
-    verify = sub.add_parser("verify-db", help="compare a database directory with a preserved expected manifest")
+    verify = sub.add_parser("verify-db", parents=[parent], help="compare a database directory with a preserved expected manifest")
     verify.add_argument("--db-dir", type=Path, required=True)
     verify.add_argument("--expected-manifest", type=Path, required=True)
     verify.add_argument("--observed-manifest", type=Path, required=True)
 
-    pre = sub.add_parser("preflight", help="check runtime, input identity, resource budget, and reference assets")
+    pre = sub.add_parser("preflight", parents=[parent], help="check runtime, input identity, resource budget, and reference assets")
     pre.add_argument("--faa", type=Path, required=True)
     pre.add_argument("--gff", type=Path, required=True)
     pre.add_argument("--env-dir", type=Path, required=True)
@@ -1343,7 +1345,7 @@ def build_parser():
     pre.add_argument("--results-dir", type=Path, required=True)
     pre.add_argument("--metadata-dir", type=Path, required=True)
 
-    run = sub.add_parser("run", help="run all dbCAN stages with explicit roots, verified assets, and per-stage records")
+    run = sub.add_parser("run", parents=[parent], help="run all dbCAN stages with explicit roots, verified assets, and per-stage records")
     run.add_argument("--input-dir", type=Path, required=True)
     run.add_argument("--results-dir", type=Path, required=True)
     run.add_argument("--metadata-dir", type=Path, required=True)
@@ -1358,11 +1360,9 @@ def build_parser():
 
 
 def main(argv=None):
-    from dbcan_cli import dispatch
-    result = dispatch(build_parser().parse_args(argv))
-    print(json.dumps(result.result, indent=2, sort_keys=True))
-    return 0
+    from dbcan_cli import main as cli_main
+    return cli_main(argv)
 
 
-if __name__=="__main__":
-    main()
+if __name__ == "__main__":
+    sys.exit(main())
