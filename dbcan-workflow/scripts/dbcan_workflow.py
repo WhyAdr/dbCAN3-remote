@@ -288,7 +288,7 @@ def compare_faa_gff(faa: Path, gff: Path) -> dict[str, Any]:
     missing_from_faa = sorted(set(cds) - set(proteins))
     faa_only = sorted(set(proteins) - set(cds))
     if missing_from_faa or faa_only:
-        raise Refusal('INPUT_MISMATCH', f"FAA/GFF CDS IDs differ; cds_only={missing_from_faa[:10]}, faa_only={faa_only[:10]}")
+        raise Refusal('INPUT_MISMATCH', "FAA/GFF CDS IDs differ.", details={"cds_only_count": len(missing_from_faa), "faa_only_count": len(faa_only)})
     if len(proteins) != len(cds):
         raise Refusal('INPUT_MISMATCH', "FAA/GFF record counts differ despite matching ID sets")
     for pid, feature in cds.items():
@@ -371,7 +371,7 @@ def parse_sha256_manifest(path: Path) -> dict[str, str]:
         rel = parts[1].lstrip("* ")
         rel = rel.removeprefix("./").replace("\\", "/")
         if Path(rel).is_absolute() or ".." in Path(rel).parts or not rel:
-            raise Refusal('MANIFEST_PATH_UNSAFE', f"unsafe path in checksum manifest: {rel!r}")
+            raise Refusal('MANIFEST_PATH_UNSAFE', "The checksum manifest contains an unsafe path.", details={"path": rel})
         if rel in expected:
             raise Refusal('MANIFEST_PATH_UNSAFE', f"duplicate path in checksum manifest: {rel}")
         expected[rel] = parts[0].lower()
@@ -425,7 +425,7 @@ def db_preflight(db_dir: Path, expected_manifest: Path, required_stages: Iterabl
         checks[stage] = {"required": list(DB_ASSETS_BY_STAGE[stage]), "missing": missing, "ready": not missing}
         if missing: missing_by_stage[stage] = missing
     if missing_by_stage:
-        raise MissingPathRefusal('DB_UNVERIFIED', f"database assets missing by stage under {db_dir}: {missing_by_stage}")
+        raise MissingPathRefusal('DB_UNVERIFIED', "Required database stage assets are missing.", details={"db_dir": str(db_dir), "missing_by_stage": missing_by_stage})
     manifest_check = verify_database(db_dir, expected_manifest)
     if not manifest_check["match"]:
         raise Refusal('DB_UNVERIFIED', f"database directory does not match pinned {SNAPSHOT}: missing={len(manifest_check['missing'])}, unexpected={len(manifest_check['unexpected'])}, mismatched={len(manifest_check['mismatched'])}")
@@ -637,7 +637,7 @@ def _status_check(status_file: Path | None, required: bool, *, faa: Path | None 
         if not record or normalized["stages"].get(stage, {}).get("state") != "succeeded" or type(record.get("exit_code")) is not int or record.get("exit_code") != 0:
             problems.append(stage)
     if problems:
-        raise Refusal('ATTESTATION_REJECTED', f"one or more required stages are incomplete or unsuccessful: {problems}")
+        raise Refusal('ATTESTATION_REJECTED', "One or more required stages are incomplete or unsuccessful.", details={"stages": problems})
     if results_dir is not None:
         expected_outputs = stages[STAGE_NAMES[-1]].get("output_sha256")
         if not expected_outputs:
@@ -1116,7 +1116,14 @@ def run_preflight(faa: Path, gff: Path, env_python: Path, run_dbcan_path: Path, 
         raise Refusal('ENV_UNMET', "Python, run_dbcan, and DIAMOND must be selected from one environment bin directory")
     env = os.environ.copy()
     env["PATH"] = f"{env_root / 'bin'}{os.pathsep}{env.get('PATH', '')}"
-    python_probe = subprocess.run(
+    def probe(*args, **kwargs):
+        try:
+            return subprocess.run(*args, **kwargs)
+        except OSError as exc:
+            raise RuntimeRefusal('ENV_UNMET', 'A selected runtime probe could not start.',
+                details={'executable': str(args[0][0])}) from exc
+
+    python_probe = probe(
         [str(paths[0]), "-c", "import platform,sys,json,importlib.metadata; "
          "print(json.dumps({'python':sys.version.split()[0],'machine':platform.machine(),"
          "'prefix':sys.prefix,'dbcan':importlib.metadata.version('dbcan'),"
@@ -1124,16 +1131,21 @@ def run_preflight(faa: Path, gff: Path, env_python: Path, run_dbcan_path: Path, 
         check=False, capture_output=True, text=True, env=env,
     )
     if python_probe.returncode != 0:
-        raise RuntimeRefusal('ENV_UNMET', f"selected Python smoke test failed: {python_probe.stderr.strip()}")
-    runtime = json.loads(python_probe.stdout)
+        raise RuntimeRefusal('ENV_UNMET', "The selected Python smoke test failed.")
+    try:
+        runtime = json.loads(python_probe.stdout)
+        if not isinstance(runtime, dict) or any(not isinstance(runtime.get(key), str) for key in ('python', 'machine', 'prefix', 'dbcan')) or not isinstance(runtime.get('packages'), dict):
+            raise ValueError('runtime probe fields are missing or invalid')
+    except ValueError as exc:
+        raise RuntimeRefusal('ENV_UNMET', 'The selected Python probe returned malformed runtime metadata.') from exc
     if Path(runtime["prefix"]).resolve() != env_root or runtime["dbcan"] != DBCAN_VERSION:
         raise Refusal('ENV_UNMET', "selected Python environment identity or dbcan distribution version differs from the requested environment")
-    run_probe = subprocess.run([str(paths[0]), str(paths[1]), "version"], check=False, capture_output=True, text=True, env=env)
+    run_probe = probe([str(paths[0]), str(paths[1]), "version"], check=False, capture_output=True, text=True, env=env)
     if run_probe.returncode != 0 or not re.search(r"(?<!\d)5\.2\.9(?!\d)", run_probe.stdout + run_probe.stderr):
-        raise RuntimeRefusal('ENV_UNMET', f"run_dbcan version probe failed or was not 5.2.9: {(run_probe.stdout + run_probe.stderr).strip()}")
-    diamond_probe = subprocess.run([str(paths[2]), "version"], check=False, capture_output=True, text=True, env=env)
+        raise RuntimeRefusal('ENV_UNMET', "The run_dbcan version probe failed or was not 5.2.9.")
+    diamond_probe = probe([str(paths[2]), "version"], check=False, capture_output=True, text=True, env=env)
     if diamond_probe.returncode != 0 or not re.search(r"(?<!\d)2\.2\.8(?!\d)", diamond_probe.stdout + diamond_probe.stderr):
-        raise RuntimeRefusal('ENV_UNMET', f"DIAMOND version probe failed or was not 2.2.8: {(diamond_probe.stdout + diamond_probe.stderr).strip()}")
+        raise RuntimeRefusal('ENV_UNMET', "The DIAMOND version probe failed or was not 2.2.8.")
 
     def existing_parent(path: Path) -> Path:
         current = path.resolve()

@@ -345,6 +345,27 @@ class ContractTests(unittest.TestCase):
         env=self.call(self.args+['--faa',str(self.root/'missinginputs/nonexistent.faa'),'--allow-unattested'])
         self.assertEqual(env['outcome']['code'],'INPUT_MISSING')
 
+    def test_environment_probe_failures_refuse_with_plain_messages(self):
+        env=self.root/'fakeenv';(env/'bin').mkdir(parents=True)
+        for name in ['python','run_dbcan','diamond']:
+            path=env/'bin'/name;path.write_text('#!/bin/sh\nexit 0\n');path.chmod(0o755)
+        def preflight():
+            return w.run_preflight(self.fx/'inputs/sample.faa',self.fx/'inputs/sample.gff3',env/'bin/python',env/'bin/run_dbcan',env/'bin/diamond',
+                self.root/'db',self.root/'expected.sha256',1,'sandbox',self.root/'results',self.root/'metadata')
+        with self.assertRaises(Refusal) as caught: preflight()
+        self.assertEqual(caught.exception.code,'ENV_UNMET')
+        self.assertEqual(str(caught.exception),'The selected Python probe returned malformed runtime metadata.')
+        with patch.object(w.subprocess,'run',return_value=subprocess.CompletedProcess([],1,'','None: traceback text')),self.assertRaises(Refusal) as caught: preflight()
+        self.assertEqual(caught.exception.code,'ENV_UNMET')
+        self.assertEqual(str(caught.exception),'The selected Python smoke test failed.')
+        runtime=subprocess.CompletedProcess([],0,json.dumps({'python':'3.12','machine':'x86_64','prefix':str(env),'dbcan':'5.2.9','packages':{}}),'')
+        with patch.object(w.subprocess,'run',side_effect=[runtime,subprocess.CompletedProcess([],0,'bad','')]),self.assertRaises(Refusal) as caught: preflight()
+        self.assertEqual(str(caught.exception),'The run_dbcan version probe failed or was not 5.2.9.')
+        with patch.object(w.subprocess,'run',side_effect=[runtime,subprocess.CompletedProcess([],0,'5.2.9',''),subprocess.CompletedProcess([],0,'bad','')]),self.assertRaises(Refusal) as caught: preflight()
+        self.assertEqual(str(caught.exception),'The DIAMOND version probe failed or was not 2.2.8.')
+        with patch.object(w.subprocess,'run',side_effect=OSError('cannot start')),self.assertRaises(Refusal) as caught: preflight()
+        self.assertEqual(str(caught.exception),'A selected runtime probe could not start.')
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:
