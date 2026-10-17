@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dbcan-workflow:envelope:v1",
+  "type": "object",
+  "required": ["contract_version", "tool", "command", "run_id", "outcome", "exit",
+               "evidence", "result", "refusal", "findings", "warnings", "artifacts", "claims"],
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {"const": 1},
+    "tool": {
+      "type": "object", "required": ["name", "version"], "additionalProperties": false,
+      "properties": {"name": {"const": "dbcan-workflow"}, "version": {"type": "string"}}
+    },
+    "command": {"enum": ["prepare", "validate", "summarize", "verify-db", "preflight", "run",
+                         "audit-circular", "cgc-overlay", "describe"]},
+    "run_id": {"type": ["string", "null"]},
+    "outcome": {
+      "type": "object", "required": ["kind", "code", "summary"], "additionalProperties": false,
+      "properties": {
+        "kind": {"enum": ["ok", "negative", "refused", "failed", "usage", "error"]},
+        "code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+        "summary": {"type": "string"}
+      }
+    },
+    "exit": {
+      "type": "object", "required": ["code", "policy"], "additionalProperties": false,
+      "properties": {"code": {"type": "integer", "minimum": 0}, "policy": {"enum": ["strict", "semantic-zero"]}}
+    },
+    "evidence": {
+      "type": "object", "required": ["structure", "attestation"], "additionalProperties": false,
+      "properties": {
+        "structure": {"enum": ["valid", "invalid", "not_assessed"]},
+        "attestation": {"enum": ["attested", "unattested", "rejected", "not_applicable"]}
+      }
+    },
+    "result": {"type": ["object", "null"]},
+    "refusal": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/refusal"}]},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "warnings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "artifacts": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+    "claims": {"$ref": "#/$defs/claims"}
+  },
+  "allOf": [
+    {"if": {"properties": {"outcome": {"properties": {"kind": {"const": "refused"}}}}},
+     "then": {"properties": {"refusal": {"type": "object"}}}},
+    {"if": {"properties": {"outcome": {"properties": {"kind": {"enum": ["ok", "negative", "failed"]}}}}},
+     "then": {"properties": {"refusal": {"type": "null"}}}}
+  ],
+  "$defs": {
+    "finding": {
+      "type": "object", "required": ["code", "message"], "additionalProperties": false,
+      "properties": {"code": {"type": "string"}, "message": {"type": "string"},
+                     "location": {"type": ["string", "null"]}}
+    },
+    "artifact": {
+      "type": "object", "required": ["role", "path", "written"], "additionalProperties": false,
+      "properties": {"role": {"type": "string"}, "path": {"type": "string"},
+                     "sha256": {"type": ["string", "null"]}, "written": {"type": "boolean"}}
+    },
+    "remedy": {
+      "type": "object", "required": ["id", "text"], "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"}, "text": {"type": "string"},
+        "flags": {"type": "array", "items": {"type": "string"}},
+        "claim_effects": {"type": "array", "items": {"type": "string", "pattern": "^CL-[A-Z0-9-]+$"}}
+      }
+    },
+    "forbidden": {
+      "type": "object", "required": ["id", "text"], "additionalProperties": false,
+      "properties": {"id": {"type": "string"}, "text": {"type": "string"}}
+    },
+    "refusal": {
+      "type": "object", "required": ["code", "message", "remediation", "forbidden", "details"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+        "message": {"type": "string"},
+        "remediation": {"type": "array", "items": {"$ref": "#/$defs/remedy"}},
+        "forbidden": {"type": "array", "items": {"$ref": "#/$defs/forbidden"}},
+        "details": {"type": "object"}
+      }
+    },
+    "claim": {
+      "type": "object", "required": ["id", "text", "source"], "additionalProperties": false,
+      "properties": {"id": {"type": "string", "pattern": "^CL-[A-Z0-9-]+$"},
+                     "text": {"type": "string"}, "source": {"type": "string"}}
+    },
+    "claims": {
+      "type": "object", "required": ["may_say", "may_not_say"], "additionalProperties": false,
+      "properties": {"may_say": {"type": "array", "items": {"$ref": "#/$defs/claim"}},
+                     "may_not_say": {"type": "array", "items": {"$ref": "#/$defs/claim"}}}
+    }
+  }
+}
