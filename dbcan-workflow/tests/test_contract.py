@@ -146,6 +146,25 @@ class ContractTests(unittest.TestCase):
         env = self.call(self.args+['--status-file', str(self.root/'absent'), '--allow-unattested'])
         self.assertEqual(env['outcome']['code'], 'ATTESTATION_REJECTED')
 
+    def test_claims_are_deterministic_and_bind_structured_evidence(self):
+        from dbcan_claims import CLAIMS, derive_claims
+        unattested = derive_claims('validate', {'kind': 'ok'}, {'structure': 'valid', 'attestation': 'unattested'}, {'sample_source': 'faa_stem'})
+        self.assertIn('CL-N1', [c['id'] for c in unattested['may_not_say']])
+        self.assertIn('CL-N9', [c['id'] for c in unattested['may_not_say']])
+        self.assertNotIn('CL-A1', [c['id'] for c in unattested['may_say']])
+        attested = derive_claims('validate', {'kind': 'ok'}, {'structure': 'valid', 'attestation': 'attested'}, {})
+        self.assertIn('CL-A1', [c['id'] for c in attested['may_say']])
+        self.assertIn('CL-N10', [c['id'] for c in attested['may_not_say']])
+        for kind in ['refused', 'failed', 'usage', 'error']:
+            claims = derive_claims('validate', {'kind': kind}, {'structure': 'not_assessed', 'attestation': 'not_applicable'}, {})
+            self.assertIn('CL-N0', [c['id'] for c in claims['may_not_say']])
+        summary = derive_claims('summarize', {'kind': 'ok'}, {'structure': 'valid', 'attestation': 'unattested'}, {'substrate_rows': 1})
+        self.assertTrue({'CL-N3','CL-N4','CL-N5','CL-N6','CL-N7','CL-N11'} <= {c['id'] for c in summary['may_not_say']})
+        for side in summary.values(): self.assertEqual([c['id'] for c in side], sorted(c['id'] for c in side))
+        for info in REGISTRY.values():
+            for remedy in info['remediation']:
+                self.assertTrue(set(remedy['claim_effects']) <= set(CLAIMS))
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:

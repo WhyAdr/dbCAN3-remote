@@ -125,8 +125,7 @@ def observed_artifacts(r, before):
     return artifacts
 
 
-def derive_claims(command, outcome, evidence, result):
-    return {'may_say': [], 'may_not_say': []}  # Populated by W1.6.
+from dbcan_claims import derive_claims
 
 
 def build_envelope(command, cr, policy):
