@@ -9,7 +9,7 @@ from its own location.
 from __future__ import annotations
 
 from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
-                            NegativeResult, MissingDataResult, StageFailure)
+                            NegativeResult, MissingDataResult, StageFailure, structure_reader)
 
 import argparse
 import csv
@@ -120,6 +120,7 @@ def write_tsv_atomic(path: Path, header: list[str], rows: Iterable[dict[str, Any
             os.unlink(tmp_name)
 
 
+@structure_reader
 def read_tsv(path: Path, expected_header: list[str] | None = None) -> list[dict[str, str]]:
     if not path.is_file():
         raise MissingPathRefusal('INPUT_MISSING', f"required result file is missing: {path}")
@@ -152,6 +153,7 @@ def parse_attributes(text: str) -> dict[str, str]:
     return out
 
 
+@structure_reader
 def parse_fasta(path: Path) -> dict[str, str]:
     if not path.is_file():
         raise MissingPathRefusal('INPUT_MISSING', f"protein FASTA is missing: {path}")
@@ -192,6 +194,7 @@ def parse_fasta(path: Path) -> dict[str, str]:
     return sequences
 
 
+@structure_reader
 def parse_gff(path: Path) -> dict[str, Any]:
     if not path.is_file():
         raise MissingPathRefusal('INPUT_MISSING', f"GFF3 is missing: {path}")
@@ -355,6 +358,8 @@ def prepare_local_gff(faa: Path, gff: Path, output: Path, report: Path) -> dict[
 
 
 def parse_sha256_manifest(path: Path) -> dict[str, str]:
+    if not path.is_file():
+        raise MissingPathRefusal('INPUT_MISSING', 'The expected checksum manifest does not exist.', details={'path': str(path)})
     expected: dict[str, str] = {}
     for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         line = line.strip()
@@ -377,6 +382,8 @@ def parse_sha256_manifest(path: Path) -> dict[str, str]:
 
 def verify_database(db_dir: Path, expected_manifest: Path, observed_manifest: Path | None = None) -> dict[str, Any]:
     db_dir = db_dir.resolve()
+    if not db_dir.is_dir():
+        raise MissingPathRefusal('DB_UNVERIFIED', 'The selected database cache directory does not exist.', details={'db_dir': str(db_dir)})
     expected_manifest = expected_manifest.resolve()
     if db_dir == expected_manifest or db_dir in expected_manifest.parents:
         raise Refusal('PATHS_OVERLAP', "expected manifest must be outside the database directory")
@@ -566,7 +573,7 @@ def _check_accessory_tables(results_dir: Path, tables: dict[str, list[dict[str, 
 
 def normalize_status_vocab(data):
     """Read either legacy records or v2; reject contradictory or unknown tokens."""
-    if not isinstance(data, dict) or data.get('schema_version', 1) not in {1, 2}:
+    if not isinstance(data, dict) or type(data.get('schema_version', 1)) is not int or data.get('schema_version', 1) not in {1, 2}:
         raise ValueError('unsupported stage-status schema')
     run_map = {'complete': 'succeeded', 'stages_complete': 'stages_succeeded'}
     stage_map = {'completed': 'succeeded'}
@@ -614,14 +621,14 @@ def _status_check(status_file: Path | None, required: bool, *, faa: Path | None 
     if state not in {'stages_succeeded', 'succeeded'}:
         raise Refusal('ATTESTATION_REJECTED', f"stage status manifest is marked '{state}': {status_file}")
     if data:
-        if not data.get("run_id"):
+        if not isinstance(data.get("run_id"), str) or not data["run_id"]:
             raise Refusal('ATTESTATION_REJECTED', f"stage status manifest lacks a run ID: {status_file}")
         for label, input_path, key in (("FAA", faa, "input_faa_sha256"), ("GFF", gff, "input_gff_sha256")):
             if input_path is None or not data.get(key):
                 raise Refusal('ATTESTATION_REJECTED', f"stage status manifest lacks {label} identity evidence: {status_file}")
             if data[key] != sha256_file(input_path):
                 raise Refusal('ATTESTATION_REJECTED', f"stage status manifest {label} hash does not match the selected input: {status_file}")
-        if results_dir is None or Path(data.get("results_dir", "")).resolve() != results_dir.resolve():
+        if results_dir is None or not isinstance(data.get("results_dir"), str) or Path(data["results_dir"]).resolve() != results_dir.resolve():
             raise Refusal('ATTESTATION_REJECTED', f"stage status manifest results path does not match the selected results directory: {status_file}")
     stages = data.get("stages", {})
     problems = []
@@ -1300,7 +1307,8 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                 except OSError as exc:
                     _stage_record(status_file, stage, state="failed", started=started, exit_code=None,
                         argv=argv, log_file=log_file, results_dir=result_dir, reason=f"could not start stage: {exc}")
-                    raise
+                    raise StageFailure('STAGE_FAILED', 'An external dbCAN stage could not start.',
+                        details={'sample': sample, 'stage': stage, 'log_path': str(log_file)}) from exc
                 _stage_record(status_file, stage, state="succeeded" if completed.returncode == 0 else "failed",
                     started=started, exit_code=completed.returncode, argv=argv,
                     log_file=log_file, results_dir=result_dir,
@@ -1334,10 +1342,13 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                             "reason": "an earlier preflight or stage failed"}
                 current["status"] = "failed"
                 current["run"] = {"state": "failed"}
-                current["failure"] = {"message": str(exc), "ended_utc": utc_now()}
+                current["failure"] = {"message": str(exc), "ended_utc": utc_now(),
+                    "kind": getattr(exc, 'kind', 'error'), "code": getattr(exc, 'code', 'INTERNAL_ERROR')}
                 write_json_atomic(status_file, _v2_status_document(current))
             except Exception:
                 pass
+            if not isinstance(exc, (StageFailure, NegativeResult)):
+                raise
     overall = {"run_id": batch_run_id,
         "status": "complete" if not failures else "failed", "samples": samples,
         "preflight": preflights, "sample_summaries": sample_summaries, "failures": failures}

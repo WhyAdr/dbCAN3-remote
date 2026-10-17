@@ -272,6 +272,51 @@ class ContractTests(unittest.TestCase):
             self.assertEqual(path.stat().st_mode & 0o777, 0o644)
         finally: os.umask(old)
 
+    def test_colliding_artifact_slots_and_refusal_inventory_are_safe(self):
+        target = self.root/'diag/output_validation.json'
+        for extra in [['--observed-manifest',str(target)], ['--envelope-out',str(target)]]:
+            before = self.tree()
+            data = self.call(self.args+['--allow-unattested',*extra])
+            self.assertEqual(data['outcome']['code'],'PATHS_OVERLAP')
+            self.assertTrue(all(not artifact['written'] for artifact in data['artifacts']))
+            self.assertEqual(self.tree(),before)
+        protected = self.fx/'inputs/sample.faa'
+        data = self.call(self.args+['--envelope-out',str(protected)])
+        self.assertTrue(all(not artifact['written'] for artifact in data['artifacts']))
+        data = self.call(['summarize',*self.args[1:],'--envelope-out',str(self.root/'diag/summary.json')])
+        self.assertEqual(data['outcome']['code'],'PATHS_OVERLAP')
+
+    def test_malformed_gff_numbers_are_negative_and_manifest_types_reject(self):
+        path = self.fx/'inputs/sample.gff3'
+        path.write_text(path.read_text().replace('100', 'invalid', 1))
+        data = self.call(self.args+['--allow-unattested'])
+        self.assertEqual(data['outcome']['kind'],'negative')
+        shutil.copy2(ROOT/'tests/fixtures/zero_hit/inputs/sample.gff3',path)
+        for key,value in [('run_id',123),('results_dir',123),('schema_version',True)]:
+            status=self.bound_status(True); record=json.loads(status.read_text()); record[key]=value; status.write_text(json.dumps(record))
+            data=self.call(self.args+['--status-file',str(status),'--allow-unattested'])
+            self.assertEqual(data['outcome']['code'],'ATTESTATION_REJECTED')
+
+    def test_failed_stage_emits_contract_and_indexes_original_logs(self):
+        inputs=self.root/'run_inputs/original'; inputs.mkdir(parents=True)
+        for suffix in ['faa','gff3']: shutil.copy2(self.fx/('inputs/sample.'+suffix),inputs/('sample.'+suffix))
+        manifest=self.root/'manifest.sha256'; manifest.write_text('synthetic preflight fixture')
+        args=['run','--input-dir',str(inputs.parent),'--results-dir',str(self.root/'run_results'), '--metadata-dir',str(self.root/'run_meta'),
+            '--env-dir',str(self.root/'env'),'--db-dir',str(self.root/'db'),'--expected-manifest',str(manifest),'--samples','sample','--threads','1','--profile','sandbox']
+        def commands(*a,**kw):
+            return [(name,[sys.executable,'-c','raise SystemExit(9)'],a[6]/(name+'.log')) for name in w.STAGE_NAMES]
+        preflight={'database':{'manifest_check':{'snapshot':'synthetic'}}}
+        stdout,stderr=io.StringIO(),io.StringIO()
+        with patch.object(w,'run_preflight',return_value=preflight),patch.object(w,'stage_commands',side_effect=commands),contextlib.redirect_stdout(stdout),contextlib.redirect_stderr(stderr):
+            exit_code=cli.main(args)
+        data=json.loads(stdout.getvalue());check_envelope(self,data)
+        self.assertEqual(exit_code,5);self.assertEqual(data['outcome']['kind'],'failed')
+        self.assertTrue(any(a['role']=='stage_log' and a['written'] and '/run_results/sample/logs/' in a['path'] for a in data['artifacts']))
+        self.assertNotIn('Traceback',stderr.getvalue())
+        status=json.loads((self.root/'run_meta/sample/stage_status.json').read_text())
+        self.assertEqual(status['run']['state'],'failed')
+        self.assertEqual(status['schema_version'],2)
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:

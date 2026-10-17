@@ -110,3 +110,18 @@ class CommandResult:
             cr.evidence['structure'] = 'invalid'
             cr.findings.append({'code': exc.code, 'message': str(exc), 'location': None})
         return cr
+
+
+def structure_reader(function):
+    """Classify parser conversion errors as read-data negatives, never crashes."""
+    from functools import wraps
+    import csv
+    @wraps(function)
+    def checked(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except WorkflowOutcome:
+            raise
+        except (ValueError, csv.Error) as exc:
+            raise NegativeResult('STRUCTURE_INVALID', str(exc)) from exc
+    return checked

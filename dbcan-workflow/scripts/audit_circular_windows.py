@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
-                            NegativeResult, MissingDataResult, StageFailure)
+                            NegativeResult, MissingDataResult, StageFailure, structure_reader)
 
 import argparse
 import csv
@@ -16,6 +16,7 @@ from dbcan_workflow import parse_attributes, parse_gff, write_json_atomic, write
 from exact_cgc_categories import categories
 
 
+@structure_reader
 def audit(faa_gff: Path, processed_gff: Path) -> dict[str, Any]:
     annotation = parse_gff(faa_gff)
     by_contig: dict[str, list[dict[str, Any]]] = defaultdict(list)

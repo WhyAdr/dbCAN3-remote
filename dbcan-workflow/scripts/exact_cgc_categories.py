@@ -8,7 +8,7 @@ parsed as the field before the first '|' in each '+'-separated annotation.
 from __future__ import annotations
 
 from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
-                            NegativeResult, MissingDataResult, StageFailure)
+                            NegativeResult, MissingDataResult, StageFailure, structure_reader)
 
 import argparse
 import csv
@@ -45,6 +45,7 @@ def gene_type(annotation: str) -> str:
     return sorted(types, key=lambda t: (PRIORITY.get(t, 99), t))[0]
 
 
+@structure_reader
 def read_processed_gff(path: Path) -> dict[str, list[dict[str, Any]]]:
     by_contig: dict[str, list[dict[str, Any]]] = defaultdict(list)
     seen: set[str] = set()
@@ -150,6 +151,7 @@ def summary_rows(members: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return output
 
 
+@structure_reader
 def rebuild(processed_gff: Path, native_members_file: Path, native_summary_file: Path,
             corrected_members_file: Path, corrected_summary_file: Path, change_file: Path,
             report_file: Path, installed_version: str, *, use_distance: bool = False) -> dict[str, Any]:

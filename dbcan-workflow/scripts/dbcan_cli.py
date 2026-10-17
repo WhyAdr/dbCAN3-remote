@@ -74,6 +74,11 @@ def dispatch(r):
         cr.run_id = data['run_id']
         if data['status'] != 'complete':
             cr.kind, cr.code, cr.summary = 'failed', 'STAGE_FAILED', 'Workflow did not complete; inspect the stage logs.'
+            failures = [json.loads((r.metadata_dir/sample/'stage_status.json').read_text()).get('failure', {}) for sample in data['samples'] if (r.metadata_dir/sample/'stage_status.json').exists()]
+            if any(failure.get('kind') == 'negative' for failure in failures):
+                cr.kind, cr.code = 'negative', 'STRUCTURE_INVALID'
+                cr.evidence['structure'] = 'invalid'
+                cr.findings = [{'code': cr.code, 'message': failure['message'], 'location': None} for failure in failures if failure.get('kind') == 'negative']
         else:
             cr.evidence = {'structure': 'valid', 'attestation': 'attested'}
     return cr
@@ -114,6 +119,9 @@ def planned_outputs(r):
         add(r.observed_manifest, 'observed_manifest'); add(getattr(r, 'diff_out', None), 'database_diff')
     if r.command == 'audit-circular':
         add(r.out_json, 'circular_audit'); add(r.out_tsv, 'circular_table')
+    if r.command == 'summarize':
+        for name in w.COMMAND_METADATA['summarize']['writes']:
+            if '/' not in name and not name.startswith('--'): add(r.metadata_dir/name, 'scientific_summary')
     if r.command == 'cgc-overlay':
         for key in ('corrected_members', 'corrected_summary', 'changes', 'report'): add(getattr(r, key), key)
     if r.command in {'validate', 'summarize', 'run'}:
@@ -134,7 +142,22 @@ def protected_paths(r):
 def guard_cli_outputs(r):
     roots, files = protected_paths(r)
     paths = planned_outputs(r)
-    if r.command == 'audit-circular': w._guard_output_files([r.out_json, r.out_tsv], files)
+    # Preserve output-slot distinctions before the inventory dict deduplicates paths.
+    selected = []
+    if r.command == 'prepare': selected = [r.out_gff, r.report]
+    elif r.command == 'validate': selected = [r.metadata_dir/'output_validation.json', r.observed_manifest or r.metadata_dir/'results_observed.sha256']
+    elif r.command == 'summarize': selected = [r.metadata_dir/name for name in w.COMMAND_METADATA['summarize']['writes'] if not name.startswith('--')]
+    elif r.command == 'verify-db': selected = [r.observed_manifest]+([r.diff_out] if r.diff_out else [])
+    elif r.command == 'audit-circular': selected = [r.out_json, r.out_tsv]
+    elif r.command == 'cgc-overlay': selected = [r.corrected_members, r.corrected_summary, r.changes, r.report]
+    default_envelope = r.metadata_dir/('envelope.%s.json' % r.command) if r.command in {'validate','summarize','run'} else None
+    explicit = getattr(r, 'envelope_out', None)
+    if default_envelope is not None and default_envelope not in selected: selected.append(default_envelope)
+    if explicit is not None and (default_envelope is None or explicit.resolve() != default_envelope.resolve()): selected.append(explicit)
+    w._guard_output_files(selected, files)
+    if explicit is not None and getattr(r, 'results_dir', None):
+        w._guard_output_directories([explicit], [r.results_dir])
+    if r.command == 'audit-circular' : w._guard_output_files([r.out_json, r.out_tsv], files)
     if r.command == 'cgc-overlay': w._guard_output_files([r.corrected_members, r.corrected_summary, r.changes, r.report], files)
     if r.command == 'verify-db' and r.diff_out:
         w._guard_output_files([r.diff_out, r.observed_manifest], files)
@@ -235,11 +258,16 @@ def main(argv=None):
                 cr.warnings.append({'code': 'DEPRECATED_FLAG', 'message': flag+' is deprecated; use --out-'+flag[2:]+'.', 'location': None})
     except WorkflowOutcome as exc:
         cr = CommandResult.from_exception(exc)
+        if cr.refusal is not None and r is not None:
+            cr.refusal['details'].update({key: str(value) if isinstance(value, Path) else value for key,value in vars(r).items() if isinstance(value, (Path, int, bool)) or key in {'sample_id', 'samples'}})
     except Exception:
         traceback.print_exc(file=sys.stderr)
         cr = CommandResult(kind='error', code='INTERNAL_ERROR', summary=REGISTRY['INTERNAL_ERROR']['summary'])
     try:
-        if r is not None: cr.artifacts = observed_artifacts(r, before)
+        if r is not None:
+            if cr.kind in {'refused', 'usage'}:
+                cr.artifacts = [{'role': role, 'path': path, 'written': False, 'sha256': None} for path,role in sorted(planned_outputs(r).items())]
+            else: cr.artifacts = observed_artifacts(r, before)
         env = build_envelope(command, cr, policy)
         persist_envelope(env, r, explicit_safe)
     except Exception:
