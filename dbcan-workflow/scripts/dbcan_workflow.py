@@ -32,7 +32,7 @@ from typing import Any, Iterable
 from urllib.parse import unquote
 
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 DBCAN_VERSION = "5.2.9"
 SNAPSHOT = "db_v5-2-9_5-5-2026"
 ARCHIVED_MANIFEST_SHA256 = "0f20c1986c32df59723cffc20b677789ed0c12819cd0939e16788f58dea406d2"
