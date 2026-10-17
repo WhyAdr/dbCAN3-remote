@@ -1302,7 +1302,7 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
     return overall
 
 
-def main() -> None:
+def build_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     prep = sub.add_parser("prepare", help="validate a Bakta FAA/GFF3 pair and prepare local flat-CDS GFF")
@@ -1354,37 +1354,14 @@ def main() -> None:
     run.add_argument("--threads", type=int, required=True)
     run.add_argument("--profile", choices=("sandbox", "hpc"), required=True)
 
-    r = parser.parse_args()
-    if r.command == "prepare":
-        data = prepare_local_gff(r.faa, r.gff, r.out_gff, r.report)
-    elif r.command == "validate":
-        results_dir, metadata_dir = r.results_dir.resolve(), r.metadata_dir.resolve()
-        if results_dir == metadata_dir or results_dir in metadata_dir.parents or metadata_dir in results_dir.parents:
-            raise Refusal('PATHS_OVERLAP', "results and metadata directories must be disjoint")
-        _guard_output_directories([metadata_dir], [results_dir, r.faa.parent, r.gff.parent])
-        observed = r.observed_manifest or metadata_dir / "results_observed.sha256"
-        data = validate_outputs(r.faa, r.gff, results_dir, status_file=r.status_file,
-            require_stage_status=not r.allow_unattested, observed_manifest=observed)
-        write_json_atomic(metadata_dir / "output_validation.json", data)
-    elif r.command == "summarize":
-        data = summarize_results(r.faa, r.gff, r.results_dir, r.metadata_dir)
-    elif r.command == "verify-db":
-        data = verify_database(r.db_dir, r.expected_manifest, r.observed_manifest)
-        if not data["match"]:
-            print(json.dumps(data, indent=2))
-            raise SystemExit(2)
-    elif r.command == "preflight":
-        env_dir = r.env_dir.resolve()
-        data = run_preflight(r.faa, r.gff, env_dir / "bin/python", env_dir / "bin/run_dbcan",
-            env_dir / "bin/diamond", r.db_dir, r.expected_manifest, r.threads, r.profile,
-            r.results_dir, r.metadata_dir)
-    else:
-        data = run_workflow(r.input_dir, r.results_dir, r.metadata_dir, r.db_dir,
-            r.expected_manifest, r.env_dir, r.samples, r.threads, r.profile)
-        if data["status"] != "complete":
-            print(json.dumps(data, indent=2, sort_keys=True))
-            raise SystemExit(2)
-    print(json.dumps(data, indent=2, sort_keys=True))
+    return parser
+
+
+def main(argv=None):
+    from dbcan_cli import dispatch
+    result = dispatch(build_parser().parse_args(argv))
+    print(json.dumps(result.result, indent=2, sort_keys=True))
+    return 0
 
 
 if __name__=="__main__":
