@@ -225,7 +225,7 @@ class ContractTests(unittest.TestCase):
         for name, meta in data['commands'].items():
             self.assertEqual(meta['requires_user_confirmation'], name=='run')
             self.assertFalse(meta['needs_network'])
-        usage = re.search(r'<([^>]+)>', (ROOT/'scripts/run_dbcan_workflow.sh').read_text()).group(1)
+        usage = re.search(r'Usage: run_dbcan_workflow.sh <([^>]+)>', (ROOT/'scripts/run_dbcan_workflow.sh').read_text()).group(1)
         self.assertEqual(set(usage.split('|')), set(data['commands']))
         self.assertEqual(data['database_stage_assets'], {key: list(value) for key,value in w.DB_ASSETS_BY_STAGE.items()})
 
@@ -246,6 +246,24 @@ class ContractTests(unittest.TestCase):
             '--samples','dup','dup','--threads','1','--profile','sandbox'])
         self.assertEqual(data['outcome']['code'], 'SAMPLE_ID_UNSAFE')
         self.assertEqual(before, self.tree())
+
+    def test_archived_manifest_digest_consistency(self):
+        digest = w.sha256_file(ROOT/'environment/database_v5-2-9_5-5-2026.expected.sha256')
+        self.assertEqual(digest, w.ARCHIVED_MANIFEST_SHA256)
+        import re
+        for path in ROOT.rglob('*.md'):
+            for quoted in re.findall(r'[0-9a-f]{64}', path.read_text()):
+                # Documents quoting the archived digest must quote its exact value.
+                if quoted.startswith(digest[:16]): self.assertEqual(quoted, digest, path)
+        self.assertNotIn('SNAPSHOT_BASE_URL =', (ROOT/'scripts/dbcan_workflow.py').read_text())
+
+    def test_wrapper_pre_python_failures_emit_static_usage_envelopes(self):
+        for interpreter, args in [('', ['validate']), ('/nonexistent', ['validate']), (sys.executable, [])]:
+            result = subprocess.run(['bash', str(ROOT/'scripts/run_dbcan_workflow.sh'), *args], capture_output=True,text=True,
+                env={**os.environ, 'DBCAN_PYTHON': interpreter})
+            self.assertEqual(result.returncode, 2)
+            data = json.loads(result.stdout); check_envelope(self,data)
+            self.assertEqual(data['outcome']['kind'], 'usage')
 
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():

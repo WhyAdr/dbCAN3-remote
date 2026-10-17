@@ -25,3 +25,5 @@ The test suite exercises orchestration with controlled subprocesses and syntheti
 Stage-status, workflow-summary and completion records carry `schema_version: 2` and `run.state` (`pending`, `running`, `stages_succeeded`, `succeeded`, `failed`, `incomplete`). Stage records carry `state` (`pending`, `running`, `succeeded`, `failed`, `skipped`); the compatibility `status` field uses the same v2 token. Readers accept legacy `complete`, `stages_complete`, and stage `completed` tokens without weakening hash, path or exit-code binding. Contradictory aliases are rejected.
 
 Validation metadata retains its legacy `status` for one release and adds independent `evidence.structure` and `evidence.attestation` fields. A supplied missing or malformed status file is rejected even in structural-review mode.
+
+Recorded in v0.2.0 source; never fetched by this tool; not re-verified: `https://dbcan.s3.us-west-2.amazonaws.com/db_v5-2-9_5-5-2026`. The unused `SNAPSHOT_BASE_URL` constant was removed; no downloader was introduced.

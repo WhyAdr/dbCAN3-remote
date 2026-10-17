@@ -35,7 +35,6 @@ from urllib.parse import unquote
 VERSION = "0.2.0"
 DBCAN_VERSION = "5.2.9"
 SNAPSHOT = "db_v5-2-9_5-5-2026"
-SNAPSHOT_BASE_URL = f"https://dbcan.s3.us-west-2.amazonaws.com/{SNAPSHOT}"
 ARCHIVED_MANIFEST_SHA256 = "0f20c1986c32df59723cffc20b677789ed0c12819cd0939e16788f58dea406d2"
 METHOD_COLUMNS = (("dbCAN_hmm", "dbCAN-HMM"), ("dbCAN_sub", "dbCAN-sub"), ("DIAMOND", "DIAMOND"))
 FAMILY_RE = re.compile(r"(?<![A-Za-z0-9])((?:GH|GT|PL|CE|AA|CBM)\d+)", re.I)
