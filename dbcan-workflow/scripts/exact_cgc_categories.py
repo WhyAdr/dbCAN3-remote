@@ -7,6 +7,9 @@ parsed as the field before the first '|' in each '+'-separated annotation.
 """
 from __future__ import annotations
 
+from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
+                            NegativeResult, MissingDataResult, StageFailure)
+
 import argparse
 import csv
 import json
@@ -50,15 +53,15 @@ def read_processed_gff(path: Path) -> dict[str, list[dict[str, Any]]]:
             continue
         cols = line.split("\t")
         if len(cols) != 9:
-            raise ValueError(f"expected 9 columns in {path}:{line_no}")
+            raise NegativeResult('STRUCTURE_INVALID', f"expected 9 columns in {path}:{line_no}")
         if cols[2] != "CDS":
             continue
         attrs = parse_attributes(cols[8])
         pid = attrs.get("protein_id") or attrs.get("ID")
         if not pid:
-            raise ValueError(f"no protein_id/ID in {path}:{line_no}")
+            raise NegativeResult('STRUCTURE_INVALID', f"no protein_id/ID in {path}:{line_no}")
         if pid in seen:
-            raise ValueError(f"duplicate protein ID in processed GFF: {pid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"duplicate protein ID in processed GFF: {pid}")
         seen.add(pid)
         by_contig[cols[0]].append({"contig": cols[0], "start": int(cols[3]), "end": int(cols[4]),
             "strand": cols[6], "protein_id": pid, "annotation": attrs.get("CGC_annotation", "null"),
@@ -73,7 +76,7 @@ def identify_clusters(by_contig: dict[str, list[dict[str, Any]]], *, additional_
                       additional_logic: str = "all", additional_min_categories: int = 1,
                       use_distance: bool = False, base_pair_distance: int = 15000) -> list[list[dict[str, Any]]]:
     if additional_logic not in {"all", "any"}:
-        raise ValueError("additional_logic must be all or any")
+        raise NegativeResult('STRUCTURE_INVALID', "additional_logic must be all or any")
     clusters: list[list[dict[str, Any]]] = []
     for contig in sorted(by_contig):
         rows = by_contig[contig]
@@ -137,7 +140,7 @@ def summary_rows(members: list[dict[str, Any]]) -> list[dict[str, Any]]:
     output=[]
     for cid, rows in by.items():
         contigs={r["Contig ID"] for r in rows}
-        if len(contigs)!=1: raise ValueError(f"CGC spans multiple contigs: {cid}")
+        if len(contigs)!=1: raise NegativeResult('STRUCTURE_INVALID', f"CGC spans multiple contigs: {cid}")
         start=min(int(r["Gene Start"]) for r in rows); end=max(int(r["Gene Stop"]) for r in rows)
         counts=Counter(r["Gene Type"] for r in rows)
         output.append({"CGC#":cid,"Contig ID":next(iter(contigs)),"Cluster Start":start,"Cluster End":end,
@@ -151,7 +154,7 @@ def rebuild(processed_gff: Path, native_members_file: Path, native_summary_file:
             corrected_members_file: Path, corrected_summary_file: Path, change_file: Path,
             report_file: Path, installed_version: str, *, use_distance: bool = False) -> dict[str, Any]:
     if installed_version != SUPPORTED_VERSION:
-        raise ValueError(f"exact-category compatibility rebuild is version-guarded for dbCAN {SUPPORTED_VERSION}; got {installed_version}")
+        raise Refusal('VERSION_UNSUPPORTED', f"exact-category compatibility rebuild is version-guarded for dbCAN {SUPPORTED_VERSION}; got {installed_version}")
     _guard_output_files([corrected_members_file, corrected_summary_file, change_file, report_file],
                         [processed_gff, native_members_file, native_summary_file])
     by=read_processed_gff(processed_gff)

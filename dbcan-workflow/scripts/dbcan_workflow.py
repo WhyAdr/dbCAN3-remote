@@ -8,6 +8,9 @@ from its own location.
 """
 from __future__ import annotations
 
+from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
+                            NegativeResult, MissingDataResult, StageFailure)
+
 import argparse
 import csv
 import hashlib
@@ -119,18 +122,18 @@ def write_tsv_atomic(path: Path, header: list[str], rows: Iterable[dict[str, Any
 
 def read_tsv(path: Path, expected_header: list[str] | None = None) -> list[dict[str, str]]:
     if not path.is_file():
-        raise FileNotFoundError(f"required result file is missing: {path}")
+        raise MissingPathRefusal('INPUT_MISSING', f"required result file is missing: {path}")
     with path.open("r", newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f, delimiter="\t")
         header = reader.fieldnames or []
         if expected_header is not None and header != expected_header:
-            raise ValueError(f"unexpected TSV header in {path}: {header!r}; expected {expected_header!r}")
+            raise NegativeResult('STRUCTURE_INVALID', f"unexpected TSV header in {path}: {header!r}; expected {expected_header!r}")
         if not header:
-            raise ValueError(f"TSV has no header: {path}")
+            raise NegativeResult('STRUCTURE_INVALID', f"TSV has no header: {path}")
         rows = list(reader)
     for n, row in enumerate(rows, 2):
         if None in row or any(v is None for v in row.values()):
-            raise ValueError(f"malformed TSV row {n} in {path}")
+            raise NegativeResult('STRUCTURE_INVALID', f"malformed TSV row {n} in {path}")
     return rows
 
 
@@ -140,18 +143,18 @@ def parse_attributes(text: str) -> dict[str, str]:
         if not item:
             continue
         if "=" not in item:
-            raise ValueError(f"GFF3 attribute lacks '=': {item!r}")
+            raise NegativeResult('STRUCTURE_INVALID', f"GFF3 attribute lacks '=': {item!r}")
         key, value = item.split("=", 1)
         key = unquote(key)
         if key in out:
-            raise ValueError(f"duplicate GFF3 attribute key {key!r}")
+            raise NegativeResult('STRUCTURE_INVALID', f"duplicate GFF3 attribute key {key!r}")
         out[key] = unquote(value)
     return out
 
 
 def parse_fasta(path: Path) -> dict[str, str]:
     if not path.is_file():
-        raise FileNotFoundError(f"protein FASTA is missing: {path}")
+        raise MissingPathRefusal('INPUT_MISSING', f"protein FASTA is missing: {path}")
     sequences: dict[str, str] = {}
     current: str | None = None
     chunks: list[str] = []
@@ -162,11 +165,11 @@ def parse_fasta(path: Path) -> dict[str, str]:
             return
         seq = "".join(chunks).upper()
         if not seq:
-            raise ValueError(f"empty FASTA sequence for {current!r} in {path} near line {line_no}")
+            raise NegativeResult('STRUCTURE_INVALID', f"empty FASTA sequence for {current!r} in {path} near line {line_no}")
         if current in sequences:
-            raise ValueError(f"duplicate protein ID {current!r} in {path}")
+            raise NegativeResult('STRUCTURE_INVALID', f"duplicate protein ID {current!r} in {path}")
         if re.search(r"[^A-Z*.-]", seq):
-            raise ValueError(f"invalid FASTA sequence symbols for {current!r} in {path}")
+            raise NegativeResult('STRUCTURE_INVALID', f"invalid FASTA sequence symbols for {current!r} in {path}")
         sequences[current] = seq
         current, chunks = None, []
 
@@ -177,21 +180,21 @@ def parse_fasta(path: Path) -> dict[str, str]:
                 flush(line_no)
                 fields = line[1:].split()
                 if not fields:
-                    raise ValueError(f"empty FASTA header at {path}:{line_no}")
+                    raise NegativeResult('STRUCTURE_INVALID', f"empty FASTA header at {path}:{line_no}")
                 current = fields[0]
             elif line.strip():
                 if current is None:
-                    raise ValueError(f"sequence before first FASTA header at {path}:{line_no}")
+                    raise NegativeResult('STRUCTURE_INVALID', f"sequence before first FASTA header at {path}:{line_no}")
                 chunks.append("".join(line.split()))
     flush(line_no + 1 if "line_no" in locals() else 1)
     if not sequences:
-        raise ValueError(f"no FASTA records in {path}")
+        raise NegativeResult('STRUCTURE_INVALID', f"no FASTA records in {path}")
     return sequences
 
 
 def parse_gff(path: Path) -> dict[str, Any]:
     if not path.is_file():
-        raise FileNotFoundError(f"GFF3 is missing: {path}")
+        raise MissingPathRefusal('INPUT_MISSING', f"GFF3 is missing: {path}")
     seq_regions: dict[str, int] = {}
     circular: dict[str, bool] = {}
     organism = ""
@@ -209,7 +212,7 @@ def parse_gff(path: Path) -> dict[str, Any]:
                 attrs = parse_attributes(cols[8])
                 value = attrs.get("Is_circular", attrs.get("is_circular", "false")).lower() == "true"
                 if cols[0] in circular and circular[cols[0]] != value:
-                    raise ValueError(f"conflicting topology declarations for {cols[0]}")
+                    raise NegativeResult('STRUCTURE_INVALID', f"conflicting topology declarations for {cols[0]}")
                 circular[cols[0]] = value
     with path.open("r", encoding="utf-8-sig") as f:
         for line_no, raw in enumerate(f, 1):
@@ -221,12 +224,12 @@ def parse_gff(path: Path) -> dict[str, Any]:
             if line.startswith("##sequence-region "):
                 cols = line.split()
                 if len(cols) != 4:
-                    raise ValueError(f"malformed sequence-region directive at {path}:{line_no}")
+                    raise NegativeResult('STRUCTURE_INVALID', f"malformed sequence-region directive at {path}:{line_no}")
                 seqid, start, end = cols[1], int(cols[2]), int(cols[3])
                 if start != 1 or end < 1:
-                    raise ValueError(f"invalid sequence-region bounds at {path}:{line_no}")
+                    raise NegativeResult('STRUCTURE_INVALID', f"invalid sequence-region bounds at {path}:{line_no}")
                 if seqid in seq_regions and seq_regions[seqid] != end:
-                    raise ValueError(f"conflicting sequence-region length for {seqid!r}")
+                    raise NegativeResult('STRUCTURE_INVALID', f"conflicting sequence-region length for {seqid!r}")
                 seq_regions[seqid] = end
             if line.startswith("#"):
                 raw_header.append(line)
@@ -235,7 +238,7 @@ def parse_gff(path: Path) -> dict[str, Any]:
                 continue
             cols = line.split("\t")
             if len(cols) != 9:
-                raise ValueError(f"expected 9 GFF3 columns at {path}:{line_no}, found {len(cols)}")
+                raise NegativeResult('STRUCTURE_INVALID', f"expected 9 GFF3 columns at {path}:{line_no}, found {len(cols)}")
             seqid, source, feature, start_s, end_s, score, strand, phase, attr_text = cols
             attrs = parse_attributes(attr_text)
             if feature.lower() == "region":
@@ -244,21 +247,21 @@ def parse_gff(path: Path) -> dict[str, Any]:
                 continue
             pid = attrs.get("ID")
             if not pid:
-                raise ValueError(f"CDS without ID at {path}:{line_no}")
+                raise NegativeResult('STRUCTURE_INVALID', f"CDS without ID at {path}:{line_no}")
             if pid in cds:
-                raise ValueError(f"duplicate CDS ID {pid!r} in {path}")
+                raise NegativeResult('STRUCTURE_INVALID', f"duplicate CDS ID {pid!r} in {path}")
             start, end = int(start_s), int(end_s)
             if start < 1 or end < start:
-                raise ValueError(f"invalid coordinates for {pid} at {path}:{line_no}")
+                raise NegativeResult('STRUCTURE_INVALID', f"invalid coordinates for {pid} at {path}:{line_no}")
             if strand not in {"+", "-", ".", "?"}:
-                raise ValueError(f"invalid strand {strand!r} for {pid} at {path}:{line_no}")
+                raise NegativeResult('STRUCTURE_INVALID', f"invalid strand {strand!r} for {pid} at {path}:{line_no}")
             if phase not in {"0", "1", "2"}:
-                raise ValueError(f"invalid CDS phase {phase!r} for {pid} at {path}:{line_no}")
+                raise NegativeResult('STRUCTURE_INVALID', f"invalid CDS phase {phase!r} for {pid} at {path}:{line_no}")
             length = seq_regions.get(seqid)
             if length is not None and end > length:
                 span = end - start + 1
                 if not circular.get(seqid, False) or start > length or span > length or end > start + length - 1:
-                    raise ValueError(f"out-of-range CDS {pid} is not a valid single-wrap circular interval")
+                    raise NegativeResult('STRUCTURE_INVALID', f"out-of-range CDS {pid} is not a valid single-wrap circular interval")
             cds[pid] = {
                 "id": pid, "seqid": seqid, "start": start, "end": end, "strand": strand,
                 "attributes": attrs, "phase": phase, "source": source, "feature": feature,
@@ -267,7 +270,7 @@ def parse_gff(path: Path) -> dict[str, Any]:
             }
             cds_order.append(pid)
     if not cds:
-        raise ValueError(f"no CDS features found in {path}")
+        raise NegativeResult('STRUCTURE_INVALID', f"no CDS features found in {path}")
     contigs = set(seq_regions) | set(circular) | {x["seqid"] for x in cds.values()}
     for seqid in contigs:
         circular.setdefault(seqid, False)
@@ -282,20 +285,20 @@ def compare_faa_gff(faa: Path, gff: Path) -> dict[str, Any]:
     missing_from_faa = sorted(set(cds) - set(proteins))
     faa_only = sorted(set(proteins) - set(cds))
     if missing_from_faa or faa_only:
-        raise ValueError(f"FAA/GFF CDS IDs differ; cds_only={missing_from_faa[:10]}, faa_only={faa_only[:10]}")
+        raise Refusal('INPUT_MISMATCH', f"FAA/GFF CDS IDs differ; cds_only={missing_from_faa[:10]}, faa_only={faa_only[:10]}")
     if len(proteins) != len(cds):
-        raise ValueError("FAA/GFF record counts differ despite matching ID sets")
+        raise Refusal('INPUT_MISMATCH', "FAA/GFF record counts differ despite matching ID sets")
     for pid, feature in cds.items():
         length = annotation["seq_regions"].get(feature["seqid"])
         if length is None:
-            raise ValueError(f"missing ##sequence-region length for contig {feature['seqid']!r}")
+            raise NegativeResult('STRUCTURE_INVALID', f"missing ##sequence-region length for contig {feature['seqid']!r}")
         end = feature["end"]
         if end > length:
             if not annotation["circular"].get(feature["seqid"], False):
-                raise ValueError(f"linear contig {feature['seqid']} has CDS {pid} ending beyond length {length}")
+                raise NegativeResult('STRUCTURE_INVALID', f"linear contig {feature['seqid']} has CDS {pid} ending beyond length {length}")
             span = end - feature["start"] + 1
             if span > length or end > feature["start"] + length - 1:
-                raise ValueError(f"CDS {pid} exceeds one circular contig traversal")
+                raise NegativeResult('STRUCTURE_INVALID', f"CDS {pid} exceeds one circular contig traversal")
     return {"proteins": proteins, "annotation": annotation}
 
 
@@ -319,7 +322,7 @@ def prepare_local_gff(faa: Path, gff: Path, output: Path, report: Path) -> dict[
             if len(cols) == 9 and cols[2] == "CDS":
                 attrs = parse_attributes(cols[8])
                 if attrs.get("ID") not in cds_ids:
-                    raise ValueError(f"unexpected CDS while preparing local GFF: {attrs.get('ID')}")
+                    raise NegativeResult('STRUCTURE_INVALID', f"unexpected CDS while preparing local GFF: {attrs.get('ID')}")
                 kept = [x for x in cols[8].split(";") if x and not x.startswith("Parent=")]
                 cols[8] = ";".join(kept)
                 lines.append("\t".join(cols))
@@ -359,16 +362,16 @@ def parse_sha256_manifest(path: Path) -> dict[str, str]:
             continue
         parts = line.split(maxsplit=1)
         if len(parts) != 2 or not re.fullmatch(r"[0-9a-fA-F]{64}", parts[0]):
-            raise ValueError(f"malformed SHA256 manifest row at {path}:{line_no}")
+            raise Refusal('MANIFEST_PATH_UNSAFE', f"malformed SHA256 manifest row at {path}:{line_no}")
         rel = parts[1].lstrip("* ")
         rel = rel.removeprefix("./").replace("\\", "/")
         if Path(rel).is_absolute() or ".." in Path(rel).parts or not rel:
-            raise ValueError(f"unsafe path in checksum manifest: {rel!r}")
+            raise Refusal('MANIFEST_PATH_UNSAFE', f"unsafe path in checksum manifest: {rel!r}")
         if rel in expected:
-            raise ValueError(f"duplicate path in checksum manifest: {rel}")
+            raise Refusal('MANIFEST_PATH_UNSAFE', f"duplicate path in checksum manifest: {rel}")
         expected[rel] = parts[0].lower()
     if not expected:
-        raise ValueError(f"empty checksum manifest: {path}")
+        raise Refusal('MANIFEST_PATH_UNSAFE', f"empty checksum manifest: {path}")
     return expected
 
 
@@ -376,11 +379,11 @@ def verify_database(db_dir: Path, expected_manifest: Path, observed_manifest: Pa
     db_dir = db_dir.resolve()
     expected_manifest = expected_manifest.resolve()
     if db_dir == expected_manifest or db_dir in expected_manifest.parents:
-        raise ValueError("expected manifest must be outside the database directory")
+        raise Refusal('PATHS_OVERLAP', "expected manifest must be outside the database directory")
     if observed_manifest is not None:
         observed_manifest = observed_manifest.resolve()
         if observed_manifest == expected_manifest or db_dir == observed_manifest or db_dir in observed_manifest.parents:
-            raise ValueError("observed manifest must be outside the database directory and must not overwrite the expected manifest")
+            raise Refusal('PATHS_OVERLAP', "observed manifest must be outside the database directory and must not overwrite the expected manifest")
     expected = parse_sha256_manifest(expected_manifest)
     observed: dict[str, str] = {}
     for path in sorted(db_dir.rglob("*")):
@@ -415,10 +418,10 @@ def db_preflight(db_dir: Path, expected_manifest: Path, required_stages: Iterabl
         checks[stage] = {"required": list(DB_ASSETS_BY_STAGE[stage]), "missing": missing, "ready": not missing}
         if missing: missing_by_stage[stage] = missing
     if missing_by_stage:
-        raise FileNotFoundError(f"database assets missing by stage under {db_dir}: {missing_by_stage}")
+        raise MissingPathRefusal('DB_UNVERIFIED', f"database assets missing by stage under {db_dir}: {missing_by_stage}")
     manifest_check = verify_database(db_dir, expected_manifest)
     if not manifest_check["match"]:
-        raise ValueError(f"database directory does not match pinned {SNAPSHOT}: missing={len(manifest_check['missing'])}, unexpected={len(manifest_check['unexpected'])}, mismatched={len(manifest_check['mismatched'])}")
+        raise Refusal('DB_UNVERIFIED', f"database directory does not match pinned {SNAPSHOT}: missing={len(manifest_check['missing'])}, unexpected={len(manifest_check['unexpected'])}, mismatched={len(manifest_check['mismatched'])}")
     return {"asset_checks": checks, "manifest_check": manifest_check}
 
 
@@ -439,10 +442,10 @@ def _as_int(value: str, label: str, path: Path) -> int:
     try:
         parsed = Decimal(value)
         if not parsed.is_finite() or parsed != parsed.to_integral_value():
-            raise ValueError("value is not a finite integer")
+            raise NegativeResult('STRUCTURE_INVALID', "value is not a finite integer")
         return int(parsed)
     except Exception as exc:
-        raise ValueError(f"invalid integer {label}={value!r} in {path}") from exc
+        raise NegativeResult('STRUCTURE_INVALID', f"invalid integer {label}={value!r} in {path}") from exc
 
 
 def _as_number(value: str, label: str, path: Path, *, minimum: float = 0,
@@ -450,34 +453,34 @@ def _as_number(value: str, label: str, path: Path, *, minimum: float = 0,
     try:
         number = float(value)
         if not math.isfinite(number) or number < minimum or (maximum is not None and number > maximum):
-            raise ValueError("number is outside the permitted finite range")
+            raise NegativeResult('STRUCTURE_INVALID', "number is outside the permitted finite range")
         return number
     except (TypeError, ValueError, OverflowError) as exc:
-        raise ValueError(f"invalid numeric {label}={value!r} in {path}") from exc
+        raise NegativeResult('STRUCTURE_INVALID', f"invalid numeric {label}={value!r} in {path}") from exc
 
 
 def _check_domain_rows(path: Path, rows: list[dict[str, str]], proteins: dict[str, str], *, subfam: bool = False) -> None:
     for n, row in enumerate(rows, 2):
         pid = row["Target Name"]
         if pid not in proteins:
-            raise ValueError(f"unknown protein {pid!r} at {path}:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"unknown protein {pid!r} at {path}:{n}")
         actual_len = len(proteins[pid].rstrip("*"))
         tlen = _as_int(row["Target Length"], "Target Length", path)
         if tlen != actual_len:
-            raise ValueError(f"Target Length {tlen} differs from FASTA length {actual_len} for {pid} in {path}:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"Target Length {tlen} differs from FASTA length {actual_len} for {pid} in {path}:{n}")
         qstart = _as_int(row["Target From"], "Target From", path)
         qend = _as_int(row["Target To"], "Target To", path)
         hstart = _as_int(row["HMM From"], "HMM From", path)
         hend = _as_int(row["HMM To"], "HMM To", path)
         hlen = _as_int(row["HMM Length"], "HMM Length", path)
         if qstart < 1 or qend < qstart or qend > actual_len:
-            raise ValueError(f"invalid query domain bounds {qstart}-{qend}/{actual_len} for {pid} in {path}:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"invalid query domain bounds {qstart}-{qend}/{actual_len} for {pid} in {path}:{n}")
         if hstart < 1 or hend < hstart or hend > hlen:
-            raise ValueError(f"invalid HMM bounds {hstart}-{hend}/{hlen} for {pid} in {path}:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"invalid HMM bounds {hstart}-{hend}/{hlen} for {pid} in {path}:{n}")
         _as_number(row["i-Evalue"], "i-Evalue", path)
         _as_number(row["Coverage"], "Coverage", path, maximum=1)
         if subfam and not row["Subfam Name"].strip():
-            raise ValueError(f"empty subfamily name in {path}:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"empty subfamily name in {path}:{n}")
 
 
 def _diamond_overview_label(label: str) -> str:
@@ -515,19 +518,19 @@ def _check_accessory_tables(results_dir: Path, tables: dict[str, list[dict[str, 
         path = results_dir / "total_cgc_info.tsv"
         pid = row["Target Name"]
         if pid not in proteins:
-            raise ValueError(f"unknown accessory protein {pid!r} in {path}:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"unknown accessory protein {pid!r} in {path}:{n}")
         length = len(proteins[pid].rstrip("*"))
         if _as_int(row["Target Length"], "Target Length", path) != length:
-            raise ValueError(f"accessory target length differs for {pid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"accessory target length differs for {pid}")
         start = _as_int(row["Target From"], "Target From", path)
         end = _as_int(row["Target To"], "Target To", path)
         model_length = _as_int(row["Annotate Length"], "Annotate Length", path)
         model_start = _as_int(row["Annotate From"], "Annotate From", path)
         model_end = _as_int(row["Annotate To"], "Annotate To", path)
         if not 1 <= start <= end <= length or not 1 <= model_start <= model_end <= model_length:
-            raise ValueError(f"invalid accessory domain bounds for {pid} in {path}:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"invalid accessory domain bounds for {pid} in {path}:{n}")
         if row["Type"] not in known_types:
-            raise ValueError(f"unknown accessory category {row['Type']!r} in {path}:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"unknown accessory category {row['Type']!r} in {path}:{n}")
         _as_number(row["i-Evalue"], "i-Evalue", path)
         _as_number(row["Coverage"], "Coverage", path, maximum=1 if row["Type"] == "STP" else 100)
     for filename, prefix in (("diamond.out.tc", "TCDB"), ("diamond.out.tf", "TF"),
@@ -541,22 +544,22 @@ def _check_accessory_tables(results_dir: Path, tables: dict[str, list[dict[str, 
         for n, row in enumerate(rows, 2):
             required = {"Target ID", "Target Length", "EVALUE", "QSTART", "QEND", "COVERAGE"}
             if not required <= row.keys():
-                raise ValueError(f"unexpected accessory header in {path}")
+                raise NegativeResult('STRUCTURE_INVALID', f"unexpected accessory header in {path}")
             pid = row["Target ID"]
             if pid not in proteins:
-                raise ValueError(f"unknown accessory protein {pid!r} in {path}:{n}")
+                raise NegativeResult('STRUCTURE_INVALID', f"unknown accessory protein {pid!r} in {path}:{n}")
             length = len(proteins[pid].rstrip("*"))
             if _as_int(row["Target Length"], "Target Length", path) != length:
-                raise ValueError(f"accessory target length differs for {pid} in {path}")
+                raise NegativeResult('STRUCTURE_INVALID', f"accessory target length differs for {pid} in {path}")
             start = _as_int(row["QSTART"], "QSTART", path)
             end = _as_int(row["QEND"], "QEND", path)
             if not 1 <= start <= end <= length:
-                raise ValueError(f"invalid accessory query bounds for {pid} in {path}:{n}")
+                raise NegativeResult('STRUCTURE_INVALID', f"invalid accessory query bounds for {pid} in {path}:{n}")
             ref_length = _as_int(row[f"{prefix} Length"], f"{prefix} Length", path)
             ref_start = _as_int(row[f"{prefix} START"], f"{prefix} START", path)
             ref_end = _as_int(row[f"{prefix} END"], f"{prefix} END", path)
             if not 1 <= ref_start <= ref_end <= ref_length:
-                raise ValueError(f"invalid accessory reference bounds for {pid} in {path}:{n}")
+                raise NegativeResult('STRUCTURE_INVALID', f"invalid accessory reference bounds for {pid} in {path}:{n}")
             _as_number(row["EVALUE"], "EVALUE", path)
             _as_number(row["COVERAGE"], "COVERAGE", path, maximum=100)
 
@@ -565,22 +568,22 @@ def _status_check(status_file: Path | None, required: bool, *, faa: Path | None 
                   gff: Path | None = None, results_dir: Path | None = None) -> dict[str, Any]:
     if status_file is None or not status_file.is_file():
         if required:
-            raise ValueError(f"stage completion evidence is missing: {status_file}")
+            raise Refusal('ATTESTATION_REQUIRED', "Stage completion evidence is missing; pass --status-file or use --allow-unattested for structural review only.")
         return {"present": False, "attested": False, "overall": "structurally_valid_execution_unattested"}
     data = json.loads(status_file.read_text(encoding="utf-8"))
     state = data.get("status")
     if state in {"failed", "incomplete"} or (state and state not in {"stages_complete", "complete"}):
-        raise ValueError(f"stage status manifest is marked {data.get('status')!r}: {status_file}")
+        raise Refusal('ATTESTATION_REJECTED', f"stage status manifest is marked {data.get('status')!r}: {status_file}")
     if data:
         if not data.get("run_id"):
-            raise ValueError(f"stage status manifest lacks a run ID: {status_file}")
+            raise Refusal('ATTESTATION_REJECTED', f"stage status manifest lacks a run ID: {status_file}")
         for label, input_path, key in (("FAA", faa, "input_faa_sha256"), ("GFF", gff, "input_gff_sha256")):
             if input_path is None or not data.get(key):
-                raise ValueError(f"stage status manifest lacks {label} identity evidence: {status_file}")
+                raise Refusal('ATTESTATION_REJECTED', f"stage status manifest lacks {label} identity evidence: {status_file}")
             if data[key] != sha256_file(input_path):
-                raise ValueError(f"stage status manifest {label} hash does not match the selected input: {status_file}")
+                raise Refusal('ATTESTATION_REJECTED', f"stage status manifest {label} hash does not match the selected input: {status_file}")
         if results_dir is None or Path(data.get("results_dir", "")).resolve() != results_dir.resolve():
-            raise ValueError(f"stage status manifest results path does not match the selected results directory: {status_file}")
+            raise Refusal('ATTESTATION_REJECTED', f"stage status manifest results path does not match the selected results directory: {status_file}")
     stages = data.get("stages", {})
     problems = []
     for stage in STAGE_NAMES:
@@ -588,13 +591,13 @@ def _status_check(status_file: Path | None, required: bool, *, faa: Path | None 
         if not record or record.get("status") != "completed" or record.get("exit_code") != 0:
             problems.append(stage)
     if problems:
-        raise ValueError(f"one or more required stages are incomplete or unsuccessful: {problems}")
+        raise Refusal('ATTESTATION_REJECTED', f"one or more required stages are incomplete or unsuccessful: {problems}")
     if results_dir is not None:
         expected_outputs = stages[STAGE_NAMES[-1]].get("output_sha256")
         if not expected_outputs:
-            raise ValueError("stage status manifest lacks final output hash evidence")
+            raise Refusal('ATTESTATION_REJECTED', "stage status manifest lacks final output hash evidence")
         if expected_outputs != _hash_tree(results_dir):
-            raise ValueError("stage status manifest output hashes differ from the selected results")
+            raise Refusal('ATTESTATION_REJECTED', "stage status manifest output hashes differ from the selected results")
     return {"present": True, "attested": True, "overall": "complete", "status_file": str(status_file.resolve()),
             "run_id": data.get("run_id"), "source": data.get("source", "workflow stage manifest")}
 
@@ -603,23 +606,23 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
                      require_stage_status: bool = True, observed_manifest: Path | None = None) -> dict[str, Any]:
     """Cross-check one explicitly selected results directory against its inputs."""
     if not results_dir.is_dir():
-        raise FileNotFoundError(f"results directory does not exist: {results_dir}")
+        raise MissingPathRefusal('RESULTS_DIR_MISSING', f"results directory does not exist: {results_dir}")
     paired = compare_faa_gff(faa, gff)
     proteins = paired["proteins"]
     annotation = paired["annotation"]
     missing = [name for name in OUTPUT_FILES if not (results_dir / name).is_file()]
     if missing:
-        raise FileNotFoundError(f"missing required outputs in {results_dir}: {missing}")
+        raise MissingDataResult('STRUCTURE_INVALID', f"missing required outputs in {results_dir}: {missing}")
     tables = {name: read_tsv(results_dir / name, header) for name, header in REQUIRED_OUTPUT_HEADERS.items()}
     overview = tables["overview.tsv"]
     overview_ids = [r["Gene ID"].strip() for r in overview]
     if any(not pid for pid in overview_ids):
-        raise ValueError("overview.tsv contains an empty Gene ID")
+        raise NegativeResult('STRUCTURE_INVALID', "overview.tsv contains an empty Gene ID")
     if len(overview_ids) != len(set(overview_ids)):
-        raise ValueError("overview.tsv contains duplicate protein IDs")
+        raise NegativeResult('STRUCTURE_INVALID', "overview.tsv contains duplicate protein IDs")
     unknown_overview = sorted(set(overview_ids) - set(proteins))
     if unknown_overview:
-        raise ValueError(f"overview.tsv contains unknown protein IDs: {unknown_overview[:10]}")
+        raise NegativeResult('STRUCTURE_INVALID', f"overview.tsv contains unknown protein IDs: {unknown_overview[:10]}")
 
     method_hits: dict[str, set[str]] = {key: set() for key, _ in METHOD_COLUMNS}
     for fname, key in (("dbCAN_hmm_results.tsv", "dbCAN_hmm"), ("dbCANsub_hmm_results.tsv", "dbCAN_sub")):
@@ -630,18 +633,18 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
     for n, row in enumerate(drows, 2):
         pid = row["Gene ID"]
         if pid not in proteins:
-            raise ValueError(f"unknown DIAMOND protein ID {pid!r} in diamond.out:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"unknown DIAMOND protein ID {pid!r} in diamond.out:{n}")
         qstart = _as_int(row["Gene Start"], "Gene Start", results_dir / "diamond.out")
         qend = _as_int(row["Gene End"], "Gene End", results_dir / "diamond.out")
         if qstart < 1 or qend < qstart or qend > len(proteins[pid].rstrip("*")):
-            raise ValueError(f"invalid DIAMOND query bounds for {pid} at diamond.out:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"invalid DIAMOND query bounds for {pid} at diamond.out:{n}")
         _as_number(row["% Identical"], "% Identical", results_dir / "diamond.out", maximum=100)
         _as_number(row["E Value"], "E Value", results_dir / "diamond.out")
         _as_number(row["Bit Score"], "Bit Score", results_dir / "diamond.out")
         for field in ("Length", "Mismatches", "Gap Open", "CAZy Start", "CAZy End"):
             number = _as_int(row[field], field, results_dir / "diamond.out")
             if number < (0 if field in {"Mismatches", "Gap Open"} else 1):
-                raise ValueError(f"invalid DIAMOND {field} for {pid}")
+                raise NegativeResult('STRUCTURE_INVALID', f"invalid DIAMOND {field} for {pid}")
     method_hits["DIAMOND"] = {r["Gene ID"] for r in drows}
     _check_accessory_tables(results_dir, tables, proteins)
     expected_calls = _expected_method_calls(tables)
@@ -651,26 +654,26 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
         actual = _positive_method_count(row)
         reported = _as_int(row["#ofTools"], "#ofTools", results_dir / "overview.tsv")
         if reported != actual:
-            raise ValueError(f"#ofTools={reported} but {actual} method columns are positive for {pid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"#ofTools={reported} but {actual} method columns are positive for {pid}")
         for col, _ in METHOD_COLUMNS:
             if hit(row.get(col, "")) and pid not in method_hits[col]:
-                raise ValueError(f"overview says {pid} has a {col} hit but the corresponding result table has none")
+                raise NegativeResult('STRUCTURE_INVALID', f"overview says {pid} has a {col} hit but the corresponding result table has none")
             if not hit(row.get(col, "")) and pid in method_hits[col]:
-                raise ValueError(f"{col} result table contains {pid}, but overview has no {col} call")
+                raise NegativeResult('STRUCTURE_INVALID', f"{col} result table contains {pid}, but overview has no {col} call")
             if hit(row.get(col, "")) and Counter(row[col].split("+")) != expected_calls[col][pid]:
-                raise ValueError(f"overview {col} label/domain evidence differs from raw results for {pid}")
+                raise NegativeResult('STRUCTURE_INVALID', f"overview {col} label/domain evidence differs from raw results for {pid}")
     union_hits = set().union(*method_hits.values())
     if set(overview_ids) != union_hits:
         extra = sorted(set(overview_ids) - union_hits)
         absent = sorted(union_hits - set(overview_ids))
-        raise ValueError(f"overview IDs disagree with method tables; overview_only={extra[:10]}, method_only={absent[:10]}")
+        raise NegativeResult('STRUCTURE_INVALID', f"overview IDs disagree with method tables; overview_only={extra[:10]}, method_only={absent[:10]}")
 
     processed_faa = parse_fasta(results_dir / "uniInput.faa")
     if set(processed_faa) != set(proteins):
-        raise ValueError(f"uniInput.faa ID set differs from source FAA; missing={sorted(set(proteins)-set(processed_faa))[:10]}, extra={sorted(set(processed_faa)-set(proteins))[:10]}")
+        raise NegativeResult('STRUCTURE_INVALID', f"uniInput.faa ID set differs from source FAA; missing={sorted(set(proteins)-set(processed_faa))[:10]}, extra={sorted(set(processed_faa)-set(proteins))[:10]}")
     for pid, seq in proteins.items():
         if seq != processed_faa[pid]:
-            raise ValueError(f"sequence changed between input FAA and uniInput.faa for {pid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"sequence changed between input FAA and uniInput.faa for {pid}")
 
     expected_cds = annotation["cds"]
     cgc_gff_rows: dict[str, dict[str, Any]] = {}
@@ -681,26 +684,26 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
                 continue
             cols = line.split("\t")
             if len(cols) != 9:
-                raise ValueError(f"cgc.gff row does not have 9 columns at line {n}")
+                raise NegativeResult('STRUCTURE_INVALID', f"cgc.gff row does not have 9 columns at line {n}")
             if cols[2] != "CDS":
                 continue
             attrs = parse_attributes(cols[8])
             pid = attrs.get("protein_id") or attrs.get("ID")
             if not pid:
-                raise ValueError(f"cgc.gff CDS lacks protein_id/ID at line {n}")
+                raise NegativeResult('STRUCTURE_INVALID', f"cgc.gff CDS lacks protein_id/ID at line {n}")
             if pid in cgc_gff_rows:
-                raise ValueError(f"duplicate processed GFF protein ID {pid}")
+                raise NegativeResult('STRUCTURE_INVALID', f"duplicate processed GFF protein ID {pid}")
             if pid not in expected_cds:
-                raise ValueError(f"unknown processed GFF protein ID {pid}")
+                raise NegativeResult('STRUCTURE_INVALID', f"unknown processed GFF protein ID {pid}")
             source = expected_cds[pid]
             observed_tuple = (cols[0], int(cols[3]), int(cols[4]), cols[6])
             expected_tuple = (source["seqid"], source["start"], source["end"], source["strand"])
             if observed_tuple != expected_tuple:
-                raise ValueError(f"contig/coordinate/strand changed for {pid}: {observed_tuple} != {expected_tuple}")
+                raise NegativeResult('STRUCTURE_INVALID', f"contig/coordinate/strand changed for {pid}: {observed_tuple} != {expected_tuple}")
             cgc_gff_rows[pid] = {"contig": cols[0], "start": int(cols[3]), "end": int(cols[4]),
                                  "strand": cols[6], "annotation": attrs.get("CGC_annotation", "null")}
     if set(cgc_gff_rows) != set(expected_cds):
-        raise ValueError(f"cgc.gff CDS IDs differ from source GFF; missing={sorted(set(expected_cds)-set(cgc_gff_rows))[:10]}, extra={sorted(set(cgc_gff_rows)-set(expected_cds))[:10]}")
+        raise NegativeResult('STRUCTURE_INVALID', f"cgc.gff CDS IDs differ from source GFF; missing={sorted(set(expected_cds)-set(cgc_gff_rows))[:10]}, extra={sorted(set(cgc_gff_rows)-set(expected_cds))[:10]}")
 
     cgc_rows = tables["cgc_standard_out.tsv"]
     summary_rows = tables["cgc_standard_out_summary.tsv"]
@@ -709,40 +712,40 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
     for n, row in enumerate(cgc_rows, 2):
         cid, pid = row["CGC#"], row["Protein ID"]
         if not cid or not pid:
-            raise ValueError(f"empty CGC# or Protein ID at cgc_standard_out.tsv:{n}")
+            raise NegativeResult('STRUCTURE_INVALID', f"empty CGC# or Protein ID at cgc_standard_out.tsv:{n}")
         key = (cid, pid)
         if key in member_seen:
-            raise ValueError(f"duplicate CGC member {pid} in {cid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"duplicate CGC member {pid} in {cid}")
         member_seen.add(key)
         if pid not in expected_cds:
-            raise ValueError(f"unknown CGC member protein ID {pid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"unknown CGC member protein ID {pid}")
         src = expected_cds[pid]
         tup = (row["Contig ID"], _as_int(row["Gene Start"], "Gene Start", results_dir / "cgc_standard_out.tsv"),
                _as_int(row["Gene Stop"], "Gene Stop", results_dir / "cgc_standard_out.tsv"), row["Gene Strand"])
         expected_tuple = (src["seqid"], src["start"], src["end"], src["strand"])
         if tup != expected_tuple:
-            raise ValueError(f"CGC membership coordinates differ from source for {pid}: {tup} != {expected_tuple}")
+            raise NegativeResult('STRUCTURE_INVALID', f"CGC membership coordinates differ from source for {pid}: {tup} != {expected_tuple}")
         if row["Gene Annotation"] != cgc_gff_rows[pid]["annotation"]:
-            raise ValueError(f"CGC annotation differs between cgc.gff and membership table for {pid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"CGC annotation differs between cgc.gff and membership table for {pid}")
         allowed_types = {"CAZyme", "TC", "TF", "STP", "Sulfatase", "Peptidase", "null"}
         tokens = {part.split("|", 1)[0] for part in row["Gene Annotation"].split("+")}
         if row["Gene Type"] not in allowed_types or row["Gene Type"] not in tokens:
-            raise ValueError(f"CGC gene type differs from annotation categories for {pid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"CGC gene type differs from annotation categories for {pid}")
         by_cluster[cid].append(row)
     summary_by_id: dict[str, dict[str, str]] = {}
     for row in summary_rows:
         cid = row["CGC#"]
         if not cid or cid in summary_by_id:
-            raise ValueError(f"empty or duplicate CGC ID in summary: {cid!r}")
+            raise NegativeResult('STRUCTURE_INVALID', f"empty or duplicate CGC ID in summary: {cid!r}")
         summary_by_id[cid] = row
     if set(summary_by_id) != set(by_cluster):
-        raise ValueError(f"CGC IDs differ between member table and summary; member_only={sorted(set(by_cluster)-set(summary_by_id))}, summary_only={sorted(set(summary_by_id)-set(by_cluster))}")
+        raise NegativeResult('STRUCTURE_INVALID', f"CGC IDs differ between member table and summary; member_only={sorted(set(by_cluster)-set(summary_by_id))}, summary_only={sorted(set(summary_by_id)-set(by_cluster))}")
     type_columns = {"CAZyme": "CAZymes", "TC": "TC", "TF": "TF", "STP": "STP", "Sulfatase": "Sulfatase", "Peptidase": "Peptidase"}
     for cid, members in by_cluster.items():
         summary = summary_by_id[cid]
         contigs = {r["Contig ID"] for r in members}
         if len(contigs) != 1 or summary["Contig ID"] not in contigs:
-            raise ValueError(f"inconsistent contig membership for {cid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"inconsistent contig membership for {cid}")
         starts = [_as_int(r["Gene Start"], "Gene Start", results_dir / "cgc_standard_out.tsv") for r in members]
         ends = [_as_int(r["Gene Stop"], "Gene Stop", results_dir / "cgc_standard_out.tsv") for r in members]
         values = {"Genes": len(members), "Cluster Start": min(starts), "Cluster End": max(ends),
@@ -753,7 +756,7 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
         for key, expected in values.items():
             observed = _as_int(summary[key], key, results_dir / "cgc_standard_out_summary.tsv")
             if observed != expected:
-                raise ValueError(f"{cid} summary {key}={observed}, member rows imply {expected}")
+                raise NegativeResult('STRUCTURE_INVALID', f"{cid} summary {key}={observed}, member rows imply {expected}")
 
     substrate_rows = tables["substrate_prediction.tsv"]
     known_cgc_keys = {f"{summary['Contig ID']}|{cid}" for cid, summary in summary_by_id.items()}
@@ -761,9 +764,9 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
     for row in substrate_rows:
         cgcid = row["#cgcid"]
         if cgcid not in known_cgc_keys:
-            raise ValueError(f"substrate row references unknown CGC {cgcid!r}")
+            raise NegativeResult('STRUCTURE_INVALID', f"substrate row references unknown CGC {cgcid!r}")
         if cgcid in seen_substrates:
-            raise ValueError(f"duplicate substrate row for {cgcid}")
+            raise NegativeResult('STRUCTURE_INVALID', f"duplicate substrate row for {cgcid}")
         seen_substrates.add(cgcid)
 
     status = _status_check(status_file, require_stage_status, faa=faa, gff=gff, results_dir=results_dir)
@@ -793,9 +796,9 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
         observed_manifest = observed_manifest.resolve()
         for protected in (results_dir.resolve(), faa.resolve().parent, gff.resolve().parent):
             if observed_manifest == protected or protected in observed_manifest.parents:
-                raise ValueError("observed result manifest must be outside native results and input directories")
+                raise Refusal('PATHS_OVERLAP', "observed result manifest must be outside native results and input directories")
         if status_file is not None and observed_manifest == status_file.resolve():
-            raise ValueError("observed result manifest must not overwrite stage status")
+            raise Refusal('PATHS_OVERLAP', "observed result manifest must not overwrite stage status")
         observed_manifest.parent.mkdir(parents=True, exist_ok=True)
         files = [p for p in sorted(results_dir.rglob("*")) if p.is_file()]
         with observed_manifest.open("w", encoding="utf-8", newline="\n") as f:
@@ -809,10 +812,10 @@ def summarize_results(faa: Path, gff: Path, results_dir: Path, output_dir: Path)
     results_dir = results_dir.resolve()
     output_dir = output_dir.resolve()
     if results_dir == output_dir or results_dir in output_dir.parents or output_dir in results_dir.parents:
-        raise ValueError("summary output directory must be separate from and outside the native results directory")
+        raise Refusal('PATHS_OVERLAP', "summary output directory must be separate from and outside the native results directory")
     for input_root in {faa.resolve().parent, gff.resolve().parent}:
         if output_dir == input_root or output_dir in input_root.parents or input_root in output_dir.parents:
-            raise ValueError("summary metadata must be separate from the input directory")
+            raise Refusal('PATHS_OVERLAP', "summary metadata must be separate from the input directory")
     validate_outputs(faa, gff, results_dir, require_stage_status=False)
     paired = compare_faa_gff(faa, gff)
     proteins = paired["proteins"]
@@ -1034,36 +1037,36 @@ def check_fresh_destinations(results_root: Path, metadata_root: Path, samples: I
     for sample in samples:
         target = results_root / sample
         if target.exists() and any(target.iterdir()) and not resume:
-            raise FileExistsError(f"results destination is not empty; choose a new --results-dir: {target}")
+            raise ExistingPathRefusal('PATHS_OVERLAP', f"results destination is not empty; choose a new --results-dir: {target}")
     if metadata_root.exists() and any(metadata_root.iterdir()) and not resume:
-        raise FileExistsError(f"metadata destination is not empty; choose a new --metadata-dir: {metadata_root}")
+        raise ExistingPathRefusal('PATHS_OVERLAP', f"metadata destination is not empty; choose a new --metadata-dir: {metadata_root}")
 
 
 def run_preflight(faa: Path, gff: Path, env_python: Path, run_dbcan_path: Path, diamond_path: Path,
                   db_dir: Path, expected_manifest: Path, threads: int, profile: str, results_dir: Path,
                   metadata_dir: Path) -> dict[str, Any]:
     if threads < 1:
-        raise ValueError("threads must be a positive integer")
+        raise Refusal('ENV_UNMET', "threads must be a positive integer")
     if profile not in {"sandbox", "hpc"}:
-        raise ValueError("profile must be sandbox or hpc")
+        raise Refusal('ENV_UNMET', "profile must be sandbox or hpc")
     _guard_output_directories([results_dir, metadata_dir],
                               [faa.parent, gff.parent, db_dir, env_python.parent.parent])
     paired = compare_faa_gff(faa, gff)
     resources = effective_resources()
     if resources["effective_cpu_allocation"] and threads > resources["effective_cpu_allocation"]:
-        raise ValueError(
+        raise Refusal('THREADS_EXCEED_ALLOCATION', 
             f"requested threads={threads} exceeds detected CPU allocation "
             f"{resources['effective_cpu_allocation']}"
         )
     for label, path in (("Python", env_python), ("run_dbcan", run_dbcan_path), ("DIAMOND", diamond_path)):
         if not path.is_file() or not os.access(path, os.X_OK):
-            raise FileNotFoundError(f"selected {label} executable is not executable: {path}")
+            raise MissingPathRefusal('ENV_UNMET', f"selected {label} executable is not executable: {path}")
     # Preserve the venv interpreter path: resolving its symlink invokes the
     # base interpreter and loses the selected environment's sys.prefix.
     paths = [Path(os.path.abspath(p)) for p in (env_python, run_dbcan_path, diamond_path)]
     env_root = paths[0].parent.parent.resolve()
     if any(p.parent.resolve() != env_root / "bin" for p in paths):
-        raise ValueError("Python, run_dbcan, and DIAMOND must be selected from one environment bin directory")
+        raise Refusal('ENV_UNMET', "Python, run_dbcan, and DIAMOND must be selected from one environment bin directory")
     env = os.environ.copy()
     env["PATH"] = f"{env_root / 'bin'}{os.pathsep}{env.get('PATH', '')}"
     python_probe = subprocess.run(
@@ -1074,16 +1077,16 @@ def run_preflight(faa: Path, gff: Path, env_python: Path, run_dbcan_path: Path, 
         check=False, capture_output=True, text=True, env=env,
     )
     if python_probe.returncode != 0:
-        raise RuntimeError(f"selected Python smoke test failed: {python_probe.stderr.strip()}")
+        raise RuntimeRefusal('ENV_UNMET', f"selected Python smoke test failed: {python_probe.stderr.strip()}")
     runtime = json.loads(python_probe.stdout)
     if Path(runtime["prefix"]).resolve() != env_root or runtime["dbcan"] != DBCAN_VERSION:
-        raise ValueError("selected Python environment identity or dbcan distribution version differs from the requested environment")
+        raise Refusal('ENV_UNMET', "selected Python environment identity or dbcan distribution version differs from the requested environment")
     run_probe = subprocess.run([str(paths[0]), str(paths[1]), "version"], check=False, capture_output=True, text=True, env=env)
     if run_probe.returncode != 0 or not re.search(r"(?<!\d)5\.2\.9(?!\d)", run_probe.stdout + run_probe.stderr):
-        raise RuntimeError(f"run_dbcan version probe failed or was not 5.2.9: {(run_probe.stdout + run_probe.stderr).strip()}")
+        raise RuntimeRefusal('ENV_UNMET', f"run_dbcan version probe failed or was not 5.2.9: {(run_probe.stdout + run_probe.stderr).strip()}")
     diamond_probe = subprocess.run([str(paths[2]), "version"], check=False, capture_output=True, text=True, env=env)
     if diamond_probe.returncode != 0 or not re.search(r"(?<!\d)2\.2\.8(?!\d)", diamond_probe.stdout + diamond_probe.stderr):
-        raise RuntimeError(f"DIAMOND version probe failed or was not 2.2.8: {(diamond_probe.stdout + diamond_probe.stderr).strip()}")
+        raise RuntimeRefusal('ENV_UNMET', f"DIAMOND version probe failed or was not 2.2.8: {(diamond_probe.stdout + diamond_probe.stderr).strip()}")
 
     def existing_parent(path: Path) -> Path:
         current = path.resolve()
@@ -1145,14 +1148,14 @@ def _guard_output_directories(outputs: Iterable[Path], protected: Iterable[Path]
     for i, left in enumerate(destinations):
         for right in protected + destinations[i + 1:]:
             if left == right or left in right.parents or right in left.parents:
-                raise ValueError(f"output directories must be disjoint from inputs, runtime, database and each other: {left}; {right}")
+                raise Refusal('PATHS_OVERLAP', f"output directories must be disjoint from inputs, runtime, database and each other: {left}; {right}")
 
 
 def _guard_output_files(outputs: Iterable[Path], protected: Iterable[Path]) -> None:
     destinations = [p.resolve() for p in outputs]
     sources = {p.resolve() for p in protected}
     if len(set(destinations)) != len(destinations) or any(p in sources for p in destinations):
-        raise ValueError("derived output files must be distinct and must not overwrite source files")
+        raise Refusal('PATHS_OVERLAP', "derived output files must be distinct and must not overwrite source files")
 
 
 def _stage_record(status_file: Path, stage: str, *, state: str, started: str | None = None,
@@ -1184,22 +1187,22 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
     input_dir, results_dir, metadata_dir, db_dir, env_dir = [p.resolve() for p in
         (input_dir, results_dir, metadata_dir, db_dir, env_dir)]
     if not samples or len(samples) != len(set(samples)) or any(s in {".", ".."} or not re.fullmatch(r"[A-Za-z0-9_.-]+", s) for s in samples):
-        raise ValueError("provide unique sample names containing only letters, digits, period, underscore, or hyphen")
+        raise Refusal('SAMPLE_ID_UNSAFE', "provide unique sample names containing only letters, digits, period, underscore, or hyphen")
     for left_name, left, right_name, right in (
         ("inputs", input_dir, "results", results_dir), ("inputs", input_dir, "metadata", metadata_dir),
         ("results", results_dir, "metadata", metadata_dir),
     ):
         if left == right or left in right.parents or right in left.parents:
-            raise ValueError(f"{left_name} and {right_name} directories must be disjoint: {left}, {right}")
+            raise Refusal('PATHS_OVERLAP', f"{left_name} and {right_name} directories must be disjoint: {left}, {right}")
     if not input_dir.is_dir():
-        raise FileNotFoundError(f"input directory does not exist: {input_dir}")
+        raise MissingPathRefusal('INPUT_MISSING', f"input directory does not exist: {input_dir}")
     _guard_output_directories([results_dir, metadata_dir], [input_dir, db_dir, env_dir])
     for target in (results_dir, metadata_dir):
         if target.resolve() == expected_manifest.resolve() or target.resolve() in expected_manifest.resolve().parents:
-            raise ValueError("run outputs must not overlap the expected database manifest")
+            raise Refusal('PATHS_OVERLAP', "run outputs must not overlap the expected database manifest")
     for root in (results_dir, metadata_dir):
         if root.exists() and any(root.iterdir()):
-            raise FileExistsError(f"run destination must be fresh and empty: {root}")
+            raise ExistingPathRefusal('PATHS_OVERLAP', f"run destination must be fresh and empty: {root}")
     paired_inputs = {}
     for sample in samples:
         faa = input_dir / "original" / f"{sample}.faa"
@@ -1263,7 +1266,7 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                     log_file=log_file, results_dir=result_dir,
                     reason=None if completed.returncode == 0 else "dbCAN stage returned a nonzero exit code")
                 if completed.returncode != 0:
-                    raise RuntimeError(f"{sample} {stage} failed with exit code {completed.returncode}; see {log_file}")
+                    raise StageFailure('STAGE_FAILED', f"{sample} {stage} failed with exit code {completed.returncode}; see {log_file}")
             current = json.loads(status_file.read_text(encoding="utf-8"))
             current["status"] = "stages_complete"
             current["stages_ended_utc"] = utc_now()
@@ -1357,7 +1360,7 @@ def main() -> None:
     elif r.command == "validate":
         results_dir, metadata_dir = r.results_dir.resolve(), r.metadata_dir.resolve()
         if results_dir == metadata_dir or results_dir in metadata_dir.parents or metadata_dir in results_dir.parents:
-            raise ValueError("results and metadata directories must be disjoint")
+            raise Refusal('PATHS_OVERLAP', "results and metadata directories must be disjoint")
         _guard_output_directories([metadata_dir], [results_dir, r.faa.parent, r.gff.parent])
         observed = r.observed_manifest or metadata_dir / "results_observed.sha256"
         data = validate_outputs(r.faa, r.gff, results_dir, status_file=r.status_file,

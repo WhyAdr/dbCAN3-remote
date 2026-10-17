@@ -2,6 +2,9 @@
 """Audit default CAZyme+TC cluster windows at circular contig joins."""
 from __future__ import annotations
 
+from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
+                            NegativeResult, MissingDataResult, StageFailure)
+
 import argparse
 import csv
 import json
@@ -22,26 +25,26 @@ def audit(faa_gff: Path, processed_gff: Path) -> dict[str, Any]:
             continue
         cols = line.split("\t")
         if len(cols) != 9:
-            raise ValueError(f"expected 9 GFF columns at {processed_gff}:{line_no}")
+            raise NegativeResult('STRUCTURE_INVALID', f"expected 9 GFF columns at {processed_gff}:{line_no}")
         if cols[2] != "CDS":
             continue
         attrs = parse_attributes(cols[8])
         pid = attrs.get("protein_id") or attrs.get("ID")
         if not pid or pid in seen:
-            raise ValueError(f"missing or duplicate processed protein ID at {processed_gff}:{line_no}")
+            raise NegativeResult('STRUCTURE_INVALID', f"missing or duplicate processed protein ID at {processed_gff}:{line_no}")
         seen.add(pid)
         if pid not in annotation["cds"]:
-            raise ValueError(f"unknown processed protein ID {pid!r}")
+            raise NegativeResult('STRUCTURE_INVALID', f"unknown processed protein ID {pid!r}")
         source = annotation["cds"][pid]
         observed = (cols[0], int(cols[3]), int(cols[4]), cols[6])
         expected = (source["seqid"], source["start"], source["end"], source["strand"])
         if observed != expected:
-            raise ValueError(f"processed coordinates differ for {pid}: {observed} != {expected}")
+            raise NegativeResult('STRUCTURE_INVALID', f"processed coordinates differ for {pid}: {observed} != {expected}")
         anno = attrs.get("CGC_annotation", "null")
         by_contig[cols[0]].append({"protein_id": pid, "start": int(cols[3]), "end": int(cols[4]),
             "categories": categories(anno), "annotation": anno})
     if seen != set(annotation["cds"]):
-        raise ValueError(f"processed GFF CDS ID set differs from input; missing={len(set(annotation['cds'])-seen)}")
+        raise NegativeResult('STRUCTURE_INVALID', f"processed GFF CDS ID set differs from input; missing={len(set(annotation['cds'])-seen)}")
 
     rows = []
     origins = []
