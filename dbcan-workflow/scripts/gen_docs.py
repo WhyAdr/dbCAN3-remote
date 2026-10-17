@@ -25,6 +25,8 @@ def generated_documents():
     import re
     generated = '<!-- BEGIN GENERATED:commands -->\n'+commands_markdown(describe_commands())+'\n<!-- END GENERATED:commands -->'
     text = re.sub(r'<!-- BEGIN GENERATED:commands -->.*?<!-- END GENERATED:commands -->', lambda m: generated, text, flags=re.S) if '<!-- BEGIN GENERATED:commands -->' in text else text+'\n'+generated+'\n'
+    recovery = '<!-- BEGIN GENERATED:recovery -->\n'+recovery_table()+'\n<!-- END GENERATED:recovery -->'
+    text = re.sub(r'<!-- BEGIN GENERATED:recovery -->.*?<!-- END GENERATED:recovery -->', lambda m: recovery, text, flags=re.S)
     docs[skill] = text
     return docs
 

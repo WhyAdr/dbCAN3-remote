@@ -5,77 +5,64 @@ description: Prepare, run, validate, and report dbCAN 5.2.9 CAZyme analyses from
 
 # dbCAN workflow
 
-## Choose the workflow
+## Choose the task
 
-- For existing results, validate and summarize the exact supplied results directory. Do not rerun searches just to regenerate reports.
-- For a new analysis, inventory inputs, environment, database cache, and output destinations first. Keep the input, native results, regenerated diagnostics, and metadata in separate directories.
-- Keep supplied native result files unchanged. Treat any result set without a successful stage-status manifest as structurally valid but execution-unattested.
+**Use when:** preparing paired FAA/GFF3 inputs, inspecting existing dbCAN outputs, reporting evidence, auditing CGCs or planning a confirmed new search.
+**Do NOT use when:** running searches merely to regenerate reports, downloading databases, or treating a derived overlay as an upstream patch.
 
-## Use the bundled tools
+Run these tools locally on the agent host; “remote” describes the human's access. Inventory supplied paths first. Keep inputs, native results, diagnostics, environment and database destinations separate. Preserve native files.
 
-Run the standard-library test suite from this skill folder before editing workflow code:
+Use `python3 -B scripts/dbcan_workflow.py describe` for arguments, expected outputs, database assets and possible outcomes. Use this CLI as the agent entry point; `run_dbcan_threadcap.py` is an internal, version-guarded shim for substrate prediction, not an agent entry point.
 
-```bash
-python3 -m unittest discover -s tests -v
-```
+## Read the envelope
 
-Prepare a local standalone CDS GFF from a Bakta FAA/GFF3 pair:
+1. Parse stdout as one JSON document. Branch on `outcome.kind`, not on the exit code.
+2. `refused` is a correct, deliberate result, not a failure to work around. Follow only `refusal.remediation`; never attempt anything in `refusal.forbidden`. Surface the refusal and its code to the user.
+3. `negative` means the tool worked and the answer is no. Report it; do not retry.
+4. `failed` means a stage failed; read the artifact with role `stage_log`; rerun only into fresh directories.
+5. `error` is a tool defect; report it with the stderr traceback.
+6. In any report, assert only what is in `claims.may_say`, and never what is in `claims.may_not_say`. The ledger is guidance with provenance, not a security boundary.
 
-```bash
-python3 scripts/dbcan_workflow.py prepare \
-  --faa /path/to/inputs/original/sample.faa \
-  --gff /path/to/inputs/original/sample.gff3 \
-  --out-gff /path/to/new/results/sample/inputs/sample.cds.flat.local.gff \
-  --report /path/to/new/results/sample/inputs/sample.local_gff_validation.json
-```
+Read the command payload under `result`. `legacy_status` is transitional; use `outcome` and `evidence` for decisions. Strict process exits are 0/1/2/3/4/5 for ok/error/usage/refused/negative/failed. If a shell discards nonzero stdout, use `--exit-policy semantic-zero`; semantic outcomes remain binding. `--help` prints help instead of an envelope. `describe --format markdown` places its rendering in `result.markdown` within the envelope.
 
-Review an existing result directory with explicit paths. When a manifest is available, first validate with `--status-file /path/to/metadata/sample/stage_status.json` and omit `--allow-unattested`. A complete attestation binds a run ID, both input hashes, the selected results path, four successful stage exit codes, and the final output inventory. File presence or declared success alone is insufficient.
+## Review existing results
 
-For an archive without usable attestation, review its table structure using `--allow-unattested`, without supplying the unusable manifest. Record any earlier manifest rejection explicitly. Supplying a failed or incomplete manifest still causes rejection even with this flag; never call a structural review an attested completed run:
+Use the exact selected native directory and separate diagnostics:
 
 ```bash
-python3 scripts/dbcan_workflow.py validate \
-  --faa /path/to/inputs/original/sample.faa \
-  --gff /path/to/inputs/original/sample.gff3 \
-  --results-dir /path/to/native/results/sample \
-  --metadata-dir /path/to/fresh/diagnostics/sample \
-  --allow-unattested
-
-python3 scripts/dbcan_workflow.py summarize \
-  --faa /path/to/inputs/original/sample.faa \
-  --gff /path/to/inputs/original/sample.gff3 \
-  --results-dir /path/to/native/results/sample \
-  --metadata-dir /path/to/fresh/diagnostics/sample/scientific_summary
+python3 -B scripts/dbcan_workflow.py validate \
+  --faa /inputs/sample.faa --gff /inputs/sample.gff3 \
+  --results-dir /native/sample --metadata-dir /diagnostics/sample \
+  --status-file /metadata/sample/stage_status.json --sample-id isolate_a
+python3 -B scripts/dbcan_workflow.py summarize \
+  --faa /inputs/sample.faa --gff /inputs/sample.gff3 \
+  --results-dir /native/sample --metadata-dir /diagnostics/sample/summary \
+  --sample-id isolate_a
 ```
 
-Summaries derive `sample` from the FAA basename. If several files are named `proteins.faa`, keep explicit isolate directories and identify the isolates in the comparative report; the inferred label is not a sample identity check. The static fixture's `stage_status.template.json` is an unbound test template, not execution evidence.
+A bound attestation requires a run ID, both input hashes, the selected results path, four successful stage exit codes and the final output inventory. File presence or declared success is insufficient. A supplied failed, missing, malformed or mismatched manifest is rejected even with `--allow-unattested`.
 
-Audit circular windows separately:
+For structural review without usable attestation, omit `--status-file` and add `--allow-unattested`. Preserve and explicitly report any earlier rejection. Describe valid results as structurally valid, execution-unattested; never manufacture a status record. The fixture's `stage_status.template.json` is an unbound template, not execution evidence.
+
+Pass `--sample-id` for identically named FASTAs. `sample_source: faa_stem` and `SAMPLE_INFERRED` expose inferred labels; neither an explicit label nor a filename verifies isolate identity.
+
+## Prepare or run a new analysis
+
+Prepare an adapter with `prepare --faa … --gff … --out-gff … --report …`. Inspect `describe` for circular audit and overlay paths. The overlay's `--dbcan-version 5.2.9` is a caller-supplied compatibility guard, not independent runtime evidence; corroborate historical version metadata.
+
+Obtain user confirmation for a **new search**. Before provisioning or downloading, explain the pinned runtime, database snapshot and reported storage requirement from `references/provenance.md`. Validation, summaries, overlays, audits and fixture tests need only the standard library.
+
+For a confirmed search, supply the exact preserved database cache, run `verify-db` and `preflight`, then run:
 
 ```bash
-python3 scripts/audit_circular_windows.py \
-  --gff /path/to/inputs/original/sample.gff3 \
-  --processed-gff /path/to/native/results/sample/cgc.gff \
-  --json /path/to/fresh/diagnostics/sample/circular_audit.json \
-  --tsv /path/to/fresh/diagnostics/sample/circular_audit.tsv
+python3 -B scripts/dbcan_workflow.py run \
+  --input-dir /inputs --results-dir /fresh/results --metadata-dir /fresh/metadata \
+  --db-dir /verified/cache --expected-manifest /reference/expected.sha256 \
+  --env-dir /runtime/dbcan-5.2.9 --samples isolate_a isolate_b \
+  --threads 2 --profile sandbox
 ```
 
-Inspect `python3 scripts/exact_cgc_categories.py --help` for the overlay's explicit input/output paths. Its `--dbcan-version 5.2.9` is a caller-supplied compatibility guard, not independent runtime evidence; corroborate the historical version from source metadata.
-
-For a new run, pass separate fresh roots and every isolate explicitly. The runner checks input identity, environment paths and versions, CPU allocation, every required stage asset, and the full expected database manifest before it creates result directories. It records argv, stage status, timestamps, resource snapshots, and output hashes. It writes completion metadata only after validation and summary succeed.
-
-```bash
-python3 scripts/dbcan_workflow.py run \
-  --input-dir /path/to/inputs \
-  --results-dir /path/to/fresh/results \
-  --metadata-dir /path/to/fresh/metadata \
-  --db-dir /path/to/verified/dbcan-databases \
-  --expected-manifest /path/to/database.expected.sha256 \
-  --env-dir /path/to/dbcan-5.2.9 \
-  --samples sample_a sample_b --threads 2 --profile sandbox
-```
-
-Use `profiles/sandbox.yaml` or `profiles/hpc.yaml` to choose an explicit thread budget. Pass it to the runner; it refuses requests above the detected CPU allocation. run_dbcan 5.2.9's recorded `substrate_prediction --help` has no `--threads` option, so `scripts/run_dbcan_threadcap.py` caps `os.cpu_count()` only inside that one command. Keep that compatibility shim version-guarded.
+Use `profiles/sandbox.yaml` or `profiles/hpc.yaml` to select an explicit thread budget within the detected allocation. The runner refuses duplicate/unsafe sample names, used destinations, unverified assets, incompatible environments and excessive CPU requests before creating results. There is no automatic download, install or resume.
 
 ## Interpret the evidence
 
@@ -85,13 +72,11 @@ Use `profiles/sandbox.yaml` or `profiles/hpc.yaml` to choose an explicit thread 
 - Keep GH0/GT0 and other zero-root labels visible as unresolved evidence, outside resolved-family counts.
 - Describe dbCAN substrate and PUL matches as computational predictions. Compare them with protein annotations and neighborhood members before writing substrate-specific claims.
 - Record circular topology from the original GFF3. Audit terminal signature windows; do not join across an origin unless the configured signature and null-gene rules support it.
-- Use `scripts/exact_cgc_categories.py` to create a version-guarded exact-category overlay in a separate directory. Never overwrite native CGC tables or describe the overlay as an upstream package patch.
+- Create a version-guarded exact-category overlay in a separate directory. Never overwrite native CGC tables or describe the overlay as an upstream package patch.
 
-## Respect database and runtime boundaries
+Read `references/reporting.md` for scientific counting rules, `references/provenance.md` for runtime and database evidence, and `PROVENANCE.md` for historical context and glossary. Before changing code, run `python3 -B -m unittest discover -s tests -v`.
 
-The validation, report, and fixture tests need only Python's standard library. Do not install dbCAN or fetch databases for those tasks. A new sequence-search run requires the exact stage assets listed by `describe` and in the generated command reference below and must pass `verify-db` against a preserved manifest. The supplied database files are not bundled; the checksum manifest alone does not prove the absent bytes. Explain the database snapshot and reported storage requirement before any new download.
-
-For detailed interpretation, resource, and provenance rules, read `references/reporting.md`, `references/provenance.md`, and the selected profile.
+## Expected command outputs
 
 <!-- BEGIN GENERATED:commands -->
 | Command | Purpose | Writes |
@@ -112,3 +97,28 @@ Required database assets for a new search:
 - `cgc_finder`: none.
 - `substrate_prediction`: `PUL.dmnd`, `dbCAN-PUL.xlsx`, `dbCAN-PUL`.
 <!-- END GENERATED:commands -->
+
+## Recovery by outcome code
+
+<!-- BEGIN GENERATED:recovery -->
+| Code | Kind | Sanctioned remediation | Forbidden workarounds |
+|---|---|---|---|
+| `OK` | ok | The requested operation completed. | — |
+| `USAGE_INVALID` | usage | The command line is invalid. | — |
+| `PATHS_OVERLAP` | refused | Choose fresh, disjoint output roots. | Do not reuse inputs, native results, environment or database directories as outputs. |
+| `ATTESTATION_REQUIRED` | refused | Pass the run's stage_status.json. Use structural review only; do not claim execution. | Do not create or edit a manifest to satisfy this check. |
+| `ATTESTATION_REJECTED` | refused | Report and preserve the rejection. Supply a different bound manifest. Omit the rejected manifest and request structural review; retain the rejection in the report. | Do not edit the rejected manifest to make it pass. |
+| `RESULTS_DIR_MISSING` | refused | Supply the exact existing native results directory. | Do not create an empty directory to satisfy this check. |
+| `INPUT_MISSING` | refused | Supply the existing input paths. | — |
+| `INPUT_MISMATCH` | refused | Supply the matching FAA/GFF3 pair. | — |
+| `SAMPLE_ID_UNSAFE` | refused | Use distinct plain isolate names without path traversal. | — |
+| `ENV_UNMET` | refused | Provision the selected pinned environment and DIAMOND 2.2.8. | Do not install or download without user confirmation. |
+| `DB_UNVERIFIED` | refused | Run verify-db on a supplied cache and preserved manifest. | Do not download databases without explicit user confirmation. |
+| `THREADS_EXCEED_ALLOCATION` | refused | Lower the thread budget to the detected allocation. | — |
+| `MANIFEST_PATH_UNSAFE` | refused | Use the preserved checksum manifest. | — |
+| `VERSION_UNSUPPORTED` | refused | Use the overlay only for corroborated dbCAN 5.2.9 results. | — |
+| `STRUCTURE_INVALID` | negative | The supplied data are structurally inconsistent. | — |
+| `DB_MISMATCH` | negative | The cache does not match the expected manifest. | — |
+| `STAGE_FAILED` | failed | An external stage failed; inspect its log and rerun into fresh directories. | — |
+| `INTERNAL_ERROR` | error | An unexpected tool defect occurred; report the stderr traceback. | — |
+<!-- END GENERATED:recovery -->
