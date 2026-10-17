@@ -824,7 +824,7 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
         if any(sum(root in values for values in roots_by_method) >= 2 for root in roots):
             family_agreement.add(row["Gene ID"])
     result = {"schema_version": 2, "evidence": {"structure": "valid", "attestation": "attested" if status["attested"] else "unattested"},
-              "sample": faa.stem, "status": status["overall"], "execution_attested": status["attested"],
+              "run_id": status.get("run_id"), "sample": faa.stem, "status": status["overall"], "execution_attested": status["attested"],
               "faa_proteins": len(proteins), "gff_cds": len(expected_cds), "overview_candidates": len(overview),
               "method_hit_proteins": {name: len(method_hits[key]) for key, name in METHOD_COLUMNS},
               "method_count_distribution": dict(sorted(methods_per_protein.items())),

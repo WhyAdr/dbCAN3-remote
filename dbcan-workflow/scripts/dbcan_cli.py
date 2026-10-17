@@ -24,7 +24,6 @@ def dispatch(r):
         data = w.validate_outputs(r.faa, r.gff, results, status_file=r.status_file,
             require_stage_status=not r.allow_unattested,
             observed_manifest=r.observed_manifest or metadata / 'results_observed.sha256')
-        w.write_json_atomic(metadata / 'output_validation.json', data)
     elif r.command == 'summarize':
         data = w.summarize_results(r.faa, r.gff, r.results_dir, r.metadata_dir)
     elif r.command == 'verify-db':
@@ -72,7 +71,7 @@ def dispatch(r):
     if r.command in {'validate', 'summarize'}:
         cr.evidence = {'structure': 'valid', 'attestation': 'attested' if data.get('execution_attested') else 'unattested'}
         if cr.evidence['attestation'] == 'attested':
-            cr.run_id = w._status_check(r.status_file, True, faa=r.faa, gff=r.gff, results_dir=r.results_dir)['run_id']
+            cr.run_id = data['run_id']
         cr.summary = 'Structurally valid; execution %s.' % cr.evidence['attestation']
     if r.command == 'verify-db' and not data['match']:
         cr.kind, cr.code, cr.summary = 'negative', 'DB_MISMATCH', 'Database cache does not match the expected manifest.'
