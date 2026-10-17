@@ -1380,11 +1380,15 @@ def build_parser():
                      help="accept structural validation without claiming successful stage execution")
     val.add_argument("--observed-manifest", type=Path, help='observed SHA256 manifest (output path)')
 
+    val.add_argument('--sample-id', help='explicit isolate label; a label does not verify identity')
+
     summ = sub.add_parser("summarize", parents=[parent], help="write overlap-aware family/domain tables to separate metadata")
     summ.add_argument("--faa", type=Path, required=True, help='source protein FASTA (input path)')
     summ.add_argument("--gff", type=Path, required=True, help='original Bakta GFF3 (input path)')
     summ.add_argument("--results-dir", type=Path, required=True, help='native results directory; run requires a fresh output root')
     summ.add_argument("--metadata-dir", type=Path, required=True, help='separate diagnostics directory (output path)')
+
+    summ.add_argument('--sample-id', help='explicit isolate label; a label does not verify identity')
 
     verify = sub.add_parser("verify-db", parents=[parent], help="compare a database directory with a preserved expected manifest")
     verify.add_argument("--db-dir", type=Path, required=True, help='supplied database cache (input path); never downloaded')

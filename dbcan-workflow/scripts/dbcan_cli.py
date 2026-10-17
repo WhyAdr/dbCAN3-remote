@@ -54,6 +54,16 @@ def dispatch(r):
         result['legacy_status'] = result.pop('status')
     cr = CommandResult(result=result)
     if r.command in {'validate', 'summarize'}:
+        sample_id = getattr(r, 'sample_id', None)
+        result['sample_source'] = 'explicit' if sample_id is not None else 'faa_stem'
+        result['sample'] = sample_id if sample_id is not None else r.faa.stem
+        if sample_id is None:
+            cr.warnings.append({'code': 'SAMPLE_INFERRED', 'message': 'Sample label was inferred from the FAA filename stem.', 'location': None})
+        if r.command == 'validate': w.write_json_atomic(r.metadata_dir/'output_validation.json', {**data, 'sample': result['sample'], 'sample_source': result['sample_source']})
+        else:
+            result['substrate_rows'] = len(w.read_tsv(r.results_dir/'substrate_prediction.tsv', w.SUBSTRATE_HEADER))
+            w.write_json_atomic(r.metadata_dir/'summary.json', {**data, 'sample': result['sample'], 'sample_source': result['sample_source']})
+    if r.command in {'validate', 'summarize'}:
         cr.evidence = {'structure': 'valid', 'attestation': 'attested' if data.get('execution_attested') else 'unattested'}
         if cr.evidence['attestation'] == 'attested':
             cr.run_id = w._status_check(r.status_file, True, faa=r.faa, gff=r.gff, results_dir=r.results_dir)['run_id']

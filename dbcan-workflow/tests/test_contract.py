@@ -229,6 +229,24 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(set(usage.split('|')), set(data['commands']))
         self.assertEqual(data['database_stage_assets'], {key: list(value) for key,value in w.DB_ASSETS_BY_STAGE.items()})
 
+    def test_explicit_sample_labels_and_duplicate_run_samples(self):
+        inferred = self.call(self.args+['--allow-unattested'])
+        self.assertEqual(inferred['result']['sample_source'], 'faa_stem')
+        self.assertIn('CL-N9', [c['id'] for c in inferred['claims']['may_not_say']])
+        for command in ['validate','summarize']:
+            args = [command, *self.args[1:], '--sample-id', 'isolate-A']
+            if command=='validate': args.append('--allow-unattested')
+            data = self.call(args)
+            self.assertEqual(data['result']['sample'], 'isolate-A')
+            self.assertEqual(data['result']['sample_source'], 'explicit')
+            self.assertNotIn('SAMPLE_INFERRED', [x['code'] for x in data['warnings']])
+        before = self.tree()
+        data = self.call(['run','--input-dir',str(self.fx),'--results-dir',str(self.root/'newresults'),'--metadata-dir',str(self.root/'newmeta'),
+            '--db-dir',str(self.root/'db'),'--env-dir',str(self.root/'env'),'--expected-manifest',str(self.root/'expected.sha256'),
+            '--samples','dup','dup','--threads','1','--profile','sandbox'])
+        self.assertEqual(data['outcome']['code'], 'SAMPLE_ID_UNSAFE')
+        self.assertEqual(before, self.tree())
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:
