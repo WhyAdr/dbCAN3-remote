@@ -174,6 +174,15 @@ class ContractTests(unittest.TestCase):
                         self.assertIn(node.args[0].value, REGISTRY, (path, node.lineno))
         subprocess.run([sys.executable, '-B', str(ROOT/'scripts/gen_docs.py'), '--check'], check=True)
 
+    def test_every_public_parser_argument_has_help(self):
+        import argparse
+        def walk(parser):
+            for action in parser._actions:
+                self.assertTrue(action.help, action.dest)
+                if isinstance(action, argparse._SubParsersAction):
+                    for sub in action.choices.values(): walk(sub)
+        walk(w.build_parser())
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:

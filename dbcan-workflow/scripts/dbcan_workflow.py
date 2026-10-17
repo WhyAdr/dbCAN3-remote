@@ -1349,56 +1349,69 @@ def build_parser():
     from dbcan_cli import ContractParser, global_parent
     parent = global_parent()
     parser = ContractParser(description=__doc__, parents=[parent])
-    sub = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(dest="command", required=True, help="select an operation")
     prep = sub.add_parser("prepare", parents=[parent], help="validate a Bakta FAA/GFF3 pair and prepare local flat-CDS GFF")
-    prep.add_argument("--faa", type=Path, required=True)
-    prep.add_argument("--gff", type=Path, required=True)
-    prep.add_argument("--out-gff", type=Path, required=True)
-    prep.add_argument("--report", type=Path, required=True)
+    prep.add_argument("--faa", type=Path, required=True, help='source protein FASTA (input path)')
+    prep.add_argument("--gff", type=Path, required=True, help='original Bakta GFF3 (input path)')
+    prep.add_argument("--out-gff", type=Path, required=True, help='standalone CDS GFF (output path)')
+    prep.add_argument("--report", type=Path, required=True, help='adapter validation JSON (output path)')
 
     val = sub.add_parser("validate", parents=[parent], help="validate one exact results directory and write separate metadata")
-    val.add_argument("--faa", type=Path, required=True)
-    val.add_argument("--gff", type=Path, required=True)
-    val.add_argument("--results-dir", type=Path, required=True)
-    val.add_argument("--metadata-dir", type=Path, required=True)
-    val.add_argument("--status-file", type=Path)
+    val.add_argument("--faa", type=Path, required=True, help='source protein FASTA (input path)')
+    val.add_argument("--gff", type=Path, required=True, help='original Bakta GFF3 (input path)')
+    val.add_argument("--results-dir", type=Path, required=True, help='native results directory; run requires a fresh output root')
+    val.add_argument("--metadata-dir", type=Path, required=True, help='separate diagnostics directory (output path)')
+    val.add_argument("--status-file", type=Path, help='bound stage_status.json (input path); a supplied rejected record cannot be bypassed')
     val.add_argument("--allow-unattested", action="store_true",
                      help="accept structural validation without claiming successful stage execution")
-    val.add_argument("--observed-manifest", type=Path)
+    val.add_argument("--observed-manifest", type=Path, help='observed SHA256 manifest (output path)')
 
     summ = sub.add_parser("summarize", parents=[parent], help="write overlap-aware family/domain tables to separate metadata")
-    summ.add_argument("--faa", type=Path, required=True)
-    summ.add_argument("--gff", type=Path, required=True)
-    summ.add_argument("--results-dir", type=Path, required=True)
-    summ.add_argument("--metadata-dir", type=Path, required=True)
+    summ.add_argument("--faa", type=Path, required=True, help='source protein FASTA (input path)')
+    summ.add_argument("--gff", type=Path, required=True, help='original Bakta GFF3 (input path)')
+    summ.add_argument("--results-dir", type=Path, required=True, help='native results directory; run requires a fresh output root')
+    summ.add_argument("--metadata-dir", type=Path, required=True, help='separate diagnostics directory (output path)')
 
     verify = sub.add_parser("verify-db", parents=[parent], help="compare a database directory with a preserved expected manifest")
-    verify.add_argument("--db-dir", type=Path, required=True)
-    verify.add_argument("--expected-manifest", type=Path, required=True)
-    verify.add_argument("--observed-manifest", type=Path, required=True)
+    verify.add_argument("--db-dir", type=Path, required=True, help='supplied database cache (input path); never downloaded')
+    verify.add_argument("--expected-manifest", type=Path, required=True, help='preserved expected SHA256 manifest (input path)')
+    verify.add_argument("--observed-manifest", type=Path, required=True, help='observed SHA256 manifest (output path)')
 
     pre = sub.add_parser("preflight", parents=[parent], help="check runtime, input identity, resource budget, and reference assets")
-    pre.add_argument("--faa", type=Path, required=True)
-    pre.add_argument("--gff", type=Path, required=True)
-    pre.add_argument("--env-dir", type=Path, required=True)
-    pre.add_argument("--db-dir", type=Path, required=True)
-    pre.add_argument("--expected-manifest", type=Path, required=True)
-    pre.add_argument("--threads", type=int, required=True)
-    pre.add_argument("--profile", choices=("sandbox", "hpc"), required=True)
-    pre.add_argument("--results-dir", type=Path, required=True)
-    pre.add_argument("--metadata-dir", type=Path, required=True)
+    pre.add_argument("--faa", type=Path, required=True, help='source protein FASTA (input path)')
+    pre.add_argument("--gff", type=Path, required=True, help='original Bakta GFF3 (input path)')
+    pre.add_argument("--env-dir", type=Path, required=True, help='pinned environment containing bin/python, run_dbcan and diamond (input path)')
+    pre.add_argument("--db-dir", type=Path, required=True, help='supplied database cache (input path); never downloaded')
+    pre.add_argument("--expected-manifest", type=Path, required=True, help='preserved expected SHA256 manifest (input path)')
+    pre.add_argument("--threads", type=int, required=True, help='positive CPU budget within the detected allocation')
+    pre.add_argument("--profile", choices=("sandbox", "hpc"), required=True, help='explicit resource profile')
+    pre.add_argument("--results-dir", type=Path, required=True, help='native results directory; run requires a fresh output root')
+    pre.add_argument("--metadata-dir", type=Path, required=True, help='separate diagnostics directory (output path)')
 
     run = sub.add_parser("run", parents=[parent], help="run all dbCAN stages with explicit roots, verified assets, and per-stage records")
-    run.add_argument("--input-dir", type=Path, required=True)
-    run.add_argument("--results-dir", type=Path, required=True)
-    run.add_argument("--metadata-dir", type=Path, required=True)
-    run.add_argument("--db-dir", type=Path, required=True)
-    run.add_argument("--expected-manifest", type=Path, required=True)
-    run.add_argument("--env-dir", type=Path, required=True)
-    run.add_argument("--samples", nargs="+", required=True)
-    run.add_argument("--threads", type=int, required=True)
-    run.add_argument("--profile", choices=("sandbox", "hpc"), required=True)
+    run.add_argument("--input-dir", type=Path, required=True, help='input root with original/SAMPLE.faa and original/SAMPLE.gff3')
+    run.add_argument("--results-dir", type=Path, required=True, help='native results directory; run requires a fresh output root')
+    run.add_argument("--metadata-dir", type=Path, required=True, help='separate diagnostics directory (output path)')
+    run.add_argument("--db-dir", type=Path, required=True, help='supplied database cache (input path); never downloaded')
+    run.add_argument("--expected-manifest", type=Path, required=True, help='preserved expected SHA256 manifest (input path)')
+    run.add_argument("--env-dir", type=Path, required=True, help='pinned environment containing bin/python, run_dbcan and diamond (input path)')
+    run.add_argument("--samples", nargs="+", required=True, help='unique safe isolate names')
+    run.add_argument("--threads", type=int, required=True, help='positive CPU budget within the detected allocation')
+    run.add_argument("--profile", choices=("sandbox", "hpc"), required=True, help='explicit resource profile')
 
+    examples = {
+        'prepare': 'prepare --faa inputs/sample.faa --gff inputs/sample.gff3 --out-gff derived/sample.gff --report derived/adapter.json',
+        'validate': 'validate --faa inputs/sample.faa --gff inputs/sample.gff3 --results-dir native/sample --metadata-dir diagnostics/sample --allow-unattested',
+        'summarize': 'summarize --faa inputs/sample.faa --gff inputs/sample.gff3 --results-dir native/sample --metadata-dir diagnostics/summary',
+        'verify-db': 'verify-db --db-dir cache --expected-manifest environment/database_v5-2-9_5-5-2026.expected.sha256 --observed-manifest diagnostics/cache.sha256',
+        'preflight': 'preflight --faa inputs/sample.faa --gff inputs/sample.gff3 --env-dir runtime --db-dir cache --expected-manifest expected.sha256 --threads 1 --profile sandbox --results-dir fresh/results --metadata-dir fresh/metadata',
+        'run': 'run --input-dir inputs --results-dir fresh/results --metadata-dir fresh/metadata --db-dir cache --expected-manifest expected.sha256 --env-dir runtime --samples sample --threads 1 --profile sandbox',
+    }
+    for name, command_parser in sub.choices.items():
+        command_parser.epilog = 'Example: '+examples[name]
+    val.description = 'Validate structure and optional attestation; writes output_validation.json, results_observed.sha256 and envelope.validate.json to separate metadata.'
+    verify.description = 'Compare every database asset; writes the observed manifest to --observed-manifest.'
+    parser.epilog = 'Examples: '+ '; '.join(examples.values())
     return parser
 
 
