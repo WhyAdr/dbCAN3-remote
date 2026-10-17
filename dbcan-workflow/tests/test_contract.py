@@ -122,6 +122,30 @@ class ContractTests(unittest.TestCase):
         data = self.call(self.args+['--allow-unattested', '--envelope-out', str(self.fx/'inputs/sample.faa')])
         self.assertEqual(data['outcome']['code'], 'PATHS_OVERLAP'); self.assertEqual(self.tree(), before)
 
+    def bound_status(self, v2=False):
+        data = json.loads((self.fx/'metadata/stage_status.template.json').read_text())
+        data.update(run_id='bound-test', input_faa_sha256=w.sha256_file(self.fx/'inputs/sample.faa'),
+            input_gff_sha256=w.sha256_file(self.fx/'inputs/sample.gff3'), results_dir=str(self.fx/'results'))
+        data['stages'][w.STAGE_NAMES[-1]]['output_sha256'] = w._hash_tree(self.fx/'results')
+        if v2: data = w._v2_status_document(data)
+        path = self.root/'status.json'; path.write_text(json.dumps(data)); return path
+
+    def test_legacy_and_v2_status_binding_and_rejections(self):
+        for v2 in [False, True]:
+            status = self.bound_status(v2)
+            env = self.call(self.args+['--status-file', str(status)])
+            self.assertEqual(env['evidence']['attestation'], 'attested')
+            self.assertEqual(env['run_id'], 'bound-test')
+        for content in ['not JSON', '[]', '{"schema_version":2,"run":{"state":"failed"}}']:
+            status.write_text(content)
+            before = self.tree()
+            env = self.call(self.args+['--status-file', str(status), '--allow-unattested'])
+            self.assertEqual(env['outcome']['code'], 'ATTESTATION_REJECTED')
+            self.assertEqual(env['evidence']['attestation'], 'rejected')
+            self.assertEqual(self.tree(), before)
+        env = self.call(self.args+['--status-file', str(self.root/'absent'), '--allow-unattested'])
+        self.assertEqual(env['outcome']['code'], 'ATTESTATION_REJECTED')
+
     def test_exception_registry_and_legacy_types(self):
         for code, info in REGISTRY.items():
             if info['kind'] in {'refused', 'negative', 'failed', 'usage'}:

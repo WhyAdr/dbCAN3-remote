@@ -19,3 +19,9 @@ Preflight preserves the lexical virtual-environment interpreter path (a normal v
 The named May 5, 2026 database snapshot is assigned only to the exact archived manifest digest `0f20c1986c32df59723cffc20b677789ed0c12819cd0939e16788f58dea406d2`; other manifests are recorded as `custom_manifest`. Cache verification rejects unsafe manifest paths, missing files, digest differences and extra assets (apart from the generated root index). Output path guards reject overlap with source, environment, database and metadata paths. There is no automatic install, download or resume mode.
 
 The test suite exercises orchestration with controlled subprocesses and synthetic output seeding. It is not a production database-backed search test. Such a test remains necessary before claiming a new HPC or sandbox deployment is fully verified.
+
+## Status vocabulary v2
+
+Stage-status, workflow-summary and completion records carry `schema_version: 2` and `run.state` (`pending`, `running`, `stages_succeeded`, `succeeded`, `failed`, `incomplete`). Stage records carry `state` (`pending`, `running`, `succeeded`, `failed`, `skipped`); the compatibility `status` field uses the same v2 token. Readers accept legacy `complete`, `stages_complete`, and stage `completed` tokens without weakening hash, path or exit-code binding. Contradictory aliases are rejected.
+
+Validation metadata retains its legacy `status` for one release and adds independent `evidence.structure` and `evidence.attestation` fields. A supplied missing or malformed status file is rejected even in structural-review mode.

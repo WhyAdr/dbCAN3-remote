@@ -564,16 +564,55 @@ def _check_accessory_tables(results_dir: Path, tables: dict[str, list[dict[str, 
             _as_number(row["COVERAGE"], "COVERAGE", path, maximum=100)
 
 
+def normalize_status_vocab(data):
+    """Read either legacy records or v2; reject contradictory or unknown tokens."""
+    if not isinstance(data, dict) or data.get('schema_version', 1) not in {1, 2}:
+        raise ValueError('unsupported stage-status schema')
+    run_map = {'complete': 'succeeded', 'stages_complete': 'stages_succeeded'}
+    stage_map = {'completed': 'succeeded'}
+    state = data.get('run', {}).get('state', data.get('status', 'incomplete'))
+    state = run_map.get(state, state)
+    if state not in {'pending', 'running', 'stages_succeeded', 'succeeded', 'failed', 'incomplete'}:
+        raise ValueError('unknown run state')
+    if 'status' in data and run_map.get(data['status'], data['status']) != state:
+        raise ValueError('contradictory run state')
+    normalized = {'run': {'state': state}, 'stages': {}}
+    if not isinstance(data.get('stages', {}), dict): raise ValueError('stages must be an object')
+    for name, record in data.get('stages', {}).items():
+        token = record.get('state', record.get('status', 'pending'))
+        token = stage_map.get(token, token)
+        if token not in {'pending', 'running', 'succeeded', 'failed', 'skipped'}:
+            raise ValueError('unknown stage state')
+        if 'status' in record and stage_map.get(record['status'], record['status']) != token:
+            raise ValueError('contradictory stage state')
+        normalized['stages'][name] = {**record, 'state': token}
+    return normalized
+
+
+def _v2_status_document(data):
+    normalized = normalize_status_vocab(data)
+    result = {**data, 'schema_version': 2, 'run': normalized['run'], 'status': normalized['run']['state']}
+    if 'stages' in data:
+        result['stages'] = {key: {**value, 'status': value['state']} for key, value in normalized['stages'].items()}
+    return result
+
+
 def _status_check(status_file: Path | None, required: bool, *, faa: Path | None = None,
                   gff: Path | None = None, results_dir: Path | None = None) -> dict[str, Any]:
-    if status_file is None or not status_file.is_file():
+    if status_file is None:
         if required:
             raise Refusal('ATTESTATION_REQUIRED', "Stage completion evidence is missing; pass --status-file or use --allow-unattested for structural review only.")
         return {"present": False, "attested": False, "overall": "structurally_valid_execution_unattested"}
-    data = json.loads(status_file.read_text(encoding="utf-8"))
-    state = data.get("status")
-    if state in {"failed", "incomplete"} or (state and state not in {"stages_complete", "complete"}):
-        raise Refusal('ATTESTATION_REJECTED', f"stage status manifest is marked {data.get('status')!r}: {status_file}")
+    if not status_file.is_file():
+        raise Refusal('ATTESTATION_REJECTED', "The supplied --status-file does not exist.", details={'status_file': str(status_file)})
+    try:
+        data = json.loads(status_file.read_text(encoding="utf-8"))
+        normalized = normalize_status_vocab(data)
+    except (ValueError, TypeError, AttributeError, KeyError, OSError) as exc:
+        raise Refusal('ATTESTATION_REJECTED', "The supplied stage status manifest is malformed.", details={'status_file': str(status_file)}) from exc
+    state = normalized['run']['state']
+    if state not in {'stages_succeeded', 'succeeded'}:
+        raise Refusal('ATTESTATION_REJECTED', f"stage status manifest is marked '{state}': {status_file}")
     if data:
         if not data.get("run_id"):
             raise Refusal('ATTESTATION_REJECTED', f"stage status manifest lacks a run ID: {status_file}")
@@ -588,7 +627,7 @@ def _status_check(status_file: Path | None, required: bool, *, faa: Path | None 
     problems = []
     for stage in STAGE_NAMES:
         record = stages.get(stage)
-        if not record or record.get("status") != "completed" or record.get("exit_code") != 0:
+        if not record or normalized["stages"].get(stage, {}).get("state") != "succeeded" or type(record.get("exit_code")) is not int or record.get("exit_code") != 0:
             problems.append(stage)
     if problems:
         raise Refusal('ATTESTATION_REJECTED', f"one or more required stages are incomplete or unsuccessful: {problems}")
@@ -777,7 +816,8 @@ def validate_outputs(faa: Path, gff: Path, results_dir: Path, *, status_file: Pa
         roots = set().union(*roots_by_method)
         if any(sum(root in values for values in roots_by_method) >= 2 for root in roots):
             family_agreement.add(row["Gene ID"])
-    result = {"sample": faa.stem, "status": status["overall"], "execution_attested": status["attested"],
+    result = {"schema_version": 2, "evidence": {"structure": "valid", "attestation": "attested" if status["attested"] else "unattested"},
+              "sample": faa.stem, "status": status["overall"], "execution_attested": status["attested"],
               "faa_proteins": len(proteins), "gff_cds": len(expected_cds), "overview_candidates": len(overview),
               "method_hit_proteins": {name: len(method_hits[key]) for key, name in METHOD_COLUMNS},
               "method_count_distribution": dict(sorted(methods_per_protein.items())),
@@ -1164,7 +1204,7 @@ def _stage_record(status_file: Path, stage: str, *, state: str, started: str | N
                   reason: str | None = None) -> None:
     data = json.loads(status_file.read_text(encoding="utf-8"))
     record = data["stages"].setdefault(stage, {})
-    record.update({"status": state, "exit_code": exit_code, "ended_utc": utc_now(),
+    record.update({"state": "succeeded" if state == "completed" else state, "status": "succeeded" if state == "completed" else state, "exit_code": exit_code, "ended_utc": utc_now(),
                    "resources_after": effective_resources()})
     if started:
         record["started_utc"] = started
@@ -1177,7 +1217,7 @@ def _stage_record(status_file: Path, stage: str, *, state: str, started: str | N
         record["output_sha256"] = _hash_tree(results_dir)
     if reason:
         record["reason"] = reason
-    write_json_atomic(status_file, data)
+    write_json_atomic(status_file, _v2_status_document(data))
 
 
 def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir: Path,
@@ -1241,7 +1281,7 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
             "database_snapshot": shared_preflight["database"]["manifest_check"]["snapshot"],
             "database_expected_manifest_sha256": sha256_file(expected_manifest), "profile": profile,
             "threads": threads, "stages": {name: {"status": "pending", "exit_code": None} for name in STAGE_NAMES}}
-        write_json_atomic(status_file, status)
+        write_json_atomic(status_file, _v2_status_document({**status, "status": "running"}))
         try:
             prepare_local_gff(faa, gff, local_gff, adapter_report)
             commands = stage_commands(run_dbcan_path, faa, local_gff, result_dir, db_dir, threads, log_dir,
@@ -1251,7 +1291,7 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                 started = utc_now()
                 current["stages"][stage] = {"status": "running", "exit_code": None,
                     "started_utc": started, "argv": argv, "resources_before": effective_resources()}
-                write_json_atomic(status_file, current)
+                write_json_atomic(status_file, _v2_status_document(current))
                 log_file.parent.mkdir(parents=True, exist_ok=True)
                 try:
                     with log_file.open("w", encoding="utf-8") as log_handle:
@@ -1261,26 +1301,28 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                     _stage_record(status_file, stage, state="failed", started=started, exit_code=None,
                         argv=argv, log_file=log_file, results_dir=result_dir, reason=f"could not start stage: {exc}")
                     raise
-                _stage_record(status_file, stage, state="completed" if completed.returncode == 0 else "failed",
+                _stage_record(status_file, stage, state="succeeded" if completed.returncode == 0 else "failed",
                     started=started, exit_code=completed.returncode, argv=argv,
                     log_file=log_file, results_dir=result_dir,
                     reason=None if completed.returncode == 0 else "dbCAN stage returned a nonzero exit code")
                 if completed.returncode != 0:
                     raise StageFailure('STAGE_FAILED', f"{sample} {stage} failed with exit code {completed.returncode}; see {log_file}")
             current = json.loads(status_file.read_text(encoding="utf-8"))
-            current["status"] = "stages_complete"
+            current["status"] = "stages_succeeded"
+            current["run"] = {"state": "stages_succeeded"}
             current["stages_ended_utc"] = utc_now()
-            write_json_atomic(status_file, current)
+            write_json_atomic(status_file, _v2_status_document(current))
             validation = validate_outputs(faa, gff, result_dir, status_file=status_file,
                 require_stage_status=True, observed_manifest=sample_meta / "results_observed.sha256")
             write_json_atomic(sample_meta / "output_validation.json", validation)
             sample_summaries[sample] = summarize_results(faa, gff, result_dir, sample_meta / "scientific_summary")
             current = json.loads(status_file.read_text(encoding="utf-8"))
-            current["status"] = "complete"
+            current["status"] = "succeeded"
+            current["run"] = {"state": "succeeded"}
             current["completed_utc"] = utc_now()
-            write_json_atomic(status_file, current)
+            write_json_atomic(status_file, _v2_status_document(current))
             write_json_atomic(sample_meta / "completion.json", {"sample": sample, "run_id": run_id,
-                "status": "complete", "completed_utc": utc_now(), "validation": validation,
+                "schema_version": 2, "run": {"state": "succeeded"}, "completed_utc": utc_now(), "validation": validation,
                 "scientific_summary": sample_summaries[sample]})
         except Exception as exc:
             failures.append({"sample": sample, "error": str(exc)})
@@ -1291,14 +1333,15 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                         current["stages"][stage] = {"status": "skipped", "exit_code": None,
                             "reason": "an earlier preflight or stage failed"}
                 current["status"] = "failed"
+                current["run"] = {"state": "failed"}
                 current["failure"] = {"message": str(exc), "ended_utc": utc_now()}
-                write_json_atomic(status_file, current)
+                write_json_atomic(status_file, _v2_status_document(current))
             except Exception:
                 pass
     overall = {"run_id": batch_run_id,
         "status": "complete" if not failures else "failed", "samples": samples,
         "preflight": preflights, "sample_summaries": sample_summaries, "failures": failures}
-    write_json_atomic(metadata_dir / "workflow_summary.json", overall)
+    write_json_atomic(metadata_dir / "workflow_summary.json", _v2_status_document(overall))
     return overall
 
 
