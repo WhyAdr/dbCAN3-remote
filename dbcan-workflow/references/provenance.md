@@ -1,16 +1,12 @@
 # Runtime and database provenance
 
-The observed environment file records run_dbcan 5.2.9, Python 3.12.14, DIAMOND 2.2.8, and a version-pinned package listing. `environment/requirements-observed.lock` is a `pip freeze` record without package artifact hashes; it is not a hash-locked environment. The archived setup script contains the expected DIAMOND 2.2.8 Linux archive digest in `environment/diamond-linux64-v2.2.8.expected.sha256`; the archive and executable are not present here.
-
-`environment/database_v5-2-9_5-5-2026.expected.sha256` is copied byte-for-byte from the archive's recorded final `metadata/database_sha256sums.txt` (646 entries). The archive omits the database directory, so the bytes could not be independently hashed in this recovery. The manifest supports a fail-closed comparison if a cache is supplied; it does not prove that an absent cache exists or that the historical pre-refresh files matched it.
+Read [historical provenance and glossary](../PROVENANCE.md) for the retained case narrative and external-source limitations. The recorded runtime is Python 3.12.14 on Linux x86_64, dbCAN 5.2.9 and DIAMOND 2.2.8. The package listing pins versions without artifact hashes. Database bytes and the DIAMOND binary archive are not bundled; a checksum listing alone does not establish that absent bytes were verified.
 
 The dbCAN downloader generates a root `sha256sums.txt` index that was excluded from the archived asset manifest. Verification ignores that one generated root file, then requires the observed cache to match every expected path and digest with no unlisted files.
 
 Full database files are required only for a new search. Existing-output validation, summary generation, the exact-category overlay, circular audit, and unit tests do not read them. Do not run an automatic downloader as part of preflight.
 
 ## Validation and execution evidence
-
-Historical populated outputs and logs support inspection, but the JN4/JN1B archive lacks a run-wide status ledger binding input and output hashes. It remains execution-unattested. The new runner emits run ID, selected input hashes, results path, successful stage exit codes and final output hashes. These records are operational attestations, not cryptographic proof against deliberate fabrication. A changed output fails strict validation. An archive relocated to a different results path cannot automatically reuse its original path-bound ledger as a new attestation.
 
 `validate --allow-unattested` permits structural review without usable execution evidence. When supplied, a malformed, failed or mismatched status manifest still fails. `summarize` validates structure before writing tables; it does not attest execution. Keep a rejected manifest and report its rejection rather than editing it to pass.
 
