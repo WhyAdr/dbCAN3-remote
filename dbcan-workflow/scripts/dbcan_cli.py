@@ -190,6 +190,8 @@ def guard_cli_outputs(r):
             raise Refusal('PATHS_OVERLAP', 'An output parent path is not a directory.', details={'path': str(parent)})
     if explicit is not None and getattr(r, 'results_dir', None):
         w._guard_output_directories([explicit], [r.results_dir])
+    if explicit is not None and r.command == 'preflight':
+        w._guard_output_directories([explicit], [r.metadata_dir])
     # File guards protect explicitly selected manifests as well as input roots.
     w._guard_output_files([Path(p) for p in paths], files)
     for p in paths:

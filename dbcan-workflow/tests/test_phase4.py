@@ -363,4 +363,12 @@ class Phase4Tests(unittest.TestCase):
         typed = CommandResult.from_exception(NegativeResult('PREFLIGHT_UNMET', 'Readiness is unmet.'))
         self.assertEqual(typed.evidence['structure'], 'not_assessed')
 
+    def test_preflight_envelope_must_not_dirty_future_run_destinations(self):
+        self.ready_environment()
+        with patch.object(w.subprocess, 'run') as probes:
+            data, _ = self.invoke(self.preflight_args()+['--envelope-out', str(self.metadata/'preflight.json')])
+        self.assertEqual(data['outcome']['code'], 'PATHS_OVERLAP')
+        self.assertFalse(self.metadata.exists()); self.assertFalse(self.results.exists())
+        probes.assert_not_called()
+
 if __name__ == '__main__': unittest.main()

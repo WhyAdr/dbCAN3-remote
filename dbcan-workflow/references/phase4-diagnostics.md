@@ -12,7 +12,7 @@ Standalone `preflight` returns `result.checks[]`. Each row has a stable `id`, `s
 | `negative/PREFLIGHT_UNMET` | The diagnostic report completed; failed or skipped requirements remain. | 4 |
 | `refused/PATHS_OVERLAP` | Unsafe output layout; no diagnostic probes are started. | 3 |
 
-`semantic-zero` projects the first three outcomes to exit 0 without changing their meaning. Preflight writes no default files; use a separate, guarded `--envelope-out` to preserve the report. No dependency or database is installed or downloaded.
+`semantic-zero` projects the first three outcomes to exit 0 without changing their meaning. Preflight writes no default files; use a separate, guarded `--envelope-out` outside both future run roots to preserve the report without invalidating their freshness. No dependency or database is installed or downloaded.
 
 Independent checks continue after ordinary unmet requirements. Dependency-bound probes are skipped: for example, a missing Python executable blocks its smoke test and identity check, while an available DIAMOND executable and the supplied database can still be inspected. A runtime coding defect remains `error/INTERNAL_ERROR`, rather than an unmet requirement.
 
