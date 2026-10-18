@@ -108,7 +108,7 @@ class CommandResult:
             if exc.code == 'ATTESTATION_REJECTED':
                 cr.evidence['attestation'] = 'rejected'
         elif exc.kind == 'negative':
-            cr.evidence['structure'] = 'invalid'
+            if exc.code == 'STRUCTURE_INVALID': cr.evidence['structure'] = 'invalid'
             cr.findings.append({'code': exc.code, 'message': str(exc), 'location': None})
         if hasattr(exc, 'preflight_report'):
             cr.result = exc.preflight_report

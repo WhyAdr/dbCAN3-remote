@@ -52,6 +52,10 @@ Prepare an adapter with `prepare --faa … --gff … --out-gff … --report …`
 
 Obtain user confirmation for a **new search**. Before provisioning or downloading, explain the pinned runtime, database snapshot and reported storage requirement from `references/provenance.md`. Validation, summaries, overlays, audits and fixture tests need only the standard library.
 
+Standalone `preflight` completes safe independent checks and reports unmet requirements as `negative/PREFLIGHT_UNMET` with `result.checks`. Treat `skipped` as blocked, never passed; only `result.ready: true` with every check passed permits execution. Unsafe paths are refused before probes. The strict Python `run_preflight` API and `run` still stop at the first blocker; their refusal can include a partial report.
+
+For a failed run, inspect the per-sample `events.jsonl` in metadata and the `stage_log` artifacts at their original results paths. Failure context includes a log excerpt capped at 40 lines / 8 KiB; use the full log if truncated. Journals are append-only diagnostics, not attestation or a resume mechanism. Read `references/phase4-diagnostics.md` for check dependencies, event fields and failure semantics.
+
 For a confirmed search, supply the exact preserved database cache, run `verify-db` and `preflight`, then run:
 
 ```bash

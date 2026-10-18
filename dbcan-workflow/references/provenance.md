@@ -23,3 +23,7 @@ Stage-status, workflow-summary and completion records carry `schema_version: 2` 
 Validation metadata retains its legacy `status` for one release and adds independent `evidence.structure` and `evidence.attestation` fields. A supplied missing or malformed status file is rejected even in structural-review mode.
 
 Recorded in v0.2.0 source; never fetched by this tool; not re-verified: `https://dbcan.s3.us-west-2.amazonaws.com/db_v5-2-9_5-5-2026`. The unused `SNAPSHOT_BASE_URL` constant was removed; no downloader was introduced.
+
+## Readiness and event diagnostics
+
+See [Phase 4 diagnostics](phase4-diagnostics.md) for the readiness check report, strict execution gate, event journals and capped log excerpts. Readiness and event observations do not replace a bound stage-status manifest or imply that a search executed.

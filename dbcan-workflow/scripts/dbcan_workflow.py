@@ -34,7 +34,7 @@ from typing import Any, Iterable
 from urllib.parse import unquote
 
 
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 DBCAN_VERSION = "5.2.9"
 SNAPSHOT = "db_v5-2-9_5-5-2026"
 ARCHIVED_MANIFEST_SHA256 = "0f20c1986c32df59723cffc20b677789ed0c12819cd0939e16788f58dea406d2"
@@ -1442,6 +1442,8 @@ def build_parser():
         command_parser.epilog = 'Example: '+examples[name]
     val.description = 'Validate structure and optional attestation; writes output_validation.json, results_observed.sha256 and envelope.validate.json to separate metadata.'
     verify.description = 'Compare every database asset; writes the observed manifest to --observed-manifest.'
+    pre.description = 'Report independent readiness checks; unmet requirements produce negative/PREFLIGHT_UNMET. Unsafe paths are refused before probes. No files are written unless --envelope-out is supplied.'
+    run.description = 'Require strict preflight before starting stages. Append per-sample events in metadata; retain stage logs under native results and include bounded excerpts on failure.'
     parser.epilog = 'Examples: '+ '; '.join(examples.values())
     return parser
 

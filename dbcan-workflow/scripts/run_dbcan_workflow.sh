@@ -3,7 +3,7 @@ set -euo pipefail
 
 usage_envelope() {
   cat <<'JSON'
-{"contract_version":1,"tool":{"name":"dbcan-workflow","version":"0.3.0"},"command":"describe","run_id":null,"outcome":{"kind":"usage","code":"USAGE_INVALID","summary":"Set an executable DBCAN_PYTHON and provide a subcommand."},"exit":{"code":2,"policy":"strict"},"evidence":{"structure":"not_assessed","attestation":"not_applicable"},"result":null,"refusal":null,"findings":[],"warnings":[],"artifacts":[],"claims":{"may_say":[],"may_not_say":[{"id":"CL-N0","text":"Any assessment or validation was performed.","source":"contract"},{"id":"CL-N1","text":"The run completed successfully or the pipeline executed.","source":"SKILL.md"}]}}
+{"contract_version":1,"tool":{"name":"dbcan-workflow","version":"0.3.1"},"command":"describe","run_id":null,"outcome":{"kind":"usage","code":"USAGE_INVALID","summary":"Set an executable DBCAN_PYTHON and provide a subcommand."},"exit":{"code":2,"policy":"strict"},"evidence":{"structure":"not_assessed","attestation":"not_applicable"},"result":null,"refusal":null,"findings":[],"warnings":[],"artifacts":[],"claims":{"may_say":[],"may_not_say":[{"id":"CL-N0","text":"Any assessment or validation was performed.","source":"contract"},{"id":"CL-N1","text":"The run completed successfully or the pipeline executed.","source":"SKILL.md"}]}}
 JSON
 }
 

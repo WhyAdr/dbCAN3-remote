@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1
+
+- Implement Phase 4 W4.1/W4.2; the MCP entry point is excluded.
+- Add per-sample append-only, fsynced `events.jsonl` journals under metadata and `event_log` artifacts. Keep stage logs at their original native-result paths and index unavailable logs without inventing log contents.
+- Stage failures now expose a log path and excerpt capped at 40 lines / 8192 UTF-8 bytes, with truncation or unavailability explicitly recorded. The journal is outside the native hash inventory; strict attestation binding is unchanged.
+- **Behavior change, chosen by the maintainer:** standalone preflight returns `negative/PREFLIGHT_UNMET` (strict exit 4; semantic-zero exit 0) with all safe independent checks. Dependency-blocked checks are skipped; unsafe output paths still cause an immediate refusal. This replaces ordinary prerequisite refusals for the standalone diagnostic command only.
+- Preserve the strict Python `run_preflight` facade and execution gate. Failed, skipped or absent checks block starting a run, even if a readiness flag is true. No automatic install, download or resume is added.
+- Add readiness claims CL-P1/CL-P2 derived from structured checks. Input-table structural validity and search-execution attestation remain separate evidence axes.
+- Protect event journals, stage-status ledgers and summary files from explicit-envelope collisions. Bookkeeping errors propagate as tool defects and remove any success completion marker.
+- Keep contract version 1 and `legacy_status`; the original fixture files, scientific semantics, reference manifests and dependency lock are unchanged.
+
 ## 0.3.0
 
 ### Breaking

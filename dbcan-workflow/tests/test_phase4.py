@@ -343,4 +343,24 @@ class Phase4Tests(unittest.TestCase):
         self.assertEqual(status['failure']['code'], 'INTERNAL_ERROR')
         self.assertEqual(self.events('alpha')[-1]['event'], 'run_failed')
 
+    def test_readiness_claims_follow_checks_without_attesting_search_execution(self):
+        from dbcan_claims import derive_claims
+        from dbcan_outcomes import CommandResult, NegativeResult
+        self.ready_environment()
+        with patch.object(w.subprocess, 'run', side_effect=self.runtime_probe):
+            ready, _ = self.invoke(self.preflight_args())
+        self.assertIn('CL-P1', [row['id'] for row in ready['claims']['may_say']])
+        self.assertNotIn('CL-A1', [row['id'] for row in ready['claims']['may_say']])
+        self.assertIn('CL-N1', [row['id'] for row in ready['claims']['may_not_say']])
+        (self.env/'bin/diamond').unlink()
+        with patch.object(w.subprocess, 'run', side_effect=self.runtime_probe):
+            unmet, _ = self.invoke(self.preflight_args())
+        self.assertIn('CL-P2', [row['id'] for row in unmet['claims']['may_say']])
+        self.assertNotIn('CL-P1', [row['id'] for row in unmet['claims']['may_say']])
+        claims = derive_claims('preflight', {'kind': 'ok'}, {'structure': 'not_assessed', 'attestation': 'not_applicable'},
+            {'ready': True, 'checks': [{'id': 'blocked', 'state': 'skipped'}]})
+        self.assertNotIn('CL-P1', [row['id'] for row in claims['may_say']])
+        typed = CommandResult.from_exception(NegativeResult('PREFLIGHT_UNMET', 'Readiness is unmet.'))
+        self.assertEqual(typed.evidence['structure'], 'not_assessed')
+
 if __name__ == '__main__': unittest.main()

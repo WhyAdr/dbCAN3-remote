@@ -3,6 +3,8 @@ from __future__ import annotations
 
 # IDs and wording are contract v1; source paths identify the documented rules.
 CLAIMS = {
+ 'CL-P1': ('All required preflight checks passed at assessment time.', 'references/phase4-diagnostics.md'),
+ 'CL-P2': ('The readiness check report completed; failed or skipped requirements remain.', 'references/phase4-diagnostics.md'),
  'CL-S1': ('Output tables are structurally consistent with the supplied FAA/GFF3.', 'SKILL.md'),
  'CL-A1': ('Execution is operationally attested by a bound stage-status record.', 'references/provenance.md'),
  'CL-A2': ('Results are structurally valid; execution is unattested.', 'SKILL.md'),
@@ -35,6 +37,10 @@ def derive_claims(command, outcome, evidence, result):
     if ok and evidence['structure'] == 'valid':
         if command in {'validate', 'summarize'}: may.add('CL-S1')
         if evidence['attestation'] == 'unattested': may.add('CL-A2')
+    if command == 'preflight':
+        checks = result.get('checks') or []
+        if ok and result.get('ready') is True and checks and all(row['state']=='pass' for row in checks): may.add('CL-P1')
+        if outcome['kind']=='negative' and outcome.get('code')=='PREFLIGHT_UNMET' and checks and any(row['state'] in {'fail','skipped'} for row in checks): may.add('CL-P2')
     if command == 'verify-db':
         (may if ok and result.get('match') is True else forbidden).add('CL-D1' if ok and result.get('match') is True else 'CL-N2')
     if command == 'summarize':
