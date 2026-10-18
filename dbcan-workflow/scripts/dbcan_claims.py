@@ -53,7 +53,5 @@ def derive_claims(command, outcome, evidence, result):
     if result.get('sample_source') == 'faa_stem': forbidden.add('CL-N9')
     def render(ids):
         rows = [{'id': key, 'text': CLAIMS[key][0], 'source': CLAIMS[key][1]} for key in sorted(ids)]
-        if 'CL-D1' in ids:
-            next(row for row in rows if row['id']=='CL-D1')['text'] += ' %s files; manifest SHA256 %s.' % (result['expected_file_count'], result['expected_manifest_sha256'])
         return rows
     return {'may_say': render(may), 'may_not_say': render(forbidden)}

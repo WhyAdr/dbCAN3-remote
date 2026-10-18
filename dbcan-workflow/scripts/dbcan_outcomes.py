@@ -2,6 +2,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
+from dbcan_trust import make_diagnostic, bounded_details
 
 EXIT_CODES = {'ok': 0, 'error': 1, 'usage': 2, 'refused': 3, 'negative': 4, 'failed': 5}
 
@@ -93,6 +94,7 @@ class CommandResult:
     result: Any = None
     evidence: dict = field(default_factory=lambda: {'structure': 'not_assessed', 'attestation': 'not_applicable'})
     artifacts: list = field(default_factory=list)
+    diagnostics: list = field(default_factory=list)
     warnings: list = field(default_factory=list)
     findings: list = field(default_factory=list)
     refusal: Any = None
@@ -100,16 +102,18 @@ class CommandResult:
 
     @classmethod
     def from_exception(cls, exc):
-        cr = cls(kind=exc.kind, code=exc.code, summary=str(exc))
+        info = REGISTRY[exc.code]
+        cr = cls(kind=exc.kind, code=exc.code, summary=info['summary'])
+        cr.diagnostics.append(make_diagnostic('exception', str(exc)))
         if exc.kind == 'refused':
             info = REGISTRY[exc.code]
-            cr.refusal = {'code': exc.code, 'message': str(exc),
-                'remediation': info['remediation'], 'forbidden': info['forbidden'], 'details': exc.details}
+            cr.refusal = {'code': exc.code, 'message': info['summary'],
+                'remediation': info['remediation'], 'forbidden': info['forbidden'], 'details': bounded_details(exc.details)}
             if exc.code == 'ATTESTATION_REJECTED':
                 cr.evidence['attestation'] = 'rejected'
         elif exc.kind == 'negative':
             if exc.code == 'STRUCTURE_INVALID': cr.evidence['structure'] = 'invalid'
-            cr.findings.append({'code': exc.code, 'message': str(exc), 'location': None})
+            cr.findings.append({'code': exc.code, 'message': info['summary'], 'location': None})
         if hasattr(exc, 'preflight_report'):
             cr.result = exc.preflight_report
         elif exc.kind == 'failed' and exc.details:

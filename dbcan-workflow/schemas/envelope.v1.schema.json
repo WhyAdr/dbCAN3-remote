@@ -15,7 +15,11 @@
     "findings",
     "warnings",
     "artifacts",
-    "claims"
+    "claims",
+    "diagnostics",
+    "diagnostics_total",
+    "diagnostics_truncated",
+    "trust"
   ],
   "additionalProperties": false,
   "properties": {
@@ -171,6 +175,64 @@
     },
     "claims": {
       "$ref": "#/$defs/claims"
+    },
+    "diagnostics": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": [
+          "origin",
+          "untrusted",
+          "text",
+          "truncated",
+          "ref"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "origin": {
+            "type": "string"
+          },
+          "untrusted": {
+            "const": true
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "diagnostics_total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "diagnostics_truncated": {
+      "type": "boolean"
+    },
+    "trust": {
+      "type": "object",
+      "required": [
+        "untrusted_paths"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "untrusted_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "allOf": [

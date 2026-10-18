@@ -11,6 +11,7 @@ import dbcan_workflow as w
 from dbcan_outcomes import (CommandResult, Refusal, MissingPathRefusal, EXIT_CODES,
                             REGISTRY, WorkflowOutcome, UsageError)
 from dbcan_claims import derive_claims
+from dbcan_trust import (assert_trusted, bound_diagnostics, UNTRUSTED_PATHS, WARNINGS_REGISTRY)
 
 
 def dispatch(r):
@@ -64,7 +65,7 @@ def dispatch(r):
         result['sample_source'] = 'explicit' if sample_id is not None else 'faa_stem'
         result['sample'] = sample_id if sample_id is not None else r.faa.stem
         if sample_id is None:
-            cr.warnings.append({'code': 'SAMPLE_INFERRED', 'message': 'Sample label was inferred from the FAA filename stem.', 'location': None})
+            cr.warnings.append({'code': 'SAMPLE_INFERRED', 'message': WARNINGS_REGISTRY['SAMPLE_INFERRED'], 'location': None})
         if r.command == 'validate': w.write_json_atomic(r.metadata_dir/'output_validation.json', {**data, 'sample': result['sample'], 'sample_source': result['sample_source']})
         else:
             result['substrate_rows'] = len(w.read_tsv(r.results_dir/'substrate_prediction.tsv', w.SUBSTRATE_HEADER))
@@ -76,7 +77,7 @@ def dispatch(r):
         cr.summary = 'Structurally valid; execution %s.' % cr.evidence['attestation']
     if r.command == 'preflight' and not data['ready']:
         cr.kind, cr.code, cr.summary = 'negative', 'PREFLIGHT_UNMET', 'Preflight report completed; required checks did not all pass.'
-        cr.findings = [{'code': row['detail']['code'], 'message': row['detail']['message'], 'location': row['id']}
+        cr.findings = [{'code': row['detail']['code'], 'message': REGISTRY[row['detail']['code']]['summary'], 'location': row['id']}
             for row in data['checks'] if row['state']=='fail']
     if r.command == 'verify-db' and not data['match']:
         cr.kind, cr.code, cr.summary = 'negative', 'DB_MISMATCH', 'Database cache does not match the expected manifest.'
@@ -88,7 +89,7 @@ def dispatch(r):
             if any(failure.get('kind') == 'negative' for failure in failures):
                 cr.kind, cr.code = 'negative', 'STRUCTURE_INVALID'
                 cr.evidence['structure'] = 'invalid'
-                cr.findings = [{'code': cr.code, 'message': failure['message'], 'location': None} for failure in failures if failure.get('kind') == 'negative']
+                cr.findings = [{'code': cr.code, 'message': REGISTRY[cr.code]['summary'], 'location': None} for failure in failures if failure.get('kind') == 'negative']
         else:
             cr.evidence = {'structure': 'valid', 'attestation': 'attested'}
     return cr
@@ -218,7 +219,7 @@ def observed_artifacts(r, before):
                 status = json.loads(status_path.read_text())
                 if not isinstance(status, dict): raise ValueError('invalid status document')
             except (OSError, ValueError):
-                r._artifact_warnings = [{'code': 'STATUS_UNREADABLE', 'message': 'Stage-status diagnostics could not be read.', 'location': None}]
+                r._artifact_warnings = [{'code': 'STATUS_UNREADABLE', 'message': WARNINGS_REGISTRY['STATUS_UNREADABLE'], 'location': None}]
                 continue
             root = (r.results_dir/status_path.parent.name/'logs').resolve()
             for stage in status.get('stages', {}).values():
@@ -237,13 +238,18 @@ def observed_artifacts(r, before):
 def build_envelope(command, cr, policy):
     code = EXIT_CODES[cr.kind]
     if policy == 'semantic-zero' and cr.kind in {'ok', 'negative', 'refused', 'failed'}: code = 0
-    return {'contract_version': 1, 'tool': {'name': 'dbcan-workflow', 'version': w.VERSION},
+    diagnostics, total, truncated = bound_diagnostics(cr.diagnostics)
+    env = {'contract_version': 1, 'tool': {'name': 'dbcan-workflow', 'version': w.VERSION},
         'command': command, 'run_id': cr.run_id,
-        'outcome': {'kind': cr.kind, 'code': cr.code, 'summary': cr.summary},
+        'outcome': {'kind': cr.kind, 'code': cr.code, 'summary': REGISTRY[cr.code]['summary']},
         'exit': {'code': code, 'policy': policy}, 'evidence': cr.evidence,
         'result': cr.result, 'refusal': cr.refusal, 'findings': cr.findings,
         'warnings': cr.warnings, 'artifacts': cr.artifacts,
-        'claims': derive_claims(command, {'kind': cr.kind, 'code': cr.code}, cr.evidence, cr.result)}
+        'claims': derive_claims(command, {'kind': cr.kind, 'code': cr.code}, cr.evidence, cr.result),
+        'diagnostics': diagnostics, 'diagnostics_total': total, 'diagnostics_truncated': truncated,
+        'trust': {'untrusted_paths': list(UNTRUSTED_PATHS)}}
+    assert_trusted(env, REGISTRY, WARNINGS_REGISTRY)
+    return env
 
 
 def persist_envelope(env, r, explicit_safe):
@@ -302,7 +308,7 @@ def main(argv=None):
         cr = dispatch(r)
         for flag in ('--json', '--tsv'):
             if any(token.split('=', 1)[0] == flag for token in argv):
-                cr.warnings.append({'code': 'DEPRECATED_FLAG', 'message': flag+' is deprecated; use --out-'+flag[2:]+'.', 'location': None})
+                cr.warnings.append({'code': 'DEPRECATED_FLAG_'+flag[2:].upper(), 'message': WARNINGS_REGISTRY['DEPRECATED_FLAG_'+flag[2:].upper()], 'location': None})
     except WorkflowOutcome as exc:
         cr = CommandResult.from_exception(exc)
         if cr.refusal is not None and r is not None:
@@ -327,7 +333,7 @@ def main(argv=None):
         persist_envelope(env, r, explicit_safe)
     except Exception:
         traceback.print_exc(file=sys.stderr)
-        env['warnings'].append({'code': 'ENVELOPE_PERSIST_FAILED', 'message': 'The envelope could not be persisted; the operation outcome is unchanged.', 'location': None})
+        env['warnings'].append({'code': 'ENVELOPE_PERSIST_FAILED', 'message': WARNINGS_REGISTRY['ENVELOPE_PERSIST_FAILED'], 'location': None})
         for artifact in env['artifacts']:
             if artifact['role'] == 'envelope': artifact.update(written=False, sha256=None)
     try:

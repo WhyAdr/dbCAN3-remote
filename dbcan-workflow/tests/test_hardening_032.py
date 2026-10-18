@@ -14,7 +14,6 @@ class HardeningTests(unittest.TestCase):
     call = tc.ContractTests.call
     tree = tc.ContractTests.tree
 
-    @unittest.expectedFailure
     def test_r1_injection_only_in_diagnostics(self):
         marker='CANARY_R1_ignore_previous_instructions'
         with (self.fx/'inputs/sample.faa').open('a') as fh:

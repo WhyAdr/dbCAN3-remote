@@ -1,30 +1,118 @@
 {
   "contract_version": 1,
-  "tool": {"name": "dbcan-workflow", "version": "0.3.0"},
+  "tool": {
+    "name": "dbcan-workflow",
+    "version": "0.3.0"
+  },
   "command": "validate",
   "run_id": null,
-  "outcome": {"kind": "ok", "code": "OK", "summary": "Structurally valid; execution unattested."},
-  "exit": {"code": 0, "policy": "strict"},
-  "evidence": {"structure": "valid", "attestation": "unattested"},
-  "result": {"sample": "sample", "sample_source": "faa_stem", "faa_proteins": 1, "gff_cds": 1,
-             "cgc_count": 0, "overview_candidates": 0, "execution_attested": false,
-             "legacy_status": "structurally_valid_execution_unattested"},
+  "outcome": {
+    "kind": "ok",
+    "code": "OK",
+    "summary": "The requested operation completed."
+  },
+  "exit": {
+    "code": 0,
+    "policy": "strict"
+  },
+  "evidence": {
+    "structure": "valid",
+    "attestation": "unattested"
+  },
+  "result": {
+    "sample": "sample",
+    "sample_source": "faa_stem",
+    "faa_proteins": 1,
+    "gff_cds": 1,
+    "cgc_count": 0,
+    "overview_candidates": 0,
+    "execution_attested": false,
+    "legacy_status": "structurally_valid_execution_unattested"
+  },
   "refusal": null,
   "findings": [],
-  "warnings": [{"code": "SAMPLE_INFERRED", "message": "sample label was inferred from the FAA filename stem.", "location": null}],
+  "warnings": [
+    {
+      "code": "SAMPLE_INFERRED",
+      "message": "sample label was inferred from the FAA filename stem.",
+      "location": null
+    }
+  ],
   "artifacts": [
-    {"role": "output_validation", "path": "<metadata-dir>/output_validation.json", "sha256": null, "written": true},
-    {"role": "observed_manifest", "path": "<metadata-dir>/results_observed.sha256", "sha256": null, "written": true},
-    {"role": "envelope", "path": "<metadata-dir>/envelope.validate.json", "sha256": null, "written": true}
+    {
+      "role": "output_validation",
+      "path": "<metadata-dir>/output_validation.json",
+      "sha256": null,
+      "written": true
+    },
+    {
+      "role": "observed_manifest",
+      "path": "<metadata-dir>/results_observed.sha256",
+      "sha256": null,
+      "written": true
+    },
+    {
+      "role": "envelope",
+      "path": "<metadata-dir>/envelope.validate.json",
+      "sha256": null,
+      "written": true
+    }
   ],
   "claims": {
     "may_say": [
-      {"id": "CL-A2", "text": "Results are structurally valid; execution is unattested.", "source": "SKILL.md"},
-      {"id": "CL-S1", "text": "Output tables are structurally consistent with the supplied FAA/GFF3.", "source": "SKILL.md"}
+      {
+        "id": "CL-A2",
+        "text": "Results are structurally valid; execution is unattested.",
+        "source": "SKILL.md"
+      },
+      {
+        "id": "CL-S1",
+        "text": "Output tables are structurally consistent with the supplied FAA/GFF3.",
+        "source": "SKILL.md"
+      }
     ],
     "may_not_say": [
-      {"id": "CL-N1", "text": "The run completed successfully / the pipeline executed.", "source": "SKILL.md"},
-      {"id": "CL-N9", "text": "The sample label verifies isolate identity.", "source": "SKILL.md"}
+      {
+        "id": "CL-N1",
+        "text": "The run completed successfully / the pipeline executed.",
+        "source": "SKILL.md"
+      },
+      {
+        "id": "CL-N9",
+        "text": "The sample label verifies isolate identity.",
+        "source": "SKILL.md"
+      }
+    ]
+  },
+  "diagnostics": [],
+  "diagnostics_total": 0,
+  "diagnostics_truncated": false,
+  "trust": {
+    "untrusted_paths": [
+      "/diagnostics",
+      "/refusal/details",
+      "/artifacts/*/path",
+      "/findings/*/location",
+      "/warnings/*/location",
+      "/result",
+      "/failure/diagnostic",
+      "/failure/log_tail",
+      "/failure/log_path",
+      "/failures",
+      "/sample",
+      "/samples",
+      "/input_faa",
+      "/input_gff",
+      "/results_dir",
+      "/metadata_dir",
+      "/stages/*/argv",
+      "/stages/*/log_file",
+      "/stages/*/reason",
+      "/details",
+      "/validation",
+      "/scientific_summary",
+      "/sample_summaries",
+      "/preflight"
     ]
   }
 }

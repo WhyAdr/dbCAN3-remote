@@ -68,7 +68,7 @@ class ContractTests(unittest.TestCase):
             with self.subTest(code=code):
                 before = self.tree()
                 data = self.call(self.args+suffix)
-                self.assertEqual(data['outcome'], {'kind': 'refused', 'code': code, 'summary': data['outcome']['summary']})
+                self.assertEqual(data['outcome'], {'kind': 'refused', 'code': code, 'summary': REGISTRY[code]['summary']})
                 self.assertEqual(data['exit']['code'], 3)
                 self.assertEqual(self.tree(), before)
                 self.assertNotIn('None', data['refusal']['message'])
@@ -206,7 +206,7 @@ class ContractTests(unittest.TestCase):
         shim = subprocess.run([sys.executable,'-B',str(ROOT/'scripts/audit_circular_windows.py'), *audit_args], capture_output=True,text=True)
         self.assertEqual(public['result'], json.loads(shim.stdout)['result'])
         alias = self.call(['audit-circular', *[x.replace('--out-json','--json').replace('--out-tsv','--tsv') for x in audit_args]])
-        self.assertEqual(len([x for x in alias['warnings'] if x['code']=='DEPRECATED_FLAG']), 2)
+        self.assertEqual({x['code'] for x in alias['warnings']}, {'DEPRECATED_FLAG_JSON', 'DEPRECATED_FLAG_TSV'})
         args = ['--processed-gff',str(self.fx/'results/cgc.gff'),'--native-members',str(self.fx/'results/cgc_standard_out.tsv'),
             '--native-summary',str(self.fx/'results/cgc_standard_out_summary.tsv'),
             '--corrected-members',str(self.root/'overlay/members.tsv'),'--corrected-summary',str(self.root/'overlay/summary.tsv'),

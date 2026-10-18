@@ -1,24 +1,58 @@
 {
   "contract_version": 1,
-  "tool": {"name": "dbcan-workflow", "version": "0.3.0"},
+  "tool": {
+    "name": "dbcan-workflow",
+    "version": "0.3.0"
+  },
   "command": "validate",
   "run_id": null,
-  "outcome": {"kind": "refused", "code": "ATTESTATION_REQUIRED",
-              "summary": "Strict validation needs a stage-status manifest; none was supplied."},
-  "exit": {"code": 3, "policy": "strict"},
-  "evidence": {"structure": "not_assessed", "attestation": "not_applicable"},
+  "outcome": {
+    "kind": "refused",
+    "code": "ATTESTATION_REQUIRED",
+    "summary": "Strict validation requires a bound stage-status manifest."
+  },
+  "exit": {
+    "code": 3,
+    "policy": "strict"
+  },
+  "evidence": {
+    "structure": "not_assessed",
+    "attestation": "not_applicable"
+  },
   "result": null,
   "refusal": {
     "code": "ATTESTATION_REQUIRED",
-    "message": "No --status-file was given and --allow-unattested was not set.",
+    "message": "Strict validation requires a bound stage-status manifest.",
     "remediation": [
-      {"id": "PASS_STATUS_FILE", "text": "Pass the run's stage_status.json.", "flags": ["--status-file"]},
-      {"id": "STRUCTURAL_REVIEW_ONLY",
-       "text": "Re-run with --allow-unattested for structural review only; do not describe the result as a completed run.",
-       "flags": ["--allow-unattested"], "claim_effects": ["CL-N1"]}
+      {
+        "id": "PASS_STATUS_FILE",
+        "text": "Pass the run's stage_status.json.",
+        "flags": [
+          "--status-file"
+        ],
+        "claim_effects": []
+      },
+      {
+        "id": "STRUCTURAL_REVIEW_ONLY",
+        "text": "Use structural review only; do not claim execution.",
+        "flags": [
+          "--allow-unattested"
+        ],
+        "claim_effects": [
+          "CL-N1"
+        ]
+      }
     ],
-    "forbidden": [{"id": "NO_FABRICATED_MANIFEST", "text": "Do not create or edit a status manifest to satisfy this check."}],
-    "details": {"status_file": null, "allow_unattested": false}
+    "forbidden": [
+      {
+        "id": "NO_FABRICATED_MANIFEST",
+        "text": "Do not create or edit a manifest to satisfy this check."
+      }
+    ],
+    "details": {
+      "status_file": null,
+      "allow_unattested": false
+    }
   },
   "findings": [],
   "warnings": [],
@@ -26,7 +60,42 @@
   "claims": {
     "may_say": [],
     "may_not_say": [
-      {"id": "CL-N0", "text": "Any assessment or validation was performed.", "source": "contract"}
+      {
+        "id": "CL-N0",
+        "text": "Any assessment or validation was performed.",
+        "source": "contract"
+      }
+    ]
+  },
+  "diagnostics": [],
+  "diagnostics_total": 0,
+  "diagnostics_truncated": false,
+  "trust": {
+    "untrusted_paths": [
+      "/diagnostics",
+      "/refusal/details",
+      "/artifacts/*/path",
+      "/findings/*/location",
+      "/warnings/*/location",
+      "/result",
+      "/failure/diagnostic",
+      "/failure/log_tail",
+      "/failure/log_path",
+      "/failures",
+      "/sample",
+      "/samples",
+      "/input_faa",
+      "/input_gff",
+      "/results_dir",
+      "/metadata_dir",
+      "/stages/*/argv",
+      "/stages/*/log_file",
+      "/stages/*/reason",
+      "/details",
+      "/validation",
+      "/scientific_summary",
+      "/sample_summaries",
+      "/preflight"
     ]
   }
 }
