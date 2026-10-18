@@ -11,6 +11,8 @@ from __future__ import annotations
 from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
                             NegativeResult, MissingDataResult, StageFailure, structure_reader)
 
+from dbcan_events import append_event, failure_context
+
 import argparse
 import csv
 import hashlib
@@ -1292,6 +1294,7 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
         local_gff = result_dir / "inputs" / f"{sample}.cds.flat.local.gff"
         adapter_report = result_dir / "inputs" / f"{sample}.local_gff_validation.json"
         status_file = sample_meta / "stage_status.json"
+        events_file = sample_meta / "events.jsonl"
         run_id = batch_run_id
         status = {"run_id": run_id, "sample": sample, "started_utc": utc_now(),
             "input_faa": str(faa), "input_faa_sha256": sha256_file(faa), "input_gff": str(gff),
@@ -1302,6 +1305,7 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
             "threads": threads, "stages": {name: {"status": "pending", "exit_code": None} for name in STAGE_NAMES}}
         write_json_atomic(status_file, _v2_status_document({**status, "status": "running"}))
         try:
+            append_event(events_file, run_id, sample, None, "run_started")
             prepare_local_gff(faa, gff, local_gff, adapter_report)
             commands = stage_commands(run_dbcan_path, faa, local_gff, result_dir, db_dir, threads, log_dir,
                 env_python=env_python, threadcap_script=Path(__file__).with_name("run_dbcan_threadcap.py"))
@@ -1311,6 +1315,7 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                 current["stages"][stage] = {"status": "running", "exit_code": None,
                     "started_utc": started, "argv": argv, "resources_before": effective_resources()}
                 write_json_atomic(status_file, _v2_status_document(current))
+                append_event(events_file, run_id, sample, stage, "stage_started", log_path=str(log_file.resolve()))
                 log_file.parent.mkdir(parents=True, exist_ok=True)
                 try:
                     with log_file.open("w", encoding="utf-8") as log_handle:
@@ -1320,21 +1325,27 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                     _stage_record(status_file, stage, state="failed", started=started, exit_code=None,
                         argv=argv, log_file=log_file, results_dir=result_dir, reason=f"could not start stage: {exc}")
                     raise StageFailure('STAGE_FAILED', 'An external dbCAN stage could not start.',
-                        details={'sample': sample, 'stage': stage, 'log_path': str(log_file)}) from exc
+                        details=failure_context(sample, stage, None, log_file)) from exc
                 _stage_record(status_file, stage, state="succeeded" if completed.returncode == 0 else "failed",
                     started=started, exit_code=completed.returncode, argv=argv,
                     log_file=log_file, results_dir=result_dir,
                     reason=None if completed.returncode == 0 else "dbCAN stage returned a nonzero exit code")
+                append_event(events_file, run_id, sample, stage,
+                    "stage_succeeded" if completed.returncode == 0 else "stage_failed",
+                    exit_code=completed.returncode, log_path=str(log_file.resolve()))
                 if completed.returncode != 0:
-                    raise StageFailure('STAGE_FAILED', f"{sample} {stage} failed with exit code {completed.returncode}; see {log_file}")
+                    raise StageFailure('STAGE_FAILED', f"{sample} {stage} failed with exit code {completed.returncode}; see {log_file}",
+                        details=failure_context(sample, stage, completed.returncode, log_file))
             current = json.loads(status_file.read_text(encoding="utf-8"))
             current["status"] = "stages_succeeded"
             current["run"] = {"state": "stages_succeeded"}
             current["stages_ended_utc"] = utc_now()
             write_json_atomic(status_file, _v2_status_document(current))
+            append_event(events_file, run_id, sample, None, "validation_started")
             validation = validate_outputs(faa, gff, result_dir, status_file=status_file,
                 require_stage_status=True, observed_manifest=sample_meta / "results_observed.sha256")
             write_json_atomic(sample_meta / "output_validation.json", validation)
+            append_event(events_file, run_id, sample, None, "validation_succeeded")
             sample_summaries[sample] = summarize_results(faa, gff, result_dir, sample_meta / "scientific_summary")
             current = json.loads(status_file.read_text(encoding="utf-8"))
             current["status"] = "succeeded"
@@ -1344,21 +1355,30 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
             write_json_atomic(sample_meta / "completion.json", {"sample": sample, "run_id": run_id,
                 "schema_version": 2, "run": {"state": "succeeded"}, "completed_utc": utc_now(), "validation": validation,
                 "scientific_summary": sample_summaries[sample]})
+            append_event(events_file, run_id, sample, None, "run_succeeded")
         except Exception as exc:
-            failures.append({"sample": sample, "error": str(exc)})
+            context = dict(exc.details) if isinstance(exc, StageFailure) else {}
+            failures.append({"sample": sample, "error": str(exc), **context})
+            (sample_meta / "completion.json").unlink(missing_ok=True)
             try:
                 current = json.loads(status_file.read_text(encoding="utf-8"))
+                if isinstance(exc, StageFailure) and context.get("exit_code") is None:
+                    append_event(events_file, run_id, sample, context.get("stage"), "stage_failed",
+                        exit_code=None, log_path=context.get("log_path"))
                 for stage in STAGE_NAMES:
                     if current["stages"][stage]["status"] == "pending":
+                        append_event(events_file, run_id, sample, stage, "stage_skipped")
                         current["stages"][stage] = {"status": "skipped", "exit_code": None,
                             "reason": "an earlier preflight or stage failed"}
                 current["status"] = "failed"
                 current["run"] = {"state": "failed"}
                 current["failure"] = {"message": str(exc), "ended_utc": utc_now(),
-                    "kind": getattr(exc, 'kind', 'error'), "code": getattr(exc, 'code', 'INTERNAL_ERROR')}
+                    "kind": getattr(exc, 'kind', 'error'), "code": getattr(exc, 'code', 'INTERNAL_ERROR'), **context}
                 write_json_atomic(status_file, _v2_status_document(current))
             except Exception:
                 pass
+            append_event(events_file, run_id, sample, None, "run_failed",
+                kind=getattr(exc, "kind", "error"), code=getattr(exc, "code", "INTERNAL_ERROR"))
             if not isinstance(exc, (StageFailure, NegativeResult)):
                 raise
     overall = {"run_id": batch_run_id,

@@ -180,10 +180,10 @@ def observed_artifacts(r, before):
     paths = planned_outputs(r)
     if getattr(r, 'metadata_dir', None) and r.command in {'summarize', 'run'}:
         for p in r.metadata_dir.rglob('*'):
-            if p.is_file(): paths.setdefault(str(p.resolve()), 'metadata')
+            if p.is_file(): paths.setdefault(str(p.resolve()), 'event_log' if p.name == 'events.jsonl' else 'metadata')
     if r.command == 'run':
         for p in r.results_dir.rglob('*'):
-            if p.is_file(): paths.setdefault(str(p.resolve()), 'stage_log' if 'logs' in p.parts else 'native_result')
+            if p.is_file(): paths.setdefault(str(p.resolve()), 'stage_log' if p.parent.name == 'logs' else 'native_result')
     artifacts = []
     for path, role in sorted(paths.items()):
         p = Path(path)
