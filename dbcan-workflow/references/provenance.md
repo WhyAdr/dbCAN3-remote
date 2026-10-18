@@ -27,3 +27,9 @@ Recorded in v0.2.0 source; never fetched by this tool; not re-verified: `https:/
 ## Readiness and event diagnostics
 
 See [Phase 4 diagnostics](phase4-diagnostics.md) for the readiness check report, strict execution gate, event journals and capped log excerpts. Readiness and event observations do not replace a bound stage-status manifest or imply that a search executed.
+
+Every claim carries a literal source anchor, checked against the package text.
+CL-A1 and CL-N10 cite PROVENANCE.md for operational attestation limits. CL-D1
+keeps static text and carries only validated nonnegative integer file count and
+lowercase 64-hex manifest digest in `facts`; malformed facts suppress that claim.
+See [claim scope matrix](../docs/claim-scopes.md) for command applicability.

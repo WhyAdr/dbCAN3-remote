@@ -210,3 +210,26 @@ class StageInjectionTests(unittest.TestCase):
                     doc=json.loads(p.read_text());check_taint(self,doc,marker,env['trust']['untrusted_paths'],'' if 'contract_version' in doc else '/result')
                 tail=env['result']['failures'][0]['log_tail']
                 self.assertNotRegex(tail,r'[\x00\x1b\u202e\u200b\ufeff]')
+
+class ClaimTrustTests(unittest.TestCase):
+    def test_claim_scopes_and_literal_source_anchors(self):
+        from dbcan_claims import CLAIMS,derive_claims
+        from test_hardening_032 import ROOT
+        commands=set(cli.describe_commands()['commands'])|{None}
+        for command in commands:
+            ledger=derive_claims(command,{'kind':'ok'},{'structure':'not_assessed','attestation':'not_applicable'}, {})
+            self.assertEqual('CL-N1' in {c['id'] for c in ledger['may_not_say']},command not in {'describe','verify-db','prepare','cgc-overlay','audit-circular'})
+        for key,claim in CLAIMS.items():
+            self.assertIn(claim['anchor'],(ROOT/claim['source']).read_text(),key)
+            self.assertEqual(set(claim),{'text','source','anchor','scope'})
+
+    def test_database_claim_facts_fail_closed(self):
+        from dbcan_claims import derive_claims
+        for count,digest in [(646,'0'*64),(True,'0'*64),('646','0'*64),(646,'CANARY'),(-1,'0'*64),(646,'A'*64)]:
+            ledger=derive_claims('verify-db',{'kind':'ok'},{'structure':'not_assessed','attestation':'not_applicable'},
+                {'match':True,'expected_file_count':count,'expected_manifest_sha256':digest})
+            rows=[row for row in ledger['may_say'] if row['id']=='CL-D1']
+            if type(count) is int and count>=0 and digest=='0'*64:
+                self.assertEqual(rows[0]['facts'],{'expected_file_count':646,'expected_manifest_sha256':'0'*64})
+                self.assertNotIn('646',rows[0]['text'])
+            else:self.assertEqual(rows,[])

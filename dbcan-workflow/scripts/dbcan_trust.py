@@ -95,3 +95,14 @@ def assert_trusted(env, registry, warnings_registry):
         raise TrustViolation('The untrusted-path declaration changed.')
     if any(item.get('untrusted') is not True for item in env['diagnostics']):
         raise TrustViolation('Diagnostics must be declared untrusted.')
+
+    from dbcan_claims import CLAIMS
+    for side in env['claims'].values():
+        for row in side:
+            info=CLAIMS.get(row['id'])
+            if info is None or any(row.get(key)!=info[key] for key in ('text','source','anchor')):
+                raise TrustViolation('Claim text is not registry-backed.')
+            if row['id']=='CL-D1':
+                facts=row.get('facts',{})
+                if type(facts.get('expected_file_count')) is not int or facts['expected_file_count']<0 or not isinstance(facts.get('expected_manifest_sha256'),str) or not re.fullmatch('[0-9a-f]{64}',facts['expected_manifest_sha256']):
+                    raise TrustViolation('Database claim facts are invalid.')

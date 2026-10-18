@@ -57,7 +57,8 @@
       {
         "id": "CL-N2",
         "text": "The database was verified.",
-        "source": "references/provenance.md"
+        "source": "references/provenance.md",
+        "anchor": "does not establish that absent bytes were verified"
       }
     ]
   },

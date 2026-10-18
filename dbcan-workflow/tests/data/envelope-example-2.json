@@ -69,24 +69,28 @@
       {
         "id": "CL-A2",
         "text": "Results are structurally valid; execution is unattested.",
-        "source": "SKILL.md"
+        "source": "SKILL.md",
+        "anchor": "structurally valid, execution-unattested"
       },
       {
         "id": "CL-S1",
         "text": "Output tables are structurally consistent with the supplied FAA/GFF3.",
-        "source": "SKILL.md"
+        "source": "references/provenance.md",
+        "anchor": "permits structural review without usable execution evidence"
       }
     ],
     "may_not_say": [
       {
         "id": "CL-N1",
-        "text": "The run completed successfully / the pipeline executed.",
-        "source": "SKILL.md"
+        "text": "The run completed successfully or the pipeline executed.",
+        "source": "SKILL.md",
+        "anchor": "File presence or declared success is insufficient."
       },
       {
         "id": "CL-N9",
         "text": "The sample label verifies isolate identity.",
-        "source": "SKILL.md"
+        "source": "SKILL.md",
+        "anchor": "verifies isolate identity"
       }
     ]
   },

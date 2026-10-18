@@ -453,6 +453,27 @@
         },
         "source": {
           "type": "string"
+        },
+        "anchor": {
+          "type": "string"
+        },
+        "facts": {
+          "type": "object",
+          "required": [
+            "expected_file_count",
+            "expected_manifest_sha256"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "expected_file_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "expected_manifest_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
         }
       }
     },

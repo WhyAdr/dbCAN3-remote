@@ -63,7 +63,14 @@
       {
         "id": "CL-N0",
         "text": "Any assessment or validation was performed.",
-        "source": "contract"
+        "source": "SKILL.md",
+        "anchor": "Make decisions from"
+      },
+      {
+        "id": "CL-N1",
+        "text": "The run completed successfully or the pipeline executed.",
+        "source": "SKILL.md",
+        "anchor": "File presence or declared success is insufficient."
       }
     ]
   },
