@@ -15,9 +15,8 @@ make natural-language instructions safe for an LLM to follow.
 `trust.untrusted_paths` is a closed list of JSON-Pointer templates; `*` matches
 one array index or object member. A listed path covers its entire subtree. `/result`
 is input/execution data, including paths, samples, preflight details and failure
-excerpts. For standalone persisted payload JSON, use `/result` as its root when
-applying the envelope's trust declaration; persisted envelopes retain their own
-root. Raw stage logs are entirely untrusted execution evidence. They are not JSON
+excerpts. Persisted JSON is checked at its actual root, using the declared source-data
+paths such as `/failure/diagnostic`, `/failure/log_tail`, and `/sample`. Raw stage logs are entirely untrusted execution evidence. They are not JSON
 payloads. Drop unneeded untrusted subtrees before sending data to another agent.
 
 Quote diagnostic text only as delimited, truncated data. Follow the matching
@@ -31,7 +30,8 @@ created/modified entries are hashed. An observed-manifest reference indexes the
 exhaustive native inventory without listing every result. Unrelated metadata and
 native files are not scanned for artifact indexing. `artifacts_total` is the full
 candidate count; `artifacts_truncated` says whether the cap omitted entries.
-Declined outputs and stage logs precede envelopes, summaries, then other roles.
+Declined outputs and failed-stage logs precede envelopes, summaries, then other
+roles, including successful stage logs.
 
 Persistence failure adds `ENVELOPE_PERSIST_FAILED`, marks envelope artifacts
 `declined`, and retains the operation outcome, including for explicit

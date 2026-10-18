@@ -155,9 +155,8 @@ class InjectionTests(unittest.TestCase):
                     for p in self.root.rglob('*.json'):
                         if before.get(p)==p.stat().st_mtime_ns:continue
                         doc=json.loads(p.read_text())
-                        # Payload JSON files are the persisted form of /result; envelopes retain their root.
-                        prefix='' if 'contract_version' in doc else '/result'
-                        check_taint(self,doc,marker,paths,prefix)
+                        # Persisted payloads use their actual root pointers too.
+                        check_taint(self,doc,marker,paths)
 
 class StaticTrustTests(unittest.TestCase):
     def test_targeted_ast_checks(self):
@@ -207,7 +206,7 @@ class StageInjectionTests(unittest.TestCase):
                 env=json.loads(out.getvalue());self.assertEqual(code,5)
                 check_taint(self,env,marker,env['trust']['untrusted_paths'])
                 for p in self.metadata.rglob('*.json'):
-                    doc=json.loads(p.read_text());check_taint(self,doc,marker,env['trust']['untrusted_paths'],'' if 'contract_version' in doc else '/result')
+                    doc=json.loads(p.read_text());check_taint(self,doc,marker,env['trust']['untrusted_paths'])
                 tail=env['result']['failures'][0]['log_tail']
                 self.assertNotRegex(tail,r'[\x00\x1b\u202e\u200b\ufeff]')
 
@@ -233,3 +232,12 @@ class ClaimTrustTests(unittest.TestCase):
                 self.assertEqual(rows[0]['facts'],{'expected_file_count':646,'expected_manifest_sha256':'0'*64})
                 self.assertNotIn('646',rows[0]['text'])
             else:self.assertEqual(rows,[])
+
+class PersistedRootTrustTests(unittest.TestCase):
+    def test_new_persisted_outcome_sink_is_rejected_at_its_actual_root(self):
+        from trust_helpers import check_taint
+        from dbcan_trust import UNTRUSTED_PATHS
+        marker='CANARY_NEW_PERSISTED_SINK'
+        with self.assertRaises(AssertionError):
+            check_taint(self,{'outcome':{'summary':marker}},marker,UNTRUSTED_PATHS)
+        check_taint(self,{'failure':{'diagnostic':marker}},marker,UNTRUSTED_PATHS)
