@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from dbcan_outcomes import Refusal, NegativeResult, structure_reader
 
-import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
