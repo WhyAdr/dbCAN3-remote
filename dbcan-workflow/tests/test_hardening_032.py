@@ -129,3 +129,27 @@ class HardeningTests(unittest.TestCase):
             rows=cli.observed_artifacts(r,before)
         row=next(row for row in rows if row['path']==str(path))
         self.assertEqual(row['status'],'unchanged');self.assertFalse(row['written']);self.assertIsNone(row['sha256'])
+
+    def helper_args(self,command):
+        if command=='audit-circular':
+            return [command,'--gff',str(self.fx/'inputs/sample.gff3'),'--processed-gff',str(self.fx/'results/cgc.gff'),
+                    '--out-json',str(self.root/'audit.json'),'--out-tsv',str(self.root/'audit.tsv')]
+        return [command,'--processed-gff',str(self.fx/'results/cgc.gff'),'--native-members',str(self.fx/'results/cgc_standard_out.tsv'),
+                '--native-summary',str(self.fx/'results/cgc_standard_out_summary.tsv'),'--corrected-members',str(self.root/'members.tsv'),
+                '--corrected-summary',str(self.root/'summary.tsv'),'--changes',str(self.root/'changes.tsv'),'--report',str(self.root/'report.json'),'--dbcan-version','5.2.9']
+
+    def test_helper_malformed_numerics_remain_structure_invalid(self):
+        path=self.fx/'results/cgc.gff';path.write_text(path.read_text().replace('\t100\t','\t100.9\t'))
+        for command in ['audit-circular','cgc-overlay']:
+            data=self.call(self.helper_args(command))
+            self.assertEqual(data['outcome']['code'],'STRUCTURE_INVALID')
+
+    def test_algorithm_valueerrors_remain_internal_errors(self):
+        import audit_circular_windows as audit
+        import exact_cgc_categories as overlay
+        for module,method,command in [(audit,'categories','audit-circular'),(overlay,'identify_clusters','cgc-overlay')]:
+            out,err=io.StringIO(),io.StringIO()
+            with patch.object(module,method,side_effect=ValueError('programming defect')),contextlib.redirect_stdout(out),contextlib.redirect_stderr(err):
+                code=cli.main(self.helper_args(command))
+            self.assertEqual(code,1);self.assertEqual(json.loads(out.getvalue())['outcome']['code'],'INTERNAL_ERROR')
+            self.assertIn('Traceback',err.getvalue())

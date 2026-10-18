@@ -36,7 +36,6 @@ Maintainer review: the implementation request authorizes proceeding with the sup
 | `dbcan_workflow.py:703` | `validate_outputs` | ValueError | negative | `STRUCTURE_INVALID` | `ValueError(f"cgc.gff CDS IDs differ from source GFF; missing={sorted(set(expected_cds)-set(cgc_gff_rows))[:10]}, extra={sorted(set(cgc_gff_rows)-set(expected_cds))[:10]}")` |
 | `dbcan_workflow.py:739` | `validate_outputs` | ValueError | negative | `STRUCTURE_INVALID` | `ValueError(f"CGC IDs differ between member table and summary; member_only={sorted(set(by_cluster)-set(summary_by_id))}, summary_only={sorted(set(summary_by_id)-set(by_cluster))}")` |
 | `dbcan_workflow.py:812` | `summarize_results` | ValueError | refused | `PATHS_OVERLAP` | `ValueError("summary output directory must be separate from and outside the native results directory")` |
-| `dbcan_workflow.py:1039` | `check_fresh_destinations` | FileExistsError | refused | `PATHS_OVERLAP` | `FileExistsError(f"metadata destination is not empty; choose a new --metadata-dir: {metadata_root}")` |
 | `dbcan_workflow.py:1046` | `run_preflight` | ValueError | refused | `ENV_UNMET` | `ValueError("threads must be a positive integer")` |
 | `dbcan_workflow.py:1048` | `run_preflight` | ValueError | refused | `ENV_UNMET` | `ValueError("profile must be sandbox or hpc")` |
 | `dbcan_workflow.py:1054` | `run_preflight` | ValueError | refused | `THREADS_EXCEED_ALLOCATION` | `ValueError(
@@ -98,7 +97,6 @@ Maintainer review: the implementation request authorizes proceeding with the sup
 | `dbcan_workflow.py:766` | `validate_outputs` | ValueError | negative | `STRUCTURE_INVALID` | `ValueError(f"duplicate substrate row for {cgcid}")` |
 | `dbcan_workflow.py:798` | `validate_outputs` | ValueError | refused | `PATHS_OVERLAP` | `ValueError("observed result manifest must not overwrite stage status")` |
 | `dbcan_workflow.py:815` | `summarize_results` | ValueError | refused | `PATHS_OVERLAP` | `ValueError("summary metadata must be separate from the input directory")` |
-| `dbcan_workflow.py:1037` | `check_fresh_destinations` | FileExistsError | refused | `PATHS_OVERLAP` | `FileExistsError(f"results destination is not empty; choose a new --results-dir: {target}")` |
 | `dbcan_workflow.py:1060` | `run_preflight` | FileNotFoundError | refused | `ENV_UNMET` | `FileNotFoundError(f"selected {label} executable is not executable: {path}")` |
 | `dbcan_workflow.py:1193` | `run_workflow` | ValueError | refused | `PATHS_OVERLAP` | `ValueError(f"{left_name} and {right_name} directories must be disjoint: {left}, {right}")` |
 | `dbcan_workflow.py:1199` | `run_workflow` | ValueError | refused | `PATHS_OVERLAP` | `ValueError("run outputs must not overlap the expected database manifest")` |

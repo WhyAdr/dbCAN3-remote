@@ -7,12 +7,8 @@ parsed as the field before the first '|' in each '+'-separated annotation.
 """
 from __future__ import annotations
 
-from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
-                            NegativeResult, MissingDataResult, StageFailure, structure_reader)
+from dbcan_outcomes import Refusal, NegativeResult, structure_reader
 
-import argparse
-import csv
-import json
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -43,6 +39,16 @@ def gene_type(annotation: str) -> str:
     if not types or types == {"null"}:
         return "null"
     return sorted(types, key=lambda t: (PRIORITY.get(t, 99), t))[0]
+
+
+@structure_reader
+def processed_coordinates(cols):
+    return int(cols[3]), int(cols[4])
+
+
+@structure_reader
+def cgc_number(value):
+    return int(value.removeprefix('CGC'))
 
 
 @structure_reader
@@ -151,7 +157,6 @@ def summary_rows(members: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return output
 
 
-@structure_reader
 def rebuild(processed_gff: Path, native_members_file: Path, native_summary_file: Path,
             corrected_members_file: Path, corrected_summary_file: Path, change_file: Path,
             report_file: Path, installed_version: str, *, use_distance: bool = False) -> dict[str, Any]:
@@ -169,7 +174,7 @@ def rebuild(processed_gff: Path, native_members_file: Path, native_summary_file:
     for row in native: old_by[row["CGC#"]].append(row["Protein ID"])
     for row in members: new_by[row["CGC#"]].append(row["Protein ID"])
     changes=[]
-    for cid in sorted(set(old_by)|set(new_by), key=lambda x:int(x.removeprefix("CGC"))):
+    for cid in sorted(set(old_by)|set(new_by), key=cgc_number):
         old=old_by.get(cid,[]); new=new_by.get(cid,[])
         if old!=new:
             old_summary=next((r for r in native_summaries if r["CGC#"]==cid),{})

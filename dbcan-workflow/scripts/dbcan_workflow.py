@@ -8,28 +8,24 @@ from its own location.
 """
 from __future__ import annotations
 
-from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
-                            NegativeResult, MissingDataResult, StageFailure, structure_reader, REGISTRY)
+from dbcan_outcomes import Refusal, MissingPathRefusal, ExistingPathRefusal, NegativeResult, MissingDataResult, StageFailure, structure_reader, REGISTRY
 
 from dbcan_events import append_event, failure_context
 from dbcan_trust import sanitize_text
 
-import argparse
 import csv
 import hashlib
 import json
 import math
 import os
-import platform
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
 import uuid
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Iterable
 from urllib.parse import unquote
@@ -1093,15 +1089,6 @@ def effective_resources() -> dict[str, Any]:
     return {"logical_cpu_count":logical,"cpu_affinity_count":affinity,"cgroup_or_scheduler_cpu_limit":quota_cpu or (int(slurm) if slurm and slurm.isdigit() else None),
             "effective_cpu_allocation":effective_cpu,"memory_limit_bytes":memory_bytes,"memory_source":memory_source,
             "disk_free_bytes_by_path":{}}
-
-
-def check_fresh_destinations(results_root: Path, metadata_root: Path, samples: Iterable[str], *, resume: bool = False) -> None:
-    for sample in samples:
-        target = results_root / sample
-        if target.exists() and any(target.iterdir()) and not resume:
-            raise ExistingPathRefusal('PATHS_OVERLAP', f"results destination is not empty; choose a new --results-dir: {target}")
-    if metadata_root.exists() and any(metadata_root.iterdir()) and not resume:
-        raise ExistingPathRefusal('PATHS_OVERLAP', f"metadata destination is not empty; choose a new --metadata-dir: {metadata_root}")
 
 
 def collect_preflight(faa: Path, gff: Path, env_python: Path, run_dbcan_path: Path, diamond_path: Path,

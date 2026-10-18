@@ -2,21 +2,16 @@
 """Audit default CAZyme+TC cluster windows at circular contig joins."""
 from __future__ import annotations
 
-from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
-                            NegativeResult, MissingDataResult, StageFailure, structure_reader)
+from dbcan_outcomes import NegativeResult
 
-import argparse
-import csv
-import json
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-from dbcan_workflow import parse_attributes, parse_gff, write_json_atomic, write_tsv_atomic
-from exact_cgc_categories import categories
+from dbcan_workflow import parse_attributes, parse_gff
+from exact_cgc_categories import categories, processed_coordinates
 
 
-@structure_reader
 def audit(faa_gff: Path, processed_gff: Path) -> dict[str, Any]:
     annotation = parse_gff(faa_gff)
     by_contig: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -37,12 +32,13 @@ def audit(faa_gff: Path, processed_gff: Path) -> dict[str, Any]:
         if pid not in annotation["cds"]:
             raise NegativeResult('STRUCTURE_INVALID', f"unknown processed protein ID {pid!r}")
         source = annotation["cds"][pid]
-        observed = (cols[0], int(cols[3]), int(cols[4]), cols[6])
+        start, end = processed_coordinates(cols)
+        observed = (cols[0], start, end, cols[6])
         expected = (source["seqid"], source["start"], source["end"], source["strand"])
         if observed != expected:
             raise NegativeResult('STRUCTURE_INVALID', f"processed coordinates differ for {pid}: {observed} != {expected}")
         anno = attrs.get("CGC_annotation", "null")
-        by_contig[cols[0]].append({"protein_id": pid, "start": int(cols[3]), "end": int(cols[4]),
+        by_contig[cols[0]].append({"protein_id": pid, "start": start, "end": end,
             "categories": categories(anno), "annotation": anno})
     if seen != set(annotation["cds"]):
         raise NegativeResult('STRUCTURE_INVALID', f"processed GFF CDS ID set differs from input; missing={len(set(annotation['cds'])-seen)}")
