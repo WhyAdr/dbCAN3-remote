@@ -40,7 +40,6 @@ def collect_preflight(faa, gff, env_python, run_dbcan_path, diamond_path,
     report = PreflightReport()
     report.update(profile=profile, threads=threads)
     states = {}
-    values = {}
 
     def check(id, function, *, needs=(), io_code='ENV_UNMET'):
         blocked = [key for key in needs if states[key] != 'pass']
@@ -73,7 +72,6 @@ def collect_preflight(faa, gff, env_python, run_dbcan_path, diamond_path,
                 raise exc from cause
             return None
         states[id] = 'pass'
-        values[id] = value
         report['checks'].append({'id': id, 'state': 'pass', 'detail': {'message': 'Check passed.'}})
         return value
 

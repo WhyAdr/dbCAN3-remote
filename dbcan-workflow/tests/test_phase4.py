@@ -302,4 +302,45 @@ class Phase4Tests(unittest.TestCase):
                     self.root/'env', ['alpha'], 1, 'sandbox')
         self.assertFalse(self.results.exists()); self.assertFalse(self.metadata.exists()); stages.assert_not_called()
 
+    def test_envelope_cannot_replace_sample_events_status_or_summary(self):
+        args = ['run', '--input-dir', str(self.inputs.parent), '--results-dir', str(self.results), '--metadata-dir', str(self.metadata),
+            '--env-dir', str(self.root/'env'), '--db-dir', str(self.root/'db'), '--expected-manifest', str(self.manifest),
+            '--samples', 'alpha', '--threads', '1', '--profile', 'sandbox']
+        for path in (self.metadata/'alpha/events.jsonl', self.metadata/'alpha/stage_status.json',
+                     self.metadata/'workflow_summary.json', self.metadata/'alpha/scientific_summary'):
+            with patch.object(w, 'run_preflight') as preflight:
+                data, _ = self.invoke(args+['--envelope-out', str(path)])
+            self.assertEqual(data['outcome']['code'], 'PATHS_OVERLAP')
+            self.assertFalse(self.metadata.exists()); self.assertFalse(self.results.exists())
+            preflight.assert_not_called()
+
+    def test_unavailable_log_remains_a_failed_stage_and_is_indexed(self):
+        args = ['run', '--input-dir', str(self.inputs.parent), '--results-dir', str(self.results), '--metadata-dir', str(self.metadata),
+            '--env-dir', str(self.root/'env'), '--db-dir', str(self.root/'db'), '--expected-manifest', str(self.manifest),
+            '--samples', 'alpha', '--threads', '1', '--profile', 'sandbox']
+        original = Path.open
+        def open_path(path, mode='r', *args, **kwargs):
+            if mode=='w' and path.suffix=='.log': raise PermissionError('synthetic log-open failure')
+            return original(path, mode, *args, **kwargs)
+        with patch.object(w, 'run_preflight', return_value=self.preflight), patch.object(w, 'stage_commands', side_effect=self.commands()), patch.object(Path, 'open', new=open_path):
+            data, stderr = self.invoke(args)
+        self.assertEqual(data['outcome']['kind'], 'failed')
+        self.assertIn('log_tail_error', data['result']['failures'][0])
+        self.assertTrue(any(a['role']=='stage_log' and not a['written'] for a in data['artifacts']))
+        self.assertNotIn('Traceback', stderr)
+
+    def test_event_write_defect_removes_completion_marker_and_propagates(self):
+        def event(path, run_id, sample, stage, event_name, **details):
+            if event_name=='run_succeeded': raise OSError('synthetic event write failure')
+            append_event(path, run_id, sample, stage, event_name, **details)
+        with patch.object(w, 'run_preflight', return_value=self.preflight), patch.object(w, 'stage_commands', side_effect=self.commands()), patch.object(w, 'append_event', side_effect=event):
+            with self.assertRaisesRegex(OSError, 'synthetic event write failure'):
+                w.run_workflow(self.inputs.parent, self.results, self.metadata, self.root/'db', self.manifest,
+                    self.root/'env', ['alpha'], 1, 'sandbox')
+        self.assertFalse((self.metadata/'alpha/completion.json').exists())
+        status = json.loads((self.metadata/'alpha/stage_status.json').read_text())
+        self.assertEqual(status['run']['state'], 'failed')
+        self.assertEqual(status['failure']['code'], 'INTERNAL_ERROR')
+        self.assertEqual(self.events('alpha')[-1]['event'], 'run_failed')
+
 if __name__ == '__main__': unittest.main()

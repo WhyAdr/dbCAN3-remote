@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import argparse
 import os
+import re
 import sys
 import traceback
 import dbcan_workflow as w
@@ -110,6 +111,24 @@ def global_parent():
     return parent
 
 
+def run_metadata_outputs(r):
+    """Declare owned metadata slots before accepting a separate envelope path."""
+    paths = {}
+    for sample in r.samples:
+        if sample in {'.', '..'} or not re.fullmatch(r'[A-Za-z0-9_.-]+', sample):
+            continue  # The runner retains SAMPLE_ID_UNSAFE classification.
+        root = r.metadata_dir/sample
+        for name, role in (('events.jsonl', 'event_log'), ('stage_status.json', 'stage_status'),
+            ('output_validation.json', 'output_validation'), ('results_observed.sha256', 'observed_manifest'),
+            ('completion.json', 'completion')):
+            paths[str((root/name).resolve())] = role
+        for name in w.COMMAND_METADATA['summarize']['writes']:
+            if name.endswith(('.json', '.tsv')) and not name.startswith('envelope.'):
+                paths[str((root/'scientific_summary'/name).resolve())] = 'scientific_summary'
+    paths[str((r.metadata_dir/'workflow_summary.json').resolve())] = 'workflow_summary'
+    return paths
+
+
 def planned_outputs(r):
     outputs = {}
     def add(path, role):
@@ -123,6 +142,7 @@ def planned_outputs(r):
         add(r.observed_manifest, 'observed_manifest'); add(getattr(r, 'diff_out', None), 'database_diff')
     if r.command == 'audit-circular':
         add(r.out_json, 'circular_audit'); add(r.out_tsv, 'circular_table')
+    if r.command == 'run': outputs.update(run_metadata_outputs(r))
     if r.command == 'summarize':
         for name in w.COMMAND_METADATA['summarize']['writes']:
             if '/' not in name and not name.startswith('--'): add(r.metadata_dir/name, 'scientific_summary')
@@ -153,6 +173,7 @@ def guard_cli_outputs(r):
     elif r.command == 'summarize': selected = [r.metadata_dir/name for name in w.COMMAND_METADATA['summarize']['writes'] if not name.startswith('--')]
     elif r.command == 'verify-db': selected = [r.observed_manifest]+([r.diff_out] if r.diff_out else [])
     elif r.command == 'audit-circular': selected = [r.out_json, r.out_tsv]
+    elif r.command == 'run': selected = [Path(path) for path in run_metadata_outputs(r)]
     elif r.command == 'cgc-overlay': selected = [r.corrected_members, r.corrected_summary, r.changes, r.report]
     default_envelope = r.metadata_dir/('envelope.%s.json' % r.command) if r.command in {'validate','summarize','run'} else None
     explicit = getattr(r, 'envelope_out', None)
@@ -188,6 +209,13 @@ def observed_artifacts(r, before):
     if r.command == 'run':
         for p in r.results_dir.rglob('*'):
             if p.is_file(): paths.setdefault(str(p.resolve()), 'stage_log' if p.parent.name == 'logs' else 'native_result')
+        for status_path in r.metadata_dir.glob('*/stage_status.json'):
+            status = json.loads(status_path.read_text())
+            root = (r.results_dir/status_path.parent.name/'logs').resolve()
+            for stage in status.get('stages', {}).values():
+                if stage.get('log_file'):
+                    log = Path(stage['log_file']).resolve()
+                    if root in log.parents: paths.setdefault(str(log), 'stage_log')
     artifacts = []
     for path, role in sorted(paths.items()):
         p = Path(path)
