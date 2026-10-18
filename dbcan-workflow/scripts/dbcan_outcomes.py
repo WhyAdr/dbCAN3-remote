@@ -34,7 +34,7 @@ REGISTRY = {
  'INPUT_MISMATCH': entry('refused', 'The selected FAA/GFF3 identities do not match.',
     [remedy('MATCHED_PAIR', 'Supply the matching FAA/GFF3 pair.', ['--faa', '--gff'])]),
  'SAMPLE_ID_UNSAFE': entry('refused', 'Sample names must be safe and unique.',
-    [remedy('SAFE_NAMES', 'Use distinct plain isolate names without path traversal.', ['--samples'])]),
+    [remedy('SAFE_NAMES', 'Use distinct plain isolate names without path traversal.', ['--samples', '--sample-id'])]),
  'ENV_UNMET': entry('refused', 'The pinned runtime requirements are unmet.',
     [remedy('PROVISION_ENV', 'Provision the selected pinned environment and DIAMOND 2.2.8.', ['--env-dir'])],
     [('NO_AUTOINSTALL', 'Do not install or download without user confirmation.')]),

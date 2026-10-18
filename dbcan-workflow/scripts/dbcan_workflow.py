@@ -78,6 +78,16 @@ DB_ASSETS_BY_STAGE = {
 STAGE_NAMES = ("CAZyme_annotation", "gff_process", "cgc_finder", "substrate_prediction")
 
 
+SAMPLE_ID_RE = re.compile(r'[A-Za-z0-9_.-]{1,128}')
+
+
+def validate_sample_id(value):
+    """Validate a plain bounded label before it can become an output path."""
+    if not isinstance(value, str) or value in {'.', '..'} or not SAMPLE_ID_RE.fullmatch(value):
+        raise Refusal('SAMPLE_ID_UNSAFE', 'provide unique sample names containing only letters, digits, period, underscore, or hyphen')
+    return value
+
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -1187,8 +1197,10 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
     """Run only into fresh explicit destinations; keep each sample's stage ledger separate."""
     input_dir, results_dir, metadata_dir, db_dir, env_dir = [p.resolve() for p in
         (input_dir, results_dir, metadata_dir, db_dir, env_dir)]
-    if not samples or len(samples) != len(set(samples)) or any(s in {".", ".."} or not re.fullmatch(r"[A-Za-z0-9_.-]+", s) for s in samples):
-        raise Refusal('SAMPLE_ID_UNSAFE', "provide unique sample names containing only letters, digits, period, underscore, or hyphen")
+    if not samples or len(samples) != len(set(samples)):
+        raise Refusal('SAMPLE_ID_UNSAFE', 'provide unique sample names containing only letters, digits, period, underscore, or hyphen')
+    for sample in samples:
+        validate_sample_id(sample)
     for left_name, left, right_name, right in (
         ("inputs", input_dir, "results", results_dir), ("inputs", input_dir, "metadata", metadata_dir),
         ("results", results_dir, "metadata", metadata_dir),

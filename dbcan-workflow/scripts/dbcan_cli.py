@@ -115,7 +115,9 @@ def run_metadata_outputs(r):
     """Declare owned metadata slots before accepting a separate envelope path."""
     paths = {}
     for sample in r.samples:
-        if sample in {'.', '..'} or not re.fullmatch(r'[A-Za-z0-9_.-]+', sample):
+        try:
+            w.validate_sample_id(sample)
+        except Refusal:
             continue  # The runner retains SAMPLE_ID_UNSAFE classification.
         root = r.metadata_dir/sample
         for name, role in (('events.jsonl', 'event_log'), ('stage_status.json', 'stage_status'),
@@ -281,6 +283,12 @@ def main(argv=None):
         r = parser.parse_args(argv)
         command = r.command
         policy = getattr(r, 'exit_policy', policy)
+        if command in {'validate', 'summarize'}:
+            w.validate_sample_id(r.sample_id if r.sample_id is not None else r.faa.stem)
+        if command == 'run':
+            if not r.samples or len(set(r.samples)) != len(r.samples):
+                raise Refusal('SAMPLE_ID_UNSAFE', 'Sample names must be safe and unique.')
+            for sample in r.samples: w.validate_sample_id(sample)
         guard_cli_outputs(r)
         explicit_safe = True
         paths = planned_outputs(r)
@@ -348,7 +356,7 @@ def describe_commands():
         codes = ['OK', 'USAGE_INVALID', 'PATHS_OVERLAP', 'INTERNAL_ERROR']
         if name not in {'describe', 'verify-db'}: codes += ['INPUT_MISSING', 'STRUCTURE_INVALID']
         if name in {'prepare', 'validate', 'summarize'}: codes += ['INPUT_MISMATCH']
-        if name in {'validate', 'summarize'}: codes += ['RESULTS_DIR_MISSING', 'INPUT_MISMATCH']
+        if name in {'validate', 'summarize'}: codes += ['RESULTS_DIR_MISSING', 'INPUT_MISMATCH', 'SAMPLE_ID_UNSAFE']
         if name == 'cgc-overlay': codes += ['VERSION_UNSUPPORTED']
         if name == 'validate': codes += ['ATTESTATION_REQUIRED', 'ATTESTATION_REJECTED']
         if name in {'verify-db', 'preflight', 'run'}: codes += ['MANIFEST_PATH_UNSAFE']

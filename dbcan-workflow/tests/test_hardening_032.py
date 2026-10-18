@@ -24,7 +24,6 @@ class HardeningTests(unittest.TestCase):
         self.assertNotIn(marker,json.dumps(data['findings']))
         self.assertIn(marker,json.dumps(data['diagnostics']))
 
-    @unittest.expectedFailure
     def test_r3_sample_refused_before_write(self):
         before=self.tree()
         data=self.call(self.args+['--allow-unattested','--sample-id','../evil'])
@@ -71,3 +70,23 @@ class HardeningTests(unittest.TestCase):
             '--expected-manifest',str(self.root/'e'),'--samples','sample','--threads','1','--profile','sandbox'])
         self.assertTrue(cli.observed_artifacts(r,{}))
         self.assertIn('STATUS_UNREADABLE',[v['code'] for v in r._artifact_warnings])
+
+    def test_sample_validator_all_boundaries_and_inferred_stem(self):
+        for value in ['', '.', '..', '../evil', 'x'*129, 'bad name']:
+            with self.subTest(value=value):
+                before=self.tree()
+                data=self.call(self.args+['--allow-unattested','--sample-id',value])
+                self.assertEqual(data['outcome']['code'],'SAMPLE_ID_UNSAFE')
+                self.assertEqual(before,self.tree())
+        faa=self.fx/'inputs/bad name.faa';faa.write_bytes((self.fx/'inputs/sample.faa').read_bytes())
+        data=self.call(self.args+['--faa',str(faa),'--allow-unattested'])
+        self.assertEqual(data['outcome']['code'],'SAMPLE_ID_UNSAFE')
+        data=self.call(self.args+['--faa',str(faa),'--sample-id','x'*128,'--allow-unattested'])
+        self.assertEqual(data['outcome']['kind'],'ok')
+
+    def test_shared_validator_run_and_discovery(self):
+        for value in ['', '.', '..', '../evil','x'*129]:
+            with self.assertRaises(cli.Refusal): w.validate_sample_id(value)
+        for command in ['validate','summarize']:
+            self.assertIn('SAMPLE_ID_UNSAFE',cli.describe_commands()['commands'][command]['outcome_codes'])
+        self.assertIn('--sample-id',cli.REGISTRY['SAMPLE_ID_UNSAFE']['remediation'][0]['flags'])
