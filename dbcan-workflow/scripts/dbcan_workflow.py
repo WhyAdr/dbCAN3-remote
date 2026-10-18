@@ -430,7 +430,9 @@ def db_preflight(db_dir: Path, expected_manifest: Path, required_stages: Iterabl
         raise MissingPathRefusal('DB_UNVERIFIED', "Required database stage assets are missing.", details={"db_dir": str(db_dir), "missing_by_stage": missing_by_stage})
     manifest_check = verify_database(db_dir, expected_manifest)
     if not manifest_check["match"]:
-        raise Refusal('DB_UNVERIFIED', f"database directory does not match pinned {SNAPSHOT}: missing={len(manifest_check['missing'])}, unexpected={len(manifest_check['unexpected'])}, mismatched={len(manifest_check['mismatched'])}")
+        failure = Refusal('DB_UNVERIFIED', f"database directory does not match pinned {SNAPSHOT}: missing={len(manifest_check['missing'])}, unexpected={len(manifest_check['unexpected'])}, mismatched={len(manifest_check['mismatched'])}")
+        failure.manifest_check = manifest_check
+        raise failure
     return {"asset_checks": checks, "manifest_check": manifest_check}
 
 
@@ -1091,86 +1093,24 @@ def check_fresh_destinations(results_root: Path, metadata_root: Path, samples: I
         raise ExistingPathRefusal('PATHS_OVERLAP', f"metadata destination is not empty; choose a new --metadata-dir: {metadata_root}")
 
 
+def collect_preflight(faa: Path, gff: Path, env_python: Path, run_dbcan_path: Path, diamond_path: Path,
+                      db_dir: Path, expected_manifest: Path, threads: int, profile: str,
+                      results_dir: Path, metadata_dir: Path) -> dict[str, Any]:
+    """Collect safe independent readiness checks without starting search stages."""
+    from dbcan_preflight import collect_preflight as collect
+    return collect(faa, gff, env_python, run_dbcan_path, diamond_path, db_dir,
+        expected_manifest, threads, profile, results_dir, metadata_dir)
+
+
 def run_preflight(faa: Path, gff: Path, env_python: Path, run_dbcan_path: Path, diamond_path: Path,
                   db_dir: Path, expected_manifest: Path, threads: int, profile: str, results_dir: Path,
                   metadata_dir: Path) -> dict[str, Any]:
-    if threads < 1:
-        raise Refusal('ENV_UNMET', "threads must be a positive integer")
-    if profile not in {"sandbox", "hpc"}:
-        raise Refusal('ENV_UNMET', "profile must be sandbox or hpc")
-    _guard_output_directories([results_dir, metadata_dir],
-                              [faa.parent, gff.parent, db_dir, env_python.parent.parent])
-    paired = compare_faa_gff(faa, gff)
-    resources = effective_resources()
-    if resources["effective_cpu_allocation"] and threads > resources["effective_cpu_allocation"]:
-        raise Refusal('THREADS_EXCEED_ALLOCATION', 
-            f"requested threads={threads} exceeds detected CPU allocation "
-            f"{resources['effective_cpu_allocation']}"
-        )
-    for label, path in (("Python", env_python), ("run_dbcan", run_dbcan_path), ("DIAMOND", diamond_path)):
-        if not path.is_file() or not os.access(path, os.X_OK):
-            raise MissingPathRefusal('ENV_UNMET', f"selected {label} executable is not executable: {path}")
-    # Preserve the venv interpreter path: resolving its symlink invokes the
-    # base interpreter and loses the selected environment's sys.prefix.
-    paths = [Path(os.path.abspath(p)) for p in (env_python, run_dbcan_path, diamond_path)]
-    env_root = paths[0].parent.parent.resolve()
-    if any(p.parent.resolve() != env_root / "bin" for p in paths):
-        raise Refusal('ENV_UNMET', "Python, run_dbcan, and DIAMOND must be selected from one environment bin directory")
-    env = os.environ.copy()
-    env["PATH"] = f"{env_root / 'bin'}{os.pathsep}{env.get('PATH', '')}"
-    def probe(*args, **kwargs):
-        try:
-            return subprocess.run(*args, **kwargs)
-        except OSError as exc:
-            raise RuntimeRefusal('ENV_UNMET', 'A selected runtime probe could not start.',
-                details={'executable': str(args[0][0])}) from exc
-
-    python_probe = probe(
-        [str(paths[0]), "-c", "import platform,sys,json,importlib.metadata; "
-         "print(json.dumps({'python':sys.version.split()[0],'machine':platform.machine(),"
-         "'prefix':sys.prefix,'dbcan':importlib.metadata.version('dbcan'),"
-         "'packages':{d.metadata['Name']:d.version for d in importlib.metadata.distributions() if d.metadata['Name']}}))"],
-        check=False, capture_output=True, text=True, env=env,
-    )
-    if python_probe.returncode != 0:
-        raise RuntimeRefusal('ENV_UNMET', "The selected Python smoke test failed.")
-    try:
-        runtime = json.loads(python_probe.stdout)
-        if not isinstance(runtime, dict) or any(not isinstance(runtime.get(key), str) for key in ('python', 'machine', 'prefix', 'dbcan')) or not isinstance(runtime.get('packages'), dict):
-            raise ValueError('runtime probe fields are missing or invalid')
-    except ValueError as exc:
-        raise RuntimeRefusal('ENV_UNMET', 'The selected Python probe returned malformed runtime metadata.') from exc
-    if Path(runtime["prefix"]).resolve() != env_root or runtime["dbcan"] != DBCAN_VERSION:
-        raise Refusal('ENV_UNMET', "selected Python environment identity or dbcan distribution version differs from the requested environment")
-    run_probe = probe([str(paths[0]), str(paths[1]), "version"], check=False, capture_output=True, text=True, env=env)
-    if run_probe.returncode != 0 or not re.search(r"(?<!\d)5\.2\.9(?!\d)", run_probe.stdout + run_probe.stderr):
-        raise RuntimeRefusal('ENV_UNMET', "The run_dbcan version probe failed or was not 5.2.9.")
-    diamond_probe = probe([str(paths[2]), "version"], check=False, capture_output=True, text=True, env=env)
-    if diamond_probe.returncode != 0 or not re.search(r"(?<!\d)2\.2\.8(?!\d)", diamond_probe.stdout + diamond_probe.stderr):
-        raise RuntimeRefusal('ENV_UNMET', "The DIAMOND version probe failed or was not 2.2.8.")
-
-    def existing_parent(path: Path) -> Path:
-        current = path.resolve()
-        while not current.exists() and current != current.parent:
-            current = current.parent
-        return current
-
-    resources["disk_free_bytes_by_path"] = {
-        str(path.resolve()): shutil.disk_usage(existing_parent(path)).free
-        for path in (results_dir, metadata_dir, db_dir)
-    }
-    db = db_preflight(db_dir, expected_manifest, STAGE_NAMES)
-    return {
-        "profile": profile, "python": str(paths[0]), "python_version": runtime["python"],
-        "machine": runtime["machine"], "python_prefix": runtime["prefix"],
-        "resolved_package_versions": runtime["packages"],
-        "executable_observed_sha256": {str(p): sha256_file(p) for p in paths},
-        "run_dbcan": str(paths[1]), "run_dbcan_version_output": (run_probe.stdout + run_probe.stderr).strip(),
-        "diamond": str(paths[2]), "diamond_version_output": (diamond_probe.stdout + diamond_probe.stderr).strip(),
-        "threads": threads, "resources": resources, "database": db,
-        "protein_count": len(paired["proteins"]), "contig_count": len(paired["annotation"]["seq_regions"]),
-        "preflight_status": "passed",
-    }
+    """Strict library facade: return provenance only when all required checks pass."""
+    from dbcan_preflight import collect_preflight as collect, require_preflight
+    report = collect(faa, gff, env_python, run_dbcan_path, diamond_path, db_dir,
+        expected_manifest, threads, profile, results_dir, metadata_dir, stop_on_failure=True)
+    require_preflight(report)
+    return report
 
 
 def stage_commands(run_dbcan: Path, faa: Path, local_gff: Path, result_dir: Path, db_dir: Path,

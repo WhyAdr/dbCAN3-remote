@@ -144,4 +144,101 @@ class Phase4Tests(unittest.TestCase):
         self.assertTrue(any(a['role']=='stage_log' and '/results/alpha/logs/' in a['path'] for a in envelope['artifacts']))
         self.assertNotIn('Traceback', stderr.getvalue())
 
+    def ready_environment(self):
+        self.env = self.root/'env'
+        (self.env/'bin').mkdir(parents=True)
+        for name in ('python', 'run_dbcan', 'diamond'):
+            path = self.env/'bin'/name
+            path.write_text('#!/bin/sh\nexit 0\n'); path.chmod(0o755)
+        self.db = self.root/'db'; self.db.mkdir()
+        for names in w.DB_ASSETS_BY_STAGE.values():
+            for name in names:
+                path = self.db/name
+                if name == 'dbCAN-PUL':
+                    path.mkdir(exist_ok=True); (path/'synthetic').write_text('fixture')
+                else: path.write_text(name)
+        files = [p for p in sorted(self.db.rglob('*')) if p.is_file()]
+        self.manifest.write_text(''.join(w.sha256_file(p)+'  ./'+p.relative_to(self.db).as_posix()+'\n' for p in files))
+
+    def runtime_probe(self, argv, **kwargs):
+        if '-c' in argv:
+            output = json.dumps({'python': '3.12.0', 'machine': 'x86_64', 'prefix': str(self.env), 'dbcan': '5.2.9', 'packages': {}})
+        elif Path(argv[0]).name == 'diamond': output = 'diamond 2.2.8'
+        else: output = 'dbCAN 5.2.9'
+        return subprocess.CompletedProcess(argv, 0, output, '')
+
+    def collect(self, threads=1):
+        return w.collect_preflight(self.inputs/'alpha.faa', self.inputs/'alpha.gff3', self.env/'bin/python', self.env/'bin/run_dbcan',
+            self.env/'bin/diamond', self.db, self.manifest, threads, 'sandbox', self.results, self.metadata)
+
+    def test_preflight_collects_independent_failures_and_skips_dependencies(self):
+        self.ready_environment()
+        (self.env/'bin/diamond').unlink()
+        (self.db/'CAZy.dmnd').unlink()
+        path = self.inputs/'alpha.gff3'; path.write_text(path.read_text().replace('ID=p1', 'ID=other'))
+        before = w._hash_tree(self.root)
+        with patch.object(w.subprocess, 'run', side_effect=self.runtime_probe), patch.object(w, 'effective_resources', return_value={'effective_cpu_allocation': 1}):
+            report = self.collect(threads=2)
+        self.assertFalse(report['ready'])
+        checks = {row['id']: row for row in report['checks']}
+        for id in ('input_pair', 'cpu_budget', 'diamond_executable', 'database_assets', 'database_manifest'):
+            self.assertEqual(checks[id]['state'], 'fail', id)
+        for id in ('python_probe', 'python_identity', 'run_dbcan_version', 'storage_snapshot'):
+            self.assertEqual(checks[id]['state'], 'pass', id)
+        self.assertEqual(checks['diamond_version']['detail']['blocked_by'], ['diamond_executable'])
+        self.assertEqual(checks['diamond_version']['state'], 'skipped')
+        self.assertEqual(checks['executable_hashes']['state'], 'skipped')
+        self.assertEqual(report['database']['manifest_check']['missing_count'], 1)
+        self.assertEqual(before, w._hash_tree(self.root))
+        self.assertFalse(self.results.exists()); self.assertFalse(self.metadata.exists())
+        json.dumps(report)  # Private original exceptions must not leak into JSON.
+
+    def test_complete_preflight_and_strict_facade_keep_provenance(self):
+        self.ready_environment()
+        with patch.object(w.subprocess, 'run', side_effect=self.runtime_probe):
+            report = w.run_preflight(self.inputs/'alpha.faa', self.inputs/'alpha.gff3', self.env/'bin/python', self.env/'bin/run_dbcan',
+                self.env/'bin/diamond', self.db, self.manifest, 1, 'sandbox', self.results, self.metadata)
+        self.assertTrue(report['ready'])
+        self.assertTrue(all(row['state']=='pass' for row in report['checks']))
+        self.assertEqual(report['python'], str(self.env/'bin/python'))
+        self.assertEqual(report['python_prefix'], str(self.env))
+        self.assertEqual(report['preflight_status'], 'passed')
+        self.assertTrue(report['database']['manifest_check']['match'])
+        self.assertEqual(report['protein_count'], 1)
+        self.assertEqual(len(report['checks']), len({row['id'] for row in report['checks']}))
+
+    def test_safety_overlap_stops_before_probes_or_database_reads(self):
+        self.ready_environment()
+        with patch.object(w.subprocess, 'run') as probe, patch.object(w, 'db_preflight') as database:
+            with self.assertRaises(Refusal) as caught:
+                w.collect_preflight(self.inputs/'alpha.faa', self.inputs/'alpha.gff3', self.env/'bin/python', self.env/'bin/run_dbcan',
+                    self.env/'bin/diamond', self.db, self.manifest, 1, 'sandbox', self.inputs/'derived', self.metadata)
+        self.assertEqual(caught.exception.code, 'PATHS_OVERLAP')
+        probe.assert_not_called(); database.assert_not_called()
+        self.assertFalse((self.inputs/'derived').exists())
+
+    def test_readiness_boolean_cannot_override_failed_or_skipped_checks(self):
+        from dbcan_preflight import require_preflight
+        for state in ('fail', 'skipped'):
+            with self.assertRaises(Refusal):
+                require_preflight({'ready': True, 'checks': [{'id': 'critical', 'state': state, 'detail': {}}]})
+        with self.assertRaises(Refusal): require_preflight({'ready': True, 'checks': []})
+
+    def test_failed_manifest_is_hashed_once_for_diagnostic_report(self):
+        self.ready_environment()
+        (self.db/'CAZy.dmnd').write_text('corrupted')
+        verify = w.verify_database
+        with patch.object(w.subprocess, 'run', side_effect=self.runtime_probe), patch.object(w, 'verify_database', wraps=verify) as verification:
+            report = self.collect()
+        self.assertFalse(report['ready'])
+        verification.assert_called_once()
+        checks = {row['id']: row['state'] for row in report['checks']}
+        self.assertEqual(checks['database_assets'], 'pass')
+        self.assertEqual(checks['database_manifest'], 'fail')
+
+    def test_unexpected_probe_defects_are_not_converted_to_unmet_requirements(self):
+        self.ready_environment()
+        with patch.object(w.subprocess, 'run', side_effect=RuntimeError('synthetic defect')):
+            with self.assertRaisesRegex(RuntimeError, 'synthetic defect'): self.collect()
+
 if __name__ == '__main__': unittest.main()
