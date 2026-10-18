@@ -17,7 +17,7 @@ WARNINGS_REGISTRY = {
  'STATUS_UNREADABLE': 'Stage-status diagnostics could not be read.',
 }
 UNTRUSTED_PATHS = [
- '/diagnostics', '/refusal/details', '/artifacts/*/path', '/findings/*/location',
+ '/run_id', '/diagnostics', '/refusal/details', '/artifacts/*/path', '/findings/*/location',
  '/warnings/*/location', '/result',
  # Persisted JSON records share these source-data paths with their envelope.
  '/failure/diagnostic', '/failure/log_tail', '/failure/log_path', '/failures',
@@ -50,6 +50,14 @@ def bounded_details(value, limit=512, max_items=16, _depth=0):
         return rows
     if value is None or isinstance(value,(int,float,bool)):return value
     return sanitize_text(value,limit)[0]
+
+
+def sanitize_data(value):
+    """Sanitize display data without changing its numeric or container types."""
+    if isinstance(value,str): return sanitize_text(value,8192)[0]
+    if isinstance(value,dict):return {sanitize_text(k,512)[0]:sanitize_data(v) for k,v in value.items()}
+    if isinstance(value,list):return [sanitize_data(v) for v in value]
+    return value
 
 
 def make_diagnostic(origin, text, *, ref=None):

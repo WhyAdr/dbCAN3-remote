@@ -89,6 +89,7 @@
   "diagnostics_truncated": false,
   "trust": {
     "untrusted_paths": [
+      "/run_id",
       "/diagnostics",
       "/refusal/details",
       "/artifacts/*/path",

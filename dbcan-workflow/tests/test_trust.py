@@ -88,3 +88,125 @@ class PersistedSinkTests(unittest.TestCase):
         status=json.loads((self.metadata/'alpha/stage_status.json').read_text())
         self.assertEqual(status['failure']['message'],REGISTRY['STAGE_FAILED']['summary'])
         self.assertIn('alpha',status['failure']['diagnostic'])
+
+class InjectionTests(unittest.TestCase):
+    from test_hardening_032 import tc
+    setUp=tc.ContractTests.setUp
+    bound_status=tc.ContractTests.bound_status
+
+    def test_sanitizer_corpus_and_bounds(self):
+        from dbcan_trust import sanitize_text,make_diagnostic,bound_diagnostics
+        from injection_corpus import PAYLOADS
+        for payload in PAYLOADS:
+            value,cut=sanitize_text(payload)
+            self.assertLessEqual(len(value),512)
+            self.assertNotRegex(value,r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\ufeff]')
+            value.encode('utf-8')
+        rows,total,cut=bound_diagnostics([make_diagnostic('exception','λ'*10000)]*30)
+        self.assertEqual(total,30);self.assertTrue(cut)
+        import json
+        self.assertLessEqual(len(json.dumps(rows).encode()),8192)
+        self.assertLessEqual(len(rows),16)
+        # Runtime result strings are also sanitized at the envelope boundary.
+        env=cli.build_envelope('describe',CommandResult(result={'path':'\x1b[31mCANARY\u202e'}),'strict')
+        self.assertEqual(env['result']['path'],'CANARY')
+
+    def test_injection_corpus_through_all_user_data_inputs(self):
+        import contextlib,io,json,shutil
+        from urllib.parse import quote
+        from injection_corpus import PAYLOADS,canary
+        from trust_helpers import check_taint
+        from test_hardening_032 import ROOT,w
+        for point in ('fasta_id','contig','attribute','sample_id','samples','filename','manifest','status'):
+            for index,payload in enumerate(PAYLOADS):
+                with self.subTest(point=point,payload=index):
+                    shutil.rmtree(self.root/'diag',ignore_errors=True)
+                    shutil.copy2(ROOT/'tests/fixtures/zero_hit/inputs/sample.faa',self.fx/'inputs/sample.faa')
+                    shutil.copy2(ROOT/'tests/fixtures/zero_hit/inputs/sample.gff3',self.fx/'inputs/sample.gff3')
+                    marker=canary();value=marker+payload
+                    args=self.args+['--allow-unattested']
+                    if point=='fasta_id':
+                        with (self.fx/'inputs/sample.faa').open('a',errors='replace') as fh:fh.write('>'+value+'\nAAAA\n>'+value+'\nAAAA\n')
+                    elif point in {'contig','attribute'}:
+                        gff=self.fx/'inputs/sample.gff3';text=gff.read_text()
+                        text=text.replace('ctg',quote(value,safe='',errors='replace')) if point=='contig' else text.replace('Name=synthetic','Name='+quote(value,safe='',errors='replace')+';product='+quote(value,safe='',errors='replace'))
+                        gff.write_text(text)
+                    elif point=='sample_id':args+=['--sample-id',value]
+                    elif point=='samples':
+                        args=['run','--input-dir',str(self.root/'i'),'--results-dir',str(self.root/'r'),'--metadata-dir',str(self.root/'diag'),
+                              '--db-dir',str(self.root/'d'),'--env-dir',str(self.root/'e'),'--expected-manifest',str(self.root/'mf'),
+                              '--samples',value,'--threads','1','--profile','sandbox']
+                    elif point=='filename':
+                        # Escape path separators/NUL and cap at the filesystem component limit;
+                        # retain the original payload as content to cover oversized/unrepresentable names.
+                        filename=(marker+quote(payload,safe='',errors='replace'))[:180]+'.faa'
+                        path=self.fx/'inputs'/filename;path.write_text('>'+value+'\nAAAA\n>'+value+'\nAAAA\n',errors='replace')
+                        args+=['--faa',str(path),'--sample-id','safe']
+                    elif point=='manifest':
+                        db=self.root/'db';db.mkdir(exist_ok=True);manifest=self.root/'manifest';manifest.write_text('0'*64+'  ../'+value+'\n',errors='replace')
+                        args=['verify-db','--db-dir',str(db),'--expected-manifest',str(manifest),'--observed-manifest',str(self.root/'diag/observed.sha256')]
+                    elif point=='status':
+                        status=self.bound_status(True);record=json.loads(status.read_text());record['results_dir']=value;status.write_text(json.dumps(record));args+=['--status-file',str(status)]
+                    before={p:p.stat().st_mtime_ns for p in self.root.rglob('*.json')}
+                    out,err=io.StringIO(),io.StringIO()
+                    with contextlib.redirect_stdout(out),contextlib.redirect_stderr(err):code=cli.main(args)
+                    env=json.loads(out.getvalue());self.assertEqual(code,env['exit']['code'])
+                    paths=env['trust']['untrusted_paths'];check_taint(self,env,marker,paths)
+                    for p in self.root.rglob('*.json'):
+                        if before.get(p)==p.stat().st_mtime_ns:continue
+                        doc=json.loads(p.read_text())
+                        # Payload JSON files are the persisted form of /result; envelopes retain their root.
+                        prefix='' if 'contract_version' in doc else '/result'
+                        check_taint(self,doc,marker,paths,prefix)
+
+class StaticTrustTests(unittest.TestCase):
+    def test_targeted_ast_checks(self):
+        import ast
+        from pathlib import Path
+        from test_hardening_032 import ROOT
+        allow=set((ROOT/'tests/static_allow.txt').read_text().splitlines())
+        def approved(node):
+            if isinstance(node,ast.Constant) and isinstance(node.value,str):return True
+            if not isinstance(node,ast.Subscript):return False
+            text=ast.unparse(node)
+            return (text.startswith('REGISTRY[') or text.startswith('info[')) and text.endswith("['summary']") or text.startswith('WARNINGS_REGISTRY[')
+        for name in ['dbcan_cli.py','dbcan_outcomes.py','dbcan_claims.py']:
+            tree=ast.parse((ROOT/'scripts'/name).read_text())
+            for function in [n for n in ast.walk(tree) if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef))]:
+                for node in ast.walk(function):
+                    values=[]
+                    if isinstance(node,ast.Call):values += [kw.value for kw in node.keywords if kw.arg=='summary']
+                    if isinstance(node,ast.Dict):
+                        values += [v for k,v in zip(node.keys,node.values) if isinstance(k,ast.Constant) and k.value=='message']
+                        if any(isinstance(k,ast.Constant) and k.value=='contract_version' for k in node.keys):self.assertEqual(function.name,'build_envelope')
+                    for value in values:
+                        key=name+':'+function.name
+                        self.assertTrue(approved(value) or key in allow,(key,ast.unparse(value)))
+
+class StageInjectionTests(unittest.TestCase):
+    import test_phase4 as ph
+    setUp=ph.Phase4Tests.setUp
+    def test_stage_log_corpus_and_all_persisted_json(self):
+        import contextlib,io,json,shutil,sys
+        from unittest.mock import patch
+        from injection_corpus import PAYLOADS,canary
+        from trust_helpers import check_taint
+        from test_hardening_032 import w
+        for index,payload in enumerate(PAYLOADS):
+            with self.subTest(payload=index):
+                shutil.rmtree(self.results,ignore_errors=True);shutil.rmtree(self.metadata,ignore_errors=True)
+                marker=canary();source=self.root/'payload.txt';source.write_text(marker+payload,errors='replace')
+                def commands(*a,**kw):
+                    return [(w.STAGE_NAMES[0],[sys.executable,'-c',"import pathlib,sys;print(pathlib.Path(sys.argv[1]).read_text());sys.exit(7)",str(source)],a[6]/'failed.log')]
+                args=['run','--input-dir',str(self.inputs.parent),'--results-dir',str(self.results),'--metadata-dir',str(self.metadata),
+                      '--env-dir',str(self.root/'env'),'--db-dir',str(self.root/'db'),'--expected-manifest',str(self.manifest),
+                      '--samples','alpha','--threads','1','--profile','sandbox']
+                out,err=io.StringIO(),io.StringIO()
+                with patch.object(w,'run_preflight',return_value=self.preflight),patch.object(w,'stage_commands',side_effect=commands),contextlib.redirect_stdout(out),contextlib.redirect_stderr(err):
+                    code=cli.main(args)
+                env=json.loads(out.getvalue());self.assertEqual(code,5)
+                check_taint(self,env,marker,env['trust']['untrusted_paths'])
+                for p in self.metadata.rglob('*.json'):
+                    doc=json.loads(p.read_text());check_taint(self,doc,marker,env['trust']['untrusted_paths'],'' if 'contract_version' in doc else '/result')
+                tail=env['result']['failures'][0]['log_tail']
+                self.assertNotRegex(tail,r'[\x00\x1b\u202e\u200b\ufeff]')

@@ -11,7 +11,7 @@ import dbcan_workflow as w
 from dbcan_outcomes import (CommandResult, Refusal, MissingPathRefusal, EXIT_CODES,
                             REGISTRY, WorkflowOutcome, UsageError)
 from dbcan_claims import derive_claims
-from dbcan_trust import (assert_trusted, bound_diagnostics, UNTRUSTED_PATHS, WARNINGS_REGISTRY, bounded_details)
+from dbcan_trust import (assert_trusted, bound_diagnostics, UNTRUSTED_PATHS, WARNINGS_REGISTRY, bounded_details, sanitize_data)
 
 
 def dispatch(r):
@@ -243,7 +243,7 @@ def build_envelope(command, cr, policy):
         'command': command, 'run_id': cr.run_id,
         'outcome': {'kind': cr.kind, 'code': cr.code, 'summary': REGISTRY[cr.code]['summary']},
         'exit': {'code': code, 'policy': policy}, 'evidence': cr.evidence,
-        'result': cr.result, 'refusal': cr.refusal, 'findings': cr.findings,
+        'result': sanitize_data(cr.result), 'refusal': cr.refusal, 'findings': cr.findings,
         'warnings': cr.warnings, 'artifacts': cr.artifacts,
         'claims': derive_claims(command, {'kind': cr.kind, 'code': cr.code}, cr.evidence, cr.result),
         'diagnostics': diagnostics, 'diagnostics_total': total, 'diagnostics_truncated': truncated,
