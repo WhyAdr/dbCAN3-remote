@@ -96,7 +96,7 @@ def write_json_atomic(path: Path, data: Any) -> None:
     fd = os.open(tmp_name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, sort_keys=True)
+            json.dump(data, f, indent=2, sort_keys=True, allow_nan=False)
             f.write("\n")
             f.flush()
             os.fsync(f.fileno())
@@ -1319,7 +1319,11 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                     "kind": getattr(exc, 'kind', 'error'), "code": getattr(exc, 'code', 'INTERNAL_ERROR'), **context}
                 write_json_atomic(status_file, _v2_status_document(current))
             except Exception:
-                pass
+                print('Could not persist failure evidence.', file=sys.stderr)
+                try:
+                    append_event(events_file, run_id, sample, None, 'evidence_write_failed')
+                except Exception:
+                    pass
             append_event(events_file, run_id, sample, None, "run_failed",
                 kind=getattr(exc, "kind", "error"), code=getattr(exc, "code", "INTERNAL_ERROR"))
             if not isinstance(exc, (StageFailure, NegativeResult)):

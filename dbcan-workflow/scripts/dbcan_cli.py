@@ -212,7 +212,12 @@ def observed_artifacts(r, before):
         for p in r.results_dir.rglob('*'):
             if p.is_file(): paths.setdefault(str(p.resolve()), 'stage_log' if p.parent.name == 'logs' else 'native_result')
         for status_path in r.metadata_dir.glob('*/stage_status.json'):
-            status = json.loads(status_path.read_text())
+            try:
+                status = json.loads(status_path.read_text())
+                if not isinstance(status, dict): raise ValueError('invalid status document')
+            except (OSError, ValueError):
+                r._artifact_warnings = [{'code': 'STATUS_UNREADABLE', 'message': 'Stage-status diagnostics could not be read.', 'location': None}]
+                continue
             root = (r.results_dir/status_path.parent.name/'logs').resolve()
             for stage in status.get('stages', {}).values():
                 if stage.get('log_file'):
@@ -265,14 +270,14 @@ def main(argv=None):
     for i, token in enumerate(argv):
         if token.startswith('--exit-policy='): policy = token.split('=', 1)[1]
         elif token == '--exit-policy' and i+1 < len(argv): policy = argv[i+1]
-    r = None; explicit_safe = False; before = {}; command = 'describe'
+    r = None; explicit_safe = False; before = {}; command = None
     try:
         if policy not in {'strict', 'semantic-zero'}:
             policy = 'strict'
             raise UsageError('USAGE_INVALID', 'Exit policy must be strict or semantic-zero.')
         parser = w.build_parser()
         choices = parser._subparsers._group_actions[0].choices
-        command = next((token for token in argv if token in choices), 'describe')
+        command = next((token for token in argv if token in choices), None)
         r = parser.parse_args(argv)
         command = r.command
         policy = getattr(r, 'exit_policy', policy)
@@ -302,13 +307,28 @@ def main(argv=None):
             if cr.kind in {'refused', 'usage'}:
                 cr.artifacts = [{'role': role, 'path': path, 'written': False, 'sha256': None} for path,role in sorted(planned_outputs(r).items())]
             else: cr.artifacts = observed_artifacts(r, before)
+            cr.warnings.extend(getattr(r, '_artifact_warnings', []))
         env = build_envelope(command, cr, policy)
+        json.dumps(env, allow_nan=False)  # Reject invalid values before persistence.
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+        cr = CommandResult(kind='error', code='INTERNAL_ERROR', summary=REGISTRY['INTERNAL_ERROR']['summary'])
+        env = build_envelope(command, cr, policy)
+        explicit_safe = False
+    try:
         persist_envelope(env, r, explicit_safe)
     except Exception:
         traceback.print_exc(file=sys.stderr)
-        cr = CommandResult(kind='error', code='INTERNAL_ERROR', summary='Envelope persistence failed; report the stderr traceback.')
-        env = build_envelope(command, cr, policy)
-    sys.stdout.write(json.dumps(env, indent=2, sort_keys=True, allow_nan=False) + '\n')
+        env['warnings'].append({'code': 'ENVELOPE_PERSIST_FAILED', 'message': 'The envelope could not be persisted; the operation outcome is unchanged.', 'location': None})
+        for artifact in env['artifacts']:
+            if artifact['role'] == 'envelope': artifact.update(written=False, sha256=None)
+    try:
+        payload = json.dumps(env, indent=2, sort_keys=True, allow_nan=False) + '\n'
+    except (ValueError, TypeError):
+        traceback.print_exc(file=sys.stderr)
+        env = build_envelope(command, CommandResult(kind='error', code='INTERNAL_ERROR', summary=REGISTRY['INTERNAL_ERROR']['summary']), policy)
+        payload = json.dumps(env, indent=2, sort_keys=True, allow_nan=False) + '\n'
+    sys.stdout.write(payload)
     return env['exit']['code']
 
 
