@@ -153,3 +153,10 @@ class HardeningTests(unittest.TestCase):
                 code=cli.main(self.helper_args(command))
             self.assertEqual(code,1);self.assertEqual(json.loads(out.getvalue())['outcome']['code'],'INTERNAL_ERROR')
             self.assertIn('Traceback',err.getvalue())
+
+    def test_failed_logs_precede_envelopes_and_success_logs_follow(self):
+        rows=[{'role':'stage_log','path':'ok-%03d.log'%n,'written':True,'sha256':None,'status':'created','origin':'tool'} for n in range(150)]
+        rows += [{'role':role,'path':path,'written':True,'sha256':None,'status':'created','origin':'tool'} for role,path in [('stage_log','zz-failed.log'),('envelope','run.json'),('scientific_summary','summary.json')]]
+        cr=cli.CommandResult(artifacts=rows);cr.failed_log_paths={'zz-failed.log'}
+        env=cli.build_envelope('run',cr,'strict')
+        self.assertEqual([a['path'] for a in env['artifacts'][:3]],['zz-failed.log','run.json','summary.json'])

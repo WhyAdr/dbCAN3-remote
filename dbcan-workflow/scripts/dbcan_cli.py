@@ -223,7 +223,10 @@ def observed_artifacts(r, before):
             for stage in status.get('stages', {}).values():
                 if isinstance(stage,dict) and isinstance(stage.get('log_file'),str):
                     log = Path(stage['log_file']).resolve()
-                    if root in log.parents: paths.setdefault(str(log), 'stage_log')
+                    if root in log.parents:
+                        paths.setdefault(str(log), 'stage_log')
+                        if stage.get('state',stage.get('status')) == 'failed':
+                            r._failed_log_paths = getattr(r, '_failed_log_paths', set()) | {str(log)}
     artifacts = []
     for path, role in sorted(paths.items()):
         p = Path(path)
@@ -241,13 +244,13 @@ def observed_artifacts(r, before):
     return artifacts
 
 
-def artifact_priority(row):
-    priority = 0 if row.get('status') == 'declined' or row['role']=='stage_log' else 1 if row['role']=='envelope' else 2 if row['role']=='scientific_summary' else 3
+def artifact_priority(row, failed_logs=()):
+    priority = 0 if row.get('status') == 'declined' or row['path'] in failed_logs else 1 if row['role']=='envelope' else 2 if row['role']=='scientific_summary' else 3
     return priority,row['role'],row['path']
 
 
-def bound_artifacts(rows):
-    return sorted(rows,key=artifact_priority)[:100]
+def bound_artifacts(rows, failed_logs=()):
+    return sorted(rows,key=lambda row: artifact_priority(row,failed_logs))[:100]
 
 
 def build_envelope(command, cr, policy):
@@ -259,7 +262,7 @@ def build_envelope(command, cr, policy):
         'outcome': {'kind': cr.kind, 'code': cr.code, 'summary': REGISTRY[cr.code]['summary']},
         'exit': {'code': code, 'policy': policy}, 'evidence': cr.evidence,
         'result': sanitize_data(cr.result), 'refusal': cr.refusal, 'findings': cr.findings,
-        'warnings': cr.warnings, 'artifacts': bound_artifacts(cr.artifacts),
+        'warnings': cr.warnings, 'artifacts': bound_artifacts(cr.artifacts, getattr(cr, 'failed_log_paths', ())),
         'artifacts_total': len(cr.artifacts), 'artifacts_truncated': len(cr.artifacts)>100,
         'claims': derive_claims(command, {'kind': cr.kind, 'code': cr.code}, cr.evidence, cr.result),
         'diagnostics': diagnostics, 'diagnostics_total': total, 'diagnostics_truncated': truncated,
@@ -282,7 +285,7 @@ def persist_envelope(env, r, explicit_safe):
             env['artifacts'].append(artifact)
         artifact.update(written=True, sha256=None, status='modified' if path.is_file() else 'created', origin='tool')
     env['artifacts_total'] = max(env['artifacts_total'], len(env['artifacts']))
-    env['artifacts'] = bound_artifacts(env['artifacts'])
+    env['artifacts'] = bound_artifacts(env['artifacts'], getattr(r, '_failed_log_paths', ()))
     env['artifacts_truncated'] = env['artifacts_total'] > len(env['artifacts'])
     for path in dict.fromkeys(p.resolve() for p in destinations): w.write_json_atomic(path, env)
     for artifact in env['artifacts']:
@@ -348,6 +351,7 @@ def main(argv=None):
                 cr.artifacts = [{'role': role, 'path': path, 'written': False, 'sha256': None, 'status': 'declined', 'origin': 'tool'} for path,role in sorted(planned_outputs(r).items())]
             else: cr.artifacts = observed_artifacts(r, before)
             cr.warnings.extend(getattr(r, '_artifact_warnings', []))
+            cr.failed_log_paths = getattr(r, '_failed_log_paths', set())
         env = build_envelope(command, cr, policy)
         json.dumps(env, allow_nan=False)  # Reject invalid values before persistence.
     except Exception:
