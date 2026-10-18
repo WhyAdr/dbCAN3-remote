@@ -1,0 +1,137 @@
+2026-10-18 18:02:15,092 - dbcan.IO.fasta - INFO - Processing protein sequences
+2026-10-18 18:02:15,093 - dbcan.IO.fasta - INFO - Reading protein sequences from /workspace/scratch/51b8ca04e32d/c14-run/inputs/original/C14-NMZ.faa
+2026-10-18 18:02:15,141 - dbcan.IO.fasta - INFO - Processed 4636 protein sequences to /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/uniInput.faa
+2026-10-18 18:02:15,149 - root - INFO - DIAMOND CAZy...
+2026-10-18 18:02:15,373 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /tmp/dbcan-c14-database/CAZy.dmnd --query /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/uniInput.faa --out /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/diamond.out --outfmt 6 --evalue 1e-102 --max-target-seqs 1 --threads 4 --quiet
+2026-10-18 18:02:45,749 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 30.38s
+2026-10-18 18:02:45,759 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/diamond.out
+2026-10-18 18:02:45,759 - root - INFO - DIAMOND CAZy done
+2026-10-18 18:02:45,760 - root - INFO - pyhmmer vs dbCAN-HMM...
+2026-10-18 18:02:45,787 - root - ERROR - HMMER dbCAN failed: process PID not found (pid=9)
+2026-10-18 18:02:45,788 - root - INFO - Created empty dbCAN HMM results file (not in methods) -> dbCAN_hmm_results.tsv
+2026-10-18 18:02:45,788 - root - INFO - pyhmmer vs dbCAN-sub-HMM...
+2026-10-18 18:02:45,788 - dbcan.annotation.pyhmmer_search - INFO - Starting PyHMMERDBCANSUBProcessor.run()
+2026-10-18 18:02:45,788 - dbcan.annotation.pyhmmer_search - ERROR - HMM search failed, but will still attempt to create empty dbCAN-sub results file: process PID not found (pid=9)
+2026-10-18 18:02:45,788 - dbcan.annotation.pyhmmer_search - INFO - Calling process_dbcan_sub() to process results
+2026-10-18 18:02:45,788 - dbcan.process.process_dbcan_sub - INFO - Starting dbCAN-sub processing. Input: /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/dbCANsub_hmm_raw.tsv, Output: /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/dbCANsub_hmm_results.tsv
+2026-10-18 18:02:45,788 - dbcan.process.process_dbcan_sub - INFO - DBCAN_SUB_COLUMN_NAMES found: 14 columns: ['Subfam Name', 'Subfam Composition', 'Subfam EC', 'Substrate', 'HMM Length']...
+2026-10-18 18:02:45,788 - dbcan.process.process_dbcan_sub - WARNING - dbCAN-sub raw file not found: /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/dbCANsub_hmm_raw.tsv
+2026-10-18 18:02:45,788 - dbcan.process.process_dbcan_sub - INFO - Validation failed. Input file exists: False, size: 0
+2026-10-18 18:02:45,789 - dbcan.process.process_dbcan_sub - INFO - Created empty dbCAN-sub results file with headers -> /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/dbCANsub_hmm_results.tsv
+2026-10-18 18:02:45,789 - root - ERROR - dbCAN-sub HMM failed: dbCAN-sub HMM search failed; empty output was generated for downstream compatibility
+Traceback (most recent call last):
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_pslinux.py", line 1716, in wrapper
+    return fun(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_common.py", line 508, in wrapper
+    raise raise_from(err, None)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 3, in raise_from
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_common.py", line 506, in wrapper
+    return fun(self)
+           ^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_pslinux.py", line 1784, in _parse_stat_file
+    data = bcat("%s/%s/stat" % (self._procfs_path, self.pid))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_common.py", line 851, in bcat
+    return cat(fname, fallback=fallback, _open=open_binary)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_common.py", line 839, in cat
+    with _open(fname) as f:
+         ^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_common.py", line 799, in open_binary
+    return open(fname, "rb", buffering=FILE_READ_BUFFER_SIZE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/proc/9/stat'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/__init__.py", line 355, in _init
+    self._ident = self._get_ident()
+                  ^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/__init__.py", line 396, in _get_ident
+    return (self.pid, self.create_time())
+                      ^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/__init__.py", line 778, in create_time
+    self._create_time = self._proc.create_time()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_pslinux.py", line 1716, in wrapper
+    return fun(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_pslinux.py", line 1957, in create_time
+    ctime = float(self._parse_stat_file()['create_time'])
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/_pslinux.py", line 1730, in wrapper
+    raise NoSuchProcess(self.pid, self._name)
+psutil.NoSuchProcess: process no longer exists (pid=9)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/annotation/pyhmmer_search.py", line 602, in run
+    super().run()
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/annotation/pyhmmer_search.py", line 581, in run
+    self.hmmsearch()
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/annotation/pyhmmer_search.py", line 245, in hmmsearch
+    memory_monitor = get_memory_monitor(
+                     ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/utils/memory_monitor.py", line 215, in get_memory_monitor
+    return MemoryMonitor(max_memory_usage=max_memory_usage)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/utils/memory_monitor.py", line 25, in __init__
+    self.process = psutil.Process(os.getpid())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/__init__.py", line 319, in __init__
+    self._init(pid)
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/psutil/__init__.py", line 368, in _init
+    raise NoSuchProcess(pid, msg=msg)
+psutil.NoSuchProcess: process PID not found (pid=9)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/core.py", line 142, in run_dbCAN_CAZyme_annotation
+    run_dbCAN_dbcansub_hmmer(dbcansubconfig)
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/core.py", line 99, in run_dbCAN_dbcansub_hmmer
+    processor.run()
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/annotation/pyhmmer_search.py", line 615, in run
+    raise RuntimeError(
+RuntimeError: dbCAN-sub HMM search failed; empty output was generated for downstream compatibility
+2026-10-18 18:02:45,793 - root - INFO - Created empty dbCAN-sub raw file (not in methods) -> dbCANsub_hmm_raw.tsv
+2026-10-18 18:02:45,793 - root - INFO - generate overview of CAZymes...
+2026-10-18 18:02:45,799 - dbcan.IO.OverviewGenerator - INFO - Loaded 241 rows from diamond results
+2026-10-18 18:02:45,801 - dbcan.IO.OverviewGenerator - INFO - Loaded 0 rows from dbcan_sub results
+2026-10-18 18:02:45,802 - dbcan.IO.OverviewGenerator - INFO - Loaded 0 rows from dbcan_hmm results
+2026-10-18 18:02:45,808 - dbcan.IO.OverviewGenerator - INFO - Aggregated overview saved to: /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/overview.tsv
+2026-10-18 18:02:45,809 - root - INFO - CAZyme overview generated
+Traceback (most recent call last):
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/run_dbcan", line 8, in <module>
+    sys.exit(cli())
+             ^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/rich_click/rich_command.py", line 378, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/core.py", line 1631, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/rich_click/rich_command.py", line 166, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/core.py", line 2032, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/core.py", line 1415, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/core.py", line 910, in invoke
+    return callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/decorators.py", line 34, in new_func
+    return f(get_current_context(), *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/main.py", line 105, in cazyme_annotation_cmd
+    run_dbCAN_CAZyme_annotation(diamond_config, pyhmmer_config, dbcansubconfig, overviewconfig, methods_option)
+  File "/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/core.py", line 163, in run_dbCAN_CAZyme_annotation
+    raise RuntimeError(
+RuntimeError: CAZyme annotation completed with failed step(s): HMMER dbCAN: process PID not found (pid=9); dbCAN-sub HMM: dbCAN-sub HMM search failed; empty output was generated for downstream compatibility

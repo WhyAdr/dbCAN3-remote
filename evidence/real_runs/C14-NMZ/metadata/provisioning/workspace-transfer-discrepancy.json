@@ -1,0 +1,23 @@
+[
+  {
+    "attempt": "failed",
+    "mismatches": []
+  },
+  {
+    "attempt": "retry",
+    "mismatches": [
+      {
+        "role": "event_log",
+        "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-retry/C14-NMZ/events.jsonl",
+        "expected": "cf0c33621b4c1bd8a0c4563f6318537dde76d8796b4d7f0f48d98122daf2901c",
+        "actual": "c0eeae8a653b22930e89cb2401704a038b3099933b199f600825440693a5afb7"
+      },
+      {
+        "role": "stage_status",
+        "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-retry/C14-NMZ/stage_status.json",
+        "expected": "045273a66c705b342796cb3201db8a84f6c1af1970bdb49c8961828baa6cc457",
+        "actual": "58b69ddcbc918fd0b4e5eda6c02b9b3e8196b9ab482a1ce51e8372647ba2d86c"
+      }
+    ]
+  }
+]

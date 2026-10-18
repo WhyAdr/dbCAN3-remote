@@ -1,0 +1,49 @@
+{
+  "cds_count": 3730,
+  "cds_names_changed": 3730,
+  "circular_seqids": [
+    "contig_1",
+    "contig_2",
+    "contig_3"
+  ],
+  "converter_version": "1.0.0",
+  "coordinates_preserved": true,
+  "embedded_fasta_removed": false,
+  "faa_validation": {
+    "protein_count": 3730,
+    "sha256": "c22b88e32b7f291e08aa3b19b3498aeb1a0a517d153a3adab7f39fd564897368",
+    "status": "exact_id_sets_match"
+  },
+  "feature_counts": {
+    "CDS": 3730,
+    "gene": 3856,
+    "ncRNA": 31,
+    "rRNA": 18,
+    "region": 3,
+    "regulatory_region": 8,
+    "rep_origin": 1,
+    "repeat_region": 3,
+    "tRNA": 76,
+    "tmRNA": 1
+  },
+  "hierarchy_preserved": true,
+  "input_sha256": "d4056664f9db75576089666936a1c0ba462117a47a5ccbb39f32a4e5575c26b5",
+  "origin_spanning_cds": [],
+  "output_sha256": "07b7bef7db2c6d184539886a0671557ff23d80e1b6242c73cdf4e9b02a5b62fe",
+  "pseudogene_cds_ids": [
+    "HCKBFB_01245",
+    "HCKBFB_01409",
+    "HCKBFB_01644",
+    "HCKBFB_01652",
+    "HCKBFB_02132",
+    "HCKBFB_02168",
+    "HCKBFB_02672",
+    "HCKBFB_02689",
+    "HCKBFB_02708",
+    "HCKBFB_03474"
+  ],
+  "target": "dbCAN3_web_gene_positions",
+  "warnings": [
+    "Pseudogene-marked CDS retained; a homology hit on a pseudogene does not establish a functional enzyme."
+  ]
+}

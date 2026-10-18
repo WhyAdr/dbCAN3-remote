@@ -1,0 +1,8 @@
+2026-10-03 16:56:50,340 - dbcan.annotation.CGCFinder - INFO - Reading GFF file: /workspace/scratch/f8e8c66e6055/work/package/results/JN4/cgc.gff
+2026-10-03 16:56:50,359 - dbcan.annotation.CGCFinder - INFO - Loaded 3730 records from GFF file after filtering
+2026-10-03 16:56:50,361 - dbcan.annotation.CGCFinder - INFO - Marked signatures: core=59, additional=671
+2026-10-03 16:56:50,361 - dbcan.annotation.CGCFinder - INFO - Finding CGC clusters using no distance, null genes; max null genes: 2, bp distance: N/A; extension: none
+2026-10-03 16:56:50,627 - dbcan.annotation.CGCFinder - INFO - Found 35 CGC clusters
+2026-10-03 16:56:50,629 - dbcan.annotation.CGCFinder - INFO - CGC clusters have been written to /workspace/scratch/f8e8c66e6055/work/package/results/JN4/cgc_standard_out.tsv
+2026-10-03 16:56:50,641 - dbcan.annotation.CGCFinder - INFO - CGC summary has been written to /workspace/scratch/f8e8c66e6055/work/package/results/JN4/cgc_standard_out_summary.tsv
+2026-10-03 16:56:50,641 - dbcan.annotation.CGCFinder - INFO - CGCFinder run completed

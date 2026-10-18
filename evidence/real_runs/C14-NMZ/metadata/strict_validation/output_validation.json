@@ -1,0 +1,36 @@
+{
+  "cgc_count": 60,
+  "cgc_member_rows": 426,
+  "circular_contigs": 1,
+  "evidence": {
+    "attestation": "attested",
+    "structure": "valid"
+  },
+  "execution_attested": true,
+  "faa_proteins": 4636,
+  "gff_cds": 4636,
+  "input_faa_sha256": "955a8af2a91fd2411774ee1c1c4a8bb178c1f733d37aa8a5f6ac35b358e2b09f",
+  "input_gff_sha256": "db64878de9dc8005240946288f28c2bf1532ad10d9b10a51a61c03ee15d7d3cc",
+  "method_count_distribution": {
+    "1": 152,
+    "2": 20,
+    "3": 93
+  },
+  "method_hit_proteins": {
+    "DIAMOND": 241,
+    "dbCAN-HMM": 114,
+    "dbCAN-sub": 116
+  },
+  "origin_spanning_cds": [],
+  "overview_candidates": 265,
+  "positive_in_two_or_more_methods": 113,
+  "pseudogene_cds_count": 5,
+  "resolved_family_agreement": 110,
+  "results_dir": "/workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ",
+  "run_id": "dbcan-20261018T092347Z-5cde2d81",
+  "sample": "C14-NMZ",
+  "sample_source": "explicit",
+  "schema_version": 2,
+  "status": "complete",
+  "substrate_rows": 14
+}

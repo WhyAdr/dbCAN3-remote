@@ -1,0 +1,23 @@
+{
+  "input_gff": "/workspace/scratch/f8e8c66e6055/work/package/inputs/normalized/JN4.bakta.dbcan.gff",
+  "input_faa": "/workspace/scratch/f8e8c66e6055/work/package/inputs/original/JN4.faa",
+  "output_gff": "/workspace/scratch/f8e8c66e6055/work/package/inputs/normalized/JN4.cds.flat.local.gff",
+  "gff_type": "prodigal",
+  "adapter_reason": "run_dbcan 5.2.9 ProdigalProcessor reads top-level feature ID; Bakta CDS Parent is removed so CDS IDs map directly to FAA records",
+  "cds_count": 3730,
+  "faa_count": 3730,
+  "exact_ids_match": true,
+  "pseudogene_cds_ids": [
+    "HCKBFB_01245",
+    "HCKBFB_01409",
+    "HCKBFB_01644",
+    "HCKBFB_01652",
+    "HCKBFB_02132",
+    "HCKBFB_02168",
+    "HCKBFB_02672",
+    "HCKBFB_02689",
+    "HCKBFB_02708",
+    "HCKBFB_03474"
+  ],
+  "origin_spanning_cds": []
+}

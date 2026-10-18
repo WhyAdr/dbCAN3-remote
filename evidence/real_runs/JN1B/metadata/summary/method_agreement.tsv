@@ -1,0 +1,108 @@
+protein_id	positive_method_count	dbCAN_hmm_families	dbCAN_sub_families	DIAMOND_families	positive_in_at_least_two_methods	resolved_family_agreement	has_resolved_family_agreement	pseudogene_marked
+IMOLDJ_00017	1			GT47	False		False	False
+IMOLDJ_00053	3	GT4	GT4	GT4	True	GT4	True	False
+IMOLDJ_00054	1			GT8	False		False	False
+IMOLDJ_00130	1			CBM50	False		False	False
+IMOLDJ_00131	2	AA1	AA1		True	AA1	True	False
+IMOLDJ_00213	1	CE1			False		False	False
+IMOLDJ_00229	1			GT1	False		False	False
+IMOLDJ_00237	1			GH13	False		False	False
+IMOLDJ_00269	1			CBM50	False		False	False
+IMOLDJ_00283	3	GT4	GT4	GT4	True	GT4	True	False
+IMOLDJ_00284	1			GT8	False		False	False
+IMOLDJ_00295	3	GH73	GH73	GH73	True	GH73	True	False
+IMOLDJ_00314	1	CE1			False		False	False
+IMOLDJ_00324	2		GT4		True		False	False
+IMOLDJ_00357	3	AA3	AA3	AA3	True	AA3	True	False
+IMOLDJ_00362	1			GT1	False		False	False
+IMOLDJ_00390	1			GH13	False		False	False
+IMOLDJ_00394	2		GH23		True		False	False
+IMOLDJ_00401	1			AA9	False		False	False
+IMOLDJ_00478	1			GH130	False		False	False
+IMOLDJ_00479	3	GT4	GT4	GT4	True	GT4	True	False
+IMOLDJ_00515	1			GH13	False		False	False
+IMOLDJ_00559	1			GH13	False		False	False
+IMOLDJ_00569	3	GT2	GT2	GT2	True	GT2	True	False
+IMOLDJ_00573	3	GT4	GT4	GT4	True	GT4	True	False
+IMOLDJ_00617	1			GH4	False		False	False
+IMOLDJ_00624	1			GH13	False		False	False
+IMOLDJ_00628	3	GH170	GH170	GH170	True	GH170	True	False
+IMOLDJ_00638	3	GH73	GH73	GH73	True	GH73	True	False
+IMOLDJ_00737	3	GH1	GH1	GH1	True	GH1	True	False
+IMOLDJ_00799	1			GT33	False		False	False
+IMOLDJ_00807	1				False		False	False
+IMOLDJ_00812	1			GH13	False		False	False
+IMOLDJ_00814	1				False		False	False
+IMOLDJ_00822	1			GT22	False		False	False
+IMOLDJ_00829	1				False		False	False
+IMOLDJ_00840	3	GT119	GT119	GT119	True	GT119	True	False
+IMOLDJ_00865	1			GH13;GT5	False		False	False
+IMOLDJ_00871	1				False		False	False
+IMOLDJ_00885	3	GH32	GH32	GH32	True	GH32	True	False
+IMOLDJ_00886	1			GH32	False		False	False
+IMOLDJ_00897	1			GH13	False		False	False
+IMOLDJ_00923	1			CBM50	False		False	False
+IMOLDJ_00925	1				False		False	False
+IMOLDJ_00968	3	GT51	GT51	GT51	True	GT51	True	False
+IMOLDJ_01080	3	GH73	GH73	GH73	True	GH73	True	False
+IMOLDJ_01092	1			GT4	False		False	False
+IMOLDJ_01108	1			GT2	False		False	False
+IMOLDJ_01114	1			GH24	False		False	False
+IMOLDJ_01115	3	GT51	GT51	GT51	True	GT51	True	False
+IMOLDJ_01143	1			GH13	False		False	False
+IMOLDJ_01149	1			GH13	False		False	False
+IMOLDJ_01162	1			GH28	False		False	False
+IMOLDJ_01181	1			GH5	False		False	False
+IMOLDJ_01249	1			GH28	False		False	False
+IMOLDJ_01253	1			GT1	False		False	False
+IMOLDJ_01326	1			GT30	False		False	False
+IMOLDJ_01327	3	GH13	GH13	GH13	True	GH13	True	False
+IMOLDJ_01347	2		CBM50	CBM50	True	CBM50	True	False
+IMOLDJ_01361	1			GH1	False		False	False
+IMOLDJ_01367	3	GT4	GT4	GT4	True	GT4	True	False
+IMOLDJ_01375	3	GT51	GT51	GT51	True	GT51	True	False
+IMOLDJ_01402	3	GT28	GT28	GT28	True	GT28	True	False
+IMOLDJ_01415	1			GT2	False		False	False
+IMOLDJ_01495	1			GH38	False		False	False
+IMOLDJ_01529	1			GH47	False		False	False
+IMOLDJ_01553	1			GT2	False		False	False
+IMOLDJ_01555	1			GH13	False		False	False
+IMOLDJ_01560	1			GT2	False		False	False
+IMOLDJ_01566	1			CBM50;GH25	False		False	False
+IMOLDJ_01582	1			GT2	False		False	False
+IMOLDJ_01641	1			CE11	False		False	False
+IMOLDJ_01689	3	GT119	GT119	GT119	True	GT119	True	False
+IMOLDJ_01734	1			GH13	False		False	False
+IMOLDJ_01736	1			GH13	False		False	False
+IMOLDJ_01756	3	GH73	GH73	GH73	True	GH73	True	False
+IMOLDJ_01783	1			GT4	False		False	False
+IMOLDJ_01786	3	GT28	GT28	GT28	True	GT28	True	False
+IMOLDJ_01789	1	CE1			False		False	False
+IMOLDJ_01809	1			CBM50	False		False	False
+IMOLDJ_01823	1				False		False	False
+IMOLDJ_01839	1			CE8	False		False	False
+IMOLDJ_01840	1			GT22	False		False	False
+IMOLDJ_01934	1			GH13	False		False	False
+IMOLDJ_01959	2		CBM50	CBM50	True	CBM50	True	False
+IMOLDJ_02018	3	GT2	GT2	GT2	True	GT2	True	False
+IMOLDJ_02021	3	CE9	CE9	CE9	True	CE9	True	False
+IMOLDJ_02059	2		CBM50	CBM50	True	CBM50	True	False
+IMOLDJ_02077	3	GT2	GT2	GT2	True	GT2	True	False
+IMOLDJ_02081	3	GT26	GT26	GT26	True	GT26	True	False
+IMOLDJ_02154	2	CE14	CE14		True	CE14	True	False
+IMOLDJ_02158	3	GT4	GT4	GT4	True	GT4	True	False
+IMOLDJ_02178	1			CE4	False		False	False
+IMOLDJ_02182	1			GH1	False		False	False
+IMOLDJ_02195	1			GH27	False		False	False
+IMOLDJ_02200	1			GT4	False		False	False
+IMOLDJ_02207	1			CBM13	False		False	False
+IMOLDJ_02225	1			GT119	False		False	False
+IMOLDJ_02231	1			GT50	False		False	False
+IMOLDJ_02252	1			GH84	False		False	False
+IMOLDJ_02282	3	GT4	GT4	GT4	True	GT4	True	False
+IMOLDJ_02283	3	CBM50	CBM50	CBM50	True	CBM50	True	False
+IMOLDJ_02310	1			GH131	False		False	False
+IMOLDJ_02317	1			GH1	False		False	False
+IMOLDJ_02332	3	GH25	GH25	GH25	True	GH25	True	False
+IMOLDJ_02352	3	GT4	GT4	GT4	True	GT4	True	False
+IMOLDJ_02353	1			GT4	False		False	False

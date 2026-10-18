@@ -1,0 +1,45 @@
+2026-10-03 16:59:15,669 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /workspace/scratch/f8e8c66e6055/work/db/TCDB.dmnd --query /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/uniInput.faa --out /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.tc --outfmt 6 sseqid slen qseqid qlen evalue sstart send qstart qend qcovhsp --evalue 0.0001 --max-target-seqs 1 --threads 6 --quiet --query-cover 35.0
+2026-10-03 16:59:16,211 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 0.54s
+2026-10-03 16:59:16,218 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.tc
+2026-10-03 16:59:16,218 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /workspace/scratch/f8e8c66e6055/work/db/TF.dmnd --query /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/uniInput.faa --out /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.tf --outfmt 6 sseqid slen qseqid qlen evalue sstart send qstart qend qcovhsp --evalue 0.0001 --max-target-seqs 1 --threads 6 --quiet --query-cover 35.0
+2026-10-03 16:59:16,291 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 0.07s
+2026-10-03 16:59:16,294 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.tf
+2026-10-03 16:59:16,343 - dbcan.utils.memory_monitor - INFO - Memory status [Before HMM search]: RSS=77.0MB, Available=8938.4MB, Usage=10.3%
+2026-10-03 16:59:16,343 - dbcan.annotation.pyhmmer_search - INFO - Running HMM search: hmm=STP.hmm input=uniInput.faa out=STP_hmm_results.tsv evalue=0.0001 cov=0.35 cpus=6
+2026-10-03 16:59:16,431 - dbcan.annotation.pyhmmer_search - INFO - Using fixed HMMER Z=177 for STP.hmm
+2026-10-03 16:59:16,431 - dbcan.annotation.pyhmmer_search - INFO - Input size: 0.7MB, HMM size: 10.6MB, Available: 8938.4MB, large_mode=False, preload_targets=True, preload_hmms=True, force_batching=False, csv_buffer_size=5000, retry=0/3
+2026-10-03 16:59:16,431 - dbcan.annotation.pyhmmer_search - INFO - Pre-loading all HMMs into memory for speed...
+2026-10-03 16:59:16,431 - dbcan.annotation.pyhmmer_search - INFO - Estimated HMM memory: 53.0MB
+2026-10-03 16:59:16,520 - dbcan.annotation.pyhmmer_search - INFO - Loaded 177 HMMs into memory.
+2026-10-03 16:59:16,825 - dbcan.utils.memory_monitor - INFO - Memory report [HMM search]: Initial=77.0MB, Current=113.1MB, Peak=113.1MB (After HMM search), Increase=36.1MB, Usage=10.5%, Checkpoints=1, Elapsed=0.5s
+2026-10-03 16:59:16,825 - dbcan.annotation.pyhmmer_search - INFO - STP.hmm search completed. Hits: 490, Sequences: 0, Batches: 0, Time: 0.48s, Retries: 0, Memory warnings: 0
+2026-10-03 16:59:16,827 - dbcan.process.process_utils - INFO - process_results loaded 490 hits from temp file /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/STP_hmm_results.tsv.raw.tsv in 0.00s
+2026-10-03 16:59:16,830 - dbcan.process.process_utils - INFO - filter_overlaps: processing 490 rows across 311 targets (avg 1.6 hits/target)
+2026-10-03 16:59:16,848 - dbcan.process.process_utils - INFO - filter_overlaps: reduced 490 rows to 387 rows across 311 targets in 0.02s
+2026-10-03 16:59:16,852 - dbcan.process.process_utils - INFO - process_results: filtered overlaps from 490 to 387 rows in 0.02s
+2026-10-03 16:59:16,854 - dbcan.process.process_utils - INFO - process_results: wrote filtered results to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/STP_hmm_results.tsv
+2026-10-03 16:59:16,856 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /workspace/scratch/f8e8c66e6055/work/db/sulfatlas_db.dmnd --query /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/uniInput.faa --out /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.sulfatase --outfmt 6 sseqid slen qseqid qlen evalue sstart send qstart qend qcovhsp --evalue 0.0001 --max-target-seqs 1 --threads 6 --quiet --query-cover 35.0
+2026-10-03 16:59:19,966 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 3.11s
+2026-10-03 16:59:19,968 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.sulfatase
+2026-10-03 16:59:19,969 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /workspace/scratch/f8e8c66e6055/work/db/peptidase_db.dmnd --query /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/uniInput.faa --out /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.peptidase --outfmt 6 sseqid slen qseqid qlen evalue sstart send qstart qend qcovhsp --evalue 0.0001 --max-target-seqs 1 --threads 6 --quiet --query-cover 35.0
+2026-10-03 16:59:21,978 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 2.01s
+2026-10-03 16:59:21,986 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.peptidase
+2026-10-03 16:59:21,990 - dbcan.process.process_utils - INFO - Loaded 461 TC annotations from /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.tc
+2026-10-03 16:59:21,993 - dbcan.process.process_utils - INFO - Loaded 387 STP annotations from /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/STP_hmm_results.tsv
+2026-10-03 16:59:21,996 - dbcan.process.process_utils - INFO - Loaded 62 Sulfatase annotations from /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.sulfatase
+2026-10-03 16:59:21,998 - dbcan.process.process_utils - INFO - Loaded 107 Peptidase annotations from /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.peptidase
+2026-10-03 16:59:22,000 - dbcan.process.process_utils - INFO - Loaded 49 TF_prok annotations from /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out.tf
+2026-10-03 16:59:22,003 - dbcan.process.process_utils - INFO - filter_overlaps: processing 1066 rows across 827 targets (avg 1.3 hits/target)
+2026-10-03 16:59:22,042 - dbcan.process.process_utils - INFO - filter_overlaps: reduced 1066 rows to 874 rows across 827 targets in 0.04s
+2026-10-03 16:59:22,056 - dbcan.process.process_utils - INFO - Saved 874 CGC annotations to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/total_cgc_info.tsv
+2026-10-03 16:59:22,060 - dbcan.IO.gff - INFO - [GFF] Prodigal type detected: skip sorting, use raw order.
+2026-10-03 16:59:22,060 - dbcan.IO.gff - INFO - Loading annotation tables (CAZyme / CGC signatures)
+2026-10-03 16:59:22,060 - dbcan.IO.gff - INFO - Loading CAZyme data from /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/overview.tsv
+2026-10-03 16:59:22,062 - dbcan.IO.gff - INFO - Loading CGC signature data from /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/total_cgc_info.tsv
+2026-10-03 16:59:22,065 - dbcan.IO.gff - INFO - CGC signature chunks read: 1, total rows: 874; TC rows: 432
+2026-10-03 16:59:22,065 - dbcan.IO.gff - INFO - Combining CAZyme and CGC signature data
+2026-10-03 16:59:22,074 - dbcan.IO.gff - INFO - Combined annotations: 847 proteins; with TC: 432
+2026-10-03 16:59:22,076 - dbcan.IO.gff - INFO - Annotating GFF from: /workspace/scratch/f8e8c66e6055/work/package/inputs/normalized/JN1B.cds.flat.local.gff
+2026-10-03 16:59:22,076 - dbcan.IO.gff - INFO - [Prodigal] BCBio GFF.parse annotator (input 0.8 MiB; threshold 50 MB for auto-streaming).
+2026-10-03 16:59:22,149 - dbcan.IO.gff - INFO - [Prodigal] Written feature lines: 2266
+2026-10-03 16:59:22,149 - dbcan.IO.gff - INFO - GFF processing complete: /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/cgc.gff

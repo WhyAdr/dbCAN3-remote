@@ -1,0 +1,153 @@
+{
+  "artifacts": [
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/C14-NMZ/metadata/strict_validation/envelope.validate.json",
+      "role": "envelope",
+      "sha256": null,
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "referenced",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/C14-NMZ/metadata/strict_validation/results_observed.sha256",
+      "role": "native_inventory",
+      "sha256": null,
+      "status": "validated",
+      "written": false
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/C14-NMZ/metadata/strict_validation/results_observed.sha256",
+      "role": "observed_manifest",
+      "sha256": "4ace9519a7c930eaaa8262e971d4c35293e62620f94eeebaa19e9ec8af90e99e",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/C14-NMZ/metadata/strict_validation/output_validation.json",
+      "role": "output_validation",
+      "sha256": "c12af2268a7dc02cc96f58c7086a45e561ee9032159401c4730efddb59805839",
+      "status": "created",
+      "written": true
+    }
+  ],
+  "artifacts_total": 4,
+  "artifacts_truncated": false,
+  "claims": {
+    "may_not_say": [
+      {
+        "anchor": "Operational evidence, not tamper-proof proof.",
+        "id": "CL-N10",
+        "source": "PROVENANCE.md",
+        "text": "The attestation is cryptographic or tamper-proof."
+      }
+    ],
+    "may_say": [
+      {
+        "anchor": "not cryptographic proof against deliberate fabrication",
+        "id": "CL-A1",
+        "source": "PROVENANCE.md",
+        "text": "Execution is operationally attested by a bound stage-status record."
+      },
+      {
+        "anchor": "permits structural review without usable execution evidence",
+        "id": "CL-S1",
+        "source": "references/provenance.md",
+        "text": "Output tables are structurally consistent with the supplied FAA/GFF3."
+      }
+    ]
+  },
+  "command": "validate",
+  "contract_version": 1,
+  "diagnostics": [],
+  "diagnostics_total": 0,
+  "diagnostics_truncated": false,
+  "evidence": {
+    "attestation": "attested",
+    "structure": "valid"
+  },
+  "exit": {
+    "code": 0,
+    "policy": "strict"
+  },
+  "findings": [],
+  "outcome": {
+    "code": "OK",
+    "kind": "ok",
+    "summary": "The requested operation completed."
+  },
+  "refusal": null,
+  "result": {
+    "cgc_count": 60,
+    "cgc_member_rows": 426,
+    "circular_contigs": 1,
+    "evidence": {
+      "attestation": "attested",
+      "structure": "valid"
+    },
+    "execution_attested": true,
+    "faa_proteins": 4636,
+    "gff_cds": 4636,
+    "input_faa_sha256": "955a8af2a91fd2411774ee1c1c4a8bb178c1f733d37aa8a5f6ac35b358e2b09f",
+    "input_gff_sha256": "db64878de9dc8005240946288f28c2bf1532ad10d9b10a51a61c03ee15d7d3cc",
+    "legacy_status": "complete",
+    "method_count_distribution": {
+      "1": 152,
+      "2": 20,
+      "3": 93
+    },
+    "method_hit_proteins": {
+      "DIAMOND": 241,
+      "dbCAN-HMM": 114,
+      "dbCAN-sub": 116
+    },
+    "origin_spanning_cds": [],
+    "overview_candidates": 265,
+    "positive_in_two_or_more_methods": 113,
+    "pseudogene_cds_count": 5,
+    "resolved_family_agreement": 110,
+    "results_dir": "/workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ",
+    "run_id": "dbcan-20261018T092347Z-5cde2d81",
+    "sample": "C14-NMZ",
+    "sample_source": "explicit",
+    "schema_version": 2,
+    "substrate_rows": 14
+  },
+  "run_id": "dbcan-20261018T092347Z-5cde2d81",
+  "tool": {
+    "name": "dbcan-workflow",
+    "version": "0.3.2"
+  },
+  "trust": {
+    "untrusted_paths": [
+      "/run_id",
+      "/diagnostics",
+      "/refusal/details",
+      "/artifacts/*/path",
+      "/findings/*/location",
+      "/warnings/*/location",
+      "/result",
+      "/failure/diagnostic",
+      "/failure/log_tail",
+      "/failure/log_path",
+      "/failures",
+      "/sample",
+      "/samples",
+      "/input_faa",
+      "/input_gff",
+      "/results_dir",
+      "/metadata_dir",
+      "/stages/*/argv",
+      "/stages/*/log_file",
+      "/stages/*/reason",
+      "/details",
+      "/validation",
+      "/scientific_summary",
+      "/sample_summaries",
+      "/preflight"
+    ]
+  },
+  "warnings": []
+}

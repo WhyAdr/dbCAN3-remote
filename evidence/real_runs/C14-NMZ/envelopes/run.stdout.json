@@ -1,0 +1,540 @@
+{
+  "artifacts": [
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/logs/01_cazyme.stdout.log",
+      "role": "stage_log",
+      "sha256": "cf9b7599f28a425048af887c4313401e4be753e9e8fb49726254d95c7a02d720",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/logs/02_gff_process.stdout.log",
+      "role": "stage_log",
+      "sha256": "79d6b17b36790832bc0db67e3fe1840c93b6074556ed538786be40ff6cc59a03",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/logs/03_cgc_finder.stdout.log",
+      "role": "stage_log",
+      "sha256": "0ebf34e248bbf14550a86e869aef8b70292dd8eed5020b2bfbbbe67648e4b424",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/logs/04_substrate_prediction.stdout.log",
+      "role": "stage_log",
+      "sha256": "bff07860da3dc1e538f369988ce0f882675574d0739b7d5523c88a6f960bba17",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/envelope.run.json",
+      "role": "envelope",
+      "sha256": "90711c95c4d316c31666886ef41759498450c9be93f690a1888c7837d45d3458",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/scientific_summary/candidate_evidence.tsv",
+      "role": "scientific_summary",
+      "sha256": "7b1c60d2b90ef88fe1ec84a2a277d79ceb4364e29c0c52f99d3d0cd30c2be0be",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/scientific_summary/class_family_comparison.tsv",
+      "role": "scientific_summary",
+      "sha256": "9346cec5cee18bf72e37c00daf75a6ad801d170d4103b0b5aa4d42c357e1d021",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/scientific_summary/domain_instances.tsv",
+      "role": "scientific_summary",
+      "sha256": "e96afbee0e98cc7d5e886146adfa5a43e7e3631c9c677e26815b50ce8ef557ec",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/scientific_summary/family_protein_counts.tsv",
+      "role": "scientific_summary",
+      "sha256": "9e4fc780e2045797d30e3f1191fac435812c3336cda5b75750b835ad72c130f4",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/scientific_summary/method_agreement.tsv",
+      "role": "scientific_summary",
+      "sha256": "0953a7c29f8140a2ee66b36b3032c47bae3efff4436a646de4f7dbacdd8edec8",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/scientific_summary/protein_family_associations.tsv",
+      "role": "scientific_summary",
+      "sha256": "cb7012e1e07975cc020d7c3975a1541546d78bb02d0e0efbea6cb094a3f08571",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/scientific_summary/summary.json",
+      "role": "scientific_summary",
+      "sha256": "f6fda1addea03dfa79f30cd0a914ef12a4a6c6f5f2f38392a61aa17848fd6094",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/completion.json",
+      "role": "completion",
+      "sha256": "710720599dd01322d04386584b2cf8b93dae25fb408b59e2dae0b65b7d8e4074",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/events.jsonl",
+      "role": "event_log",
+      "sha256": "529a330a3559a219b740e4cde8910931e1bdbf49e00e706a2bc4850f870ae3a5",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "referenced",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/results_observed.sha256",
+      "role": "native_inventory",
+      "sha256": null,
+      "status": "validated",
+      "written": false
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/results_observed.sha256",
+      "role": "observed_manifest",
+      "sha256": "4ace9519a7c930eaaa8262e971d4c35293e62620f94eeebaa19e9ec8af90e99e",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/output_validation.json",
+      "role": "output_validation",
+      "sha256": "fc9c7833f81813325d735c50c5259d1fde5e2d94b79d423a8eca13b11c3576ae",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/C14-NMZ/stage_status.json",
+      "role": "stage_status",
+      "sha256": "22a5af8c814a4f0c1ffb7a2040050b70744e067a7fb91a23bb47ed10b4d0bedf",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic/workflow_summary.json",
+      "role": "workflow_summary",
+      "sha256": "fcba1096ceb41219b4171f75533a941af7af245cc278f6e1a57812e5d054ece4",
+      "status": "created",
+      "written": true
+    }
+  ],
+  "artifacts_total": 19,
+  "artifacts_truncated": false,
+  "claims": {
+    "may_not_say": [
+      {
+        "anchor": "Operational evidence, not tamper-proof proof.",
+        "id": "CL-N10",
+        "source": "PROVENANCE.md",
+        "text": "The attestation is cryptographic or tamper-proof."
+      }
+    ],
+    "may_say": [
+      {
+        "anchor": "not cryptographic proof against deliberate fabrication",
+        "id": "CL-A1",
+        "source": "PROVENANCE.md",
+        "text": "Execution is operationally attested by a bound stage-status record."
+      }
+    ]
+  },
+  "command": "run",
+  "contract_version": 1,
+  "diagnostics": [],
+  "diagnostics_total": 0,
+  "diagnostics_truncated": false,
+  "evidence": {
+    "attestation": "attested",
+    "structure": "valid"
+  },
+  "exit": {
+    "code": 0,
+    "policy": "strict"
+  },
+  "findings": [],
+  "outcome": {
+    "code": "OK",
+    "kind": "ok",
+    "summary": "The requested operation completed."
+  },
+  "refusal": null,
+  "result": {
+    "failures": [],
+    "legacy_status": "complete",
+    "preflight": {
+      "C14-NMZ": {
+        "checks": [
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "output_paths",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "destinations_fresh",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "thread_budget",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "resource_profile",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "input_pair",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "resource_allocation",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "cpu_budget",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "python_executable",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "run_dbcan_executable",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "diamond_executable",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "environment_layout",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "python_probe",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "python_identity",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "run_dbcan_version",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "diamond_version",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "executable_hashes",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "storage_snapshot",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "database_assets",
+            "state": "pass"
+          },
+          {
+            "detail": {
+              "message": "Check passed."
+            },
+            "id": "database_manifest",
+            "state": "pass"
+          }
+        ],
+        "contig_count": 1,
+        "database": {
+          "asset_checks": {
+            "CAZyme_annotation": {
+              "missing": [],
+              "ready": true,
+              "required": [
+                "CAZy.dmnd",
+                "dbCAN.hmm",
+                "dbCAN-sub.hmm",
+                "fam-substrate-mapping.tsv"
+              ]
+            },
+            "cgc_finder": {
+              "missing": [],
+              "ready": true,
+              "required": []
+            },
+            "gff_process": {
+              "missing": [],
+              "ready": true,
+              "required": [
+                "TCDB.dmnd",
+                "TF.hmm",
+                "TF.dmnd",
+                "STP.hmm",
+                "peptidase_db.dmnd",
+                "sulfatlas_db.dmnd"
+              ]
+            },
+            "substrate_prediction": {
+              "missing": [],
+              "ready": true,
+              "required": [
+                "PUL.dmnd",
+                "dbCAN-PUL.xlsx",
+                "dbCAN-PUL"
+              ]
+            }
+          },
+          "manifest_check": {
+            "expected_file_count": 646,
+            "expected_manifest": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/dbcan-workflow/environment/database_v5-2-9_5-5-2026.expected.sha256",
+            "expected_manifest_sha256": "0f20c1986c32df59723cffc20b677789ed0c12819cd0939e16788f58dea406d2",
+            "match": true,
+            "mismatched": [],
+            "missing": [],
+            "observed_file_count": 646,
+            "observed_manifest": null,
+            "snapshot": "db_v5-2-9_5-5-2026",
+            "unexpected": []
+          }
+        },
+        "diamond": "/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/diamond",
+        "diamond_version_output": "diamond version 2.2.8",
+        "executable_observed_sha256": {
+          "/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/diamond": "d3d72578fa97e87cc0846a06d2f9d7dc481a2106265f9546bc91512972fcd1f1",
+          "/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/python": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+          "/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/run_dbcan": "e4f05351193306d0483b9f12098e07599ee47703b71e5ac07acce2b274587acc"
+        },
+        "machine": "x86_64",
+        "preflight_status": "passed",
+        "profile": "sandbox",
+        "protein_count": 4636,
+        "python": "/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/python",
+        "python_prefix": "/workspace/scratch/51b8ca04e32d/c14-runtime/env",
+        "python_version": "3.12.14",
+        "ready": true,
+        "resolved_package_versions": {
+          "Pygments": "2.21.0",
+          "archspec": "0.2.6",
+          "bcbio-gff": "0.7.1",
+          "biopython": "1.85",
+          "certifi": "2026.7.22",
+          "charset-normalizer": "3.5.2",
+          "click": "8.5.0",
+          "contourpy": "1.4.0",
+          "cycler": "0.12.1",
+          "dbcan": "5.2.9",
+          "et_xmlfile": "2.0.0",
+          "fonttools": "4.67.0",
+          "idna": "3.20",
+          "importlib_metadata": "9.0.1",
+          "kiwisolver": "1.5.1",
+          "markdown-it-py": "4.2.0",
+          "matplotlib": "3.10.1",
+          "mdurl": "0.1.2",
+          "numpy": "2.5.4",
+          "openpyxl": "3.1.5",
+          "packaging": "26.3",
+          "pandas": "2.2.3",
+          "pillow": "13.0.0",
+          "pip": "25.0.1",
+          "psutil": "6.1.1",
+          "pyCirclize": "1.9.0",
+          "pyhmmer": "0.11.0",
+          "pyparsing": "3.3.3",
+          "pyrodigal": "3.6.3",
+          "pysam": "0.23.0",
+          "python-dateutil": "2.9.0.post0",
+          "pytz": "2026.5",
+          "requests": "2.32.3",
+          "rich": "15.0.0",
+          "rich-click": "1.8.8",
+          "seaborn": "0.13.2",
+          "session_info": "1.0.1",
+          "six": "1.17.0",
+          "stdlib-list": "0.12.0",
+          "tqdm": "4.67.1",
+          "typing_extensions": "4.16.0",
+          "tzdata": "2026.5",
+          "urllib3": "2.8.0",
+          "zipp": "4.1.1"
+        },
+        "resources": {
+          "cgroup_or_scheduler_cpu_limit": 8,
+          "cpu_affinity_count": 9,
+          "disk_free_bytes_by_path": {
+            "/tmp/dbcan-c14-database": 15669018624,
+            "/workspace/scratch/51b8ca04e32d/c14-run/metadata-atomic": 15669018624,
+            "/workspace/scratch/51b8ca04e32d/c14-run/results-atomic": 15669018624
+          },
+          "effective_cpu_allocation": 8,
+          "logical_cpu_count": 9,
+          "memory_limit_bytes": 8589934592,
+          "memory_source": "/sys/fs/cgroup/memory.max"
+        },
+        "run_dbcan": "/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/run_dbcan",
+        "run_dbcan_version_output": "dbCAN version: 5.2.9",
+        "threads": 4
+      }
+    },
+    "run_id": "dbcan-20261018T092347Z-5cde2d81",
+    "sample_summaries": {
+      "C14-NMZ": {
+        "candidates_with_at_least_one_resolved_family": 259,
+        "candidates_with_only_unresolved_family_labels": 6,
+        "candidates_with_unresolved_family_labels": 8,
+        "caution": "protein counts, protein-family associations, and domain instances are separate non-equivalent quantities; DIAMOND labels are reference family associations, not query-domain proof.",
+        "family_protein_associations": 275,
+        "overview_candidate_count": 265,
+        "positive_in_at_least_two_methods": 113,
+        "positive_method_count_distribution": {
+          "1": 152,
+          "2": 20,
+          "3": 93
+        },
+        "protein_count": 4636,
+        "proteins_with_resolved_family_agreement": 110,
+        "pseudogene_candidates": [],
+        "pseudogene_cds_count": 5,
+        "query_aligned_domain_instances": 244,
+        "run_dbcan_version_expected": "5.2.9",
+        "sample": "C14-NMZ",
+        "unique_resolved_family_count": 92,
+        "unresolved_family_associations_by_method": {
+          "DIAMOND": {
+            "AA0": 1,
+            "CE0": 1,
+            "GH0": 4,
+            "GT0": 2
+          }
+        }
+      }
+    },
+    "samples": [
+      "C14-NMZ"
+    ]
+  },
+  "run_id": "dbcan-20261018T092347Z-5cde2d81",
+  "tool": {
+    "name": "dbcan-workflow",
+    "version": "0.3.2"
+  },
+  "trust": {
+    "untrusted_paths": [
+      "/run_id",
+      "/diagnostics",
+      "/refusal/details",
+      "/artifacts/*/path",
+      "/findings/*/location",
+      "/warnings/*/location",
+      "/result",
+      "/failure/diagnostic",
+      "/failure/log_tail",
+      "/failure/log_path",
+      "/failures",
+      "/sample",
+      "/samples",
+      "/input_faa",
+      "/input_gff",
+      "/results_dir",
+      "/metadata_dir",
+      "/stages/*/argv",
+      "/stages/*/log_file",
+      "/stages/*/reason",
+      "/details",
+      "/validation",
+      "/scientific_summary",
+      "/sample_summaries",
+      "/preflight"
+    ]
+  },
+  "warnings": []
+}

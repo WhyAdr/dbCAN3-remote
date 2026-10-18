@@ -1,0 +1,44 @@
+{
+  "cgc_count": 26,
+  "cgc_member_rows": 179,
+  "circular_contigs": 3,
+  "evidence": {
+    "attestation": "unattested",
+    "structure": "valid"
+  },
+  "execution_attested": false,
+  "faa_proteins": 2266,
+  "gff_cds": 2266,
+  "input_faa_sha256": "05caedeebaad58a217fb90ad3af1bdb36c4ad46a6ea9b13fc99a6c516f4d3a61",
+  "input_gff_sha256": "02808fc5b80ab0188ad699b64a11ce0e6faa7bd1f37df5004d4c0009540b5912",
+  "method_count_distribution": {
+    "1": 69,
+    "2": 7,
+    "3": 31
+  },
+  "method_hit_proteins": {
+    "DIAMOND": 102,
+    "dbCAN-HMM": 36,
+    "dbCAN-sub": 38
+  },
+  "origin_spanning_cds": [
+    {
+      "contig": "contig_3",
+      "contig_length": 4439,
+      "end": 4796,
+      "id": "IMOLDJ_02406",
+      "start": 3417
+    }
+  ],
+  "overview_candidates": 107,
+  "positive_in_two_or_more_methods": 38,
+  "pseudogene_cds_count": 7,
+  "resolved_family_agreement": 36,
+  "results_dir": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/JN1B/native_results",
+  "run_id": null,
+  "sample": "JN1B",
+  "sample_source": "explicit",
+  "schema_version": 2,
+  "status": "structurally_valid_execution_unattested",
+  "substrate_rows": 2
+}

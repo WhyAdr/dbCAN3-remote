@@ -1,0 +1,54 @@
+{
+  "cds_count": 2266,
+  "cds_names_changed": 2266,
+  "circular_seqids": [
+    "contig_1",
+    "contig_2",
+    "contig_3"
+  ],
+  "converter_version": "1.0.0",
+  "coordinates_preserved": true,
+  "embedded_fasta_removed": false,
+  "faa_validation": {
+    "protein_count": 2266,
+    "sha256": "05caedeebaad58a217fb90ad3af1bdb36c4ad46a6ea9b13fc99a6c516f4d3a61",
+    "status": "exact_id_sets_match"
+  },
+  "feature_counts": {
+    "CDS": 2266,
+    "gene": 2406,
+    "ncRNA": 59,
+    "rRNA": 19,
+    "region": 3,
+    "regulatory_region": 27,
+    "rep_origin": 2,
+    "tRNA": 61,
+    "tmRNA": 1
+  },
+  "hierarchy_preserved": true,
+  "input_sha256": "02808fc5b80ab0188ad699b64a11ce0e6faa7bd1f37df5004d4c0009540b5912",
+  "origin_spanning_cds": [
+    {
+      "end": 4796,
+      "id": "IMOLDJ_02406",
+      "seqid": "contig_3",
+      "sequence_length": 4439,
+      "start": 3417
+    }
+  ],
+  "output_sha256": "f3d2a9c3dc5a72a0ec7ded72bba7c98fa39187eaebe444886f7aa3b5fa22bab8",
+  "pseudogene_cds_ids": [
+    "IMOLDJ_00106",
+    "IMOLDJ_00482",
+    "IMOLDJ_00898",
+    "IMOLDJ_01077",
+    "IMOLDJ_02303",
+    "IMOLDJ_02307",
+    "IMOLDJ_02308"
+  ],
+  "target": "dbCAN3_web_gene_positions",
+  "warnings": [
+    "Origin-spanning CDS retained with unrolled coordinates; web acceptance does not verify circular CGC adjacency or plotting.",
+    "Pseudogene-marked CDS retained; a homology hit on a pseudogene does not establish a functional enzyme."
+  ]
+}

@@ -1,0 +1,2 @@
+{"exit_code": 0, "outcome": {"code": "OK", "kind": "ok", "summary": "The requested operation completed."}, "evidence": {"attestation": "attested", "structure": "valid"}, "artifact_hash_mismatches": []}
+archive_sha256 7c5bf4df752f8e0d63736c04239aa8fd018356958d09de3a795c9322e40435f9

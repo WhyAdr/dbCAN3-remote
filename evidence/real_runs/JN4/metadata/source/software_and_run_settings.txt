@@ -1,0 +1,9 @@
+run_dbcan: dbCAN version: 5.2.9
+DIAMOND: diamond version 2.2.8
+Python: Python 3.12.14
+threads_per_command: 6
+sandbox_cpu_allocation: 9
+sandbox_memory: approximately 9.7 GiB
+local_database_directory: ./db (database excluded from output archive; checksum manifest retained)
+database_source: AWS S3 snapshot db_v5-2-9_5-5-2026
+provenance_logs: metadata/database-download.log and metadata/database-refresh.log

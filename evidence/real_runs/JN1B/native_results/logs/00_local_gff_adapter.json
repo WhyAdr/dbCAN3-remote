@@ -1,0 +1,28 @@
+{
+  "input_gff": "/workspace/scratch/f8e8c66e6055/work/package/inputs/normalized/JN1B.bakta.dbcan.gff",
+  "input_faa": "/workspace/scratch/f8e8c66e6055/work/package/inputs/original/JN1B.faa",
+  "output_gff": "/workspace/scratch/f8e8c66e6055/work/package/inputs/normalized/JN1B.cds.flat.local.gff",
+  "gff_type": "prodigal",
+  "adapter_reason": "run_dbcan 5.2.9 ProdigalProcessor reads top-level feature ID; Bakta CDS Parent is removed so CDS IDs map directly to FAA records",
+  "cds_count": 2266,
+  "faa_count": 2266,
+  "exact_ids_match": true,
+  "pseudogene_cds_ids": [
+    "IMOLDJ_00106",
+    "IMOLDJ_00482",
+    "IMOLDJ_00898",
+    "IMOLDJ_01077",
+    "IMOLDJ_02303",
+    "IMOLDJ_02307",
+    "IMOLDJ_02308"
+  ],
+  "origin_spanning_cds": [
+    {
+      "id": "IMOLDJ_02406",
+      "seqid": "contig_3",
+      "start": 3417,
+      "end": 4796,
+      "sequence_length": 4439
+    }
+  ]
+}

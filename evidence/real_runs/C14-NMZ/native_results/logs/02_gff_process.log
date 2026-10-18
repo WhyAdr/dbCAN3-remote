@@ -1,0 +1,45 @@
+2026-10-18 18:28:47,768 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /tmp/dbcan-c14-database/TCDB.dmnd --query /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/uniInput.faa --out /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.tc --outfmt 6 sseqid slen qseqid qlen evalue sstart send qstart qend qcovhsp --evalue 0.0001 --max-target-seqs 1 --threads 4 --quiet --query-cover 35.0
+2026-10-18 18:28:48,774 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 1.01s
+2026-10-18 18:28:48,785 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.tc
+2026-10-18 18:28:48,785 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /tmp/dbcan-c14-database/TF.dmnd --query /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/uniInput.faa --out /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.tf --outfmt 6 sseqid slen qseqid qlen evalue sstart send qstart qend qcovhsp --evalue 0.0001 --max-target-seqs 1 --threads 4 --quiet --query-cover 35.0
+2026-10-18 18:28:48,958 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 0.17s
+2026-10-18 18:28:48,962 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.tf
+2026-10-18 18:28:49,043 - dbcan.utils.memory_monitor - INFO - Memory status [Before HMM search]: RSS=76.7MB, Available=9176.0MB, Usage=7.9%
+2026-10-18 18:28:49,043 - dbcan.annotation.pyhmmer_search - INFO - Running HMM search: hmm=STP.hmm input=uniInput.faa out=STP_hmm_results.tsv evalue=0.0001 cov=0.35 cpus=4
+2026-10-18 18:28:49,134 - dbcan.annotation.pyhmmer_search - INFO - Using fixed HMMER Z=177 for STP.hmm
+2026-10-18 18:28:49,134 - dbcan.annotation.pyhmmer_search - INFO - Input size: 1.5MB, HMM size: 10.6MB, Available: 9176.0MB, large_mode=False, preload_targets=True, preload_hmms=True, force_batching=False, csv_buffer_size=5000, retry=0/3
+2026-10-18 18:28:49,134 - dbcan.annotation.pyhmmer_search - INFO - Pre-loading all HMMs into memory for speed...
+2026-10-18 18:28:49,134 - dbcan.annotation.pyhmmer_search - INFO - Estimated HMM memory: 53.0MB
+2026-10-18 18:28:49,228 - dbcan.annotation.pyhmmer_search - INFO - Loaded 177 HMMs into memory.
+2026-10-18 18:28:50,014 - dbcan.utils.memory_monitor - INFO - Memory report [HMM search]: Initial=76.7MB, Current=111.1MB, Peak=111.1MB (After HMM search), Increase=34.4MB, Usage=8.1%, Checkpoints=1, Elapsed=1.0s
+2026-10-18 18:28:50,014 - dbcan.annotation.pyhmmer_search - INFO - STP.hmm search completed. Hits: 1498, Sequences: 0, Batches: 0, Time: 0.97s, Retries: 0, Memory warnings: 0
+2026-10-18 18:28:50,017 - dbcan.process.process_utils - INFO - process_results loaded 1498 hits from temp file /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/STP_hmm_results.tsv.raw.tsv in 0.00s
+2026-10-18 18:28:50,022 - dbcan.process.process_utils - INFO - filter_overlaps: processing 1498 rows across 826 targets (avg 1.8 hits/target)
+2026-10-18 18:28:50,079 - dbcan.process.process_utils - INFO - filter_overlaps: reduced 1498 rows to 1196 rows across 826 targets in 0.06s
+2026-10-18 18:28:50,093 - dbcan.process.process_utils - INFO - process_results: filtered overlaps from 1498 to 1196 rows in 0.07s
+2026-10-18 18:28:50,098 - dbcan.process.process_utils - INFO - process_results: wrote filtered results to /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/STP_hmm_results.tsv
+2026-10-18 18:28:50,101 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /tmp/dbcan-c14-database/sulfatlas_db.dmnd --query /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/uniInput.faa --out /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.sulfatase --outfmt 6 sseqid slen qseqid qlen evalue sstart send qstart qend qcovhsp --evalue 0.0001 --max-target-seqs 1 --threads 4 --quiet --query-cover 35.0
+2026-10-18 18:28:54,779 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 4.68s
+2026-10-18 18:28:54,782 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.sulfatase
+2026-10-18 18:28:54,782 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /tmp/dbcan-c14-database/peptidase_db.dmnd --query /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/uniInput.faa --out /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.peptidase --outfmt 6 sseqid slen qseqid qlen evalue sstart send qstart qend qcovhsp --evalue 0.0001 --max-target-seqs 1 --threads 4 --quiet --query-cover 35.0
+2026-10-18 18:28:59,338 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 4.56s
+2026-10-18 18:28:59,342 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.peptidase
+2026-10-18 18:28:59,347 - dbcan.process.process_utils - INFO - Loaded 1246 TC annotations from /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.tc
+2026-10-18 18:28:59,352 - dbcan.process.process_utils - INFO - Loaded 1196 STP annotations from /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/STP_hmm_results.tsv
+2026-10-18 18:28:59,354 - dbcan.process.process_utils - INFO - Loaded 175 Sulfatase annotations from /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.sulfatase
+2026-10-18 18:28:59,357 - dbcan.process.process_utils - INFO - Loaded 220 Peptidase annotations from /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.peptidase
+2026-10-18 18:28:59,359 - dbcan.process.process_utils - INFO - Loaded 178 TF_prok annotations from /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/diamond.out.tf
+2026-10-18 18:28:59,363 - dbcan.process.process_utils - INFO - filter_overlaps: processing 3015 rows across 2144 targets (avg 1.4 hits/target)
+2026-10-18 18:28:59,516 - dbcan.process.process_utils - INFO - filter_overlaps: reduced 3015 rows to 2374 rows across 2144 targets in 0.15s
+2026-10-18 18:28:59,556 - dbcan.process.process_utils - INFO - Saved 2374 CGC annotations to /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/total_cgc_info.tsv
+2026-10-18 18:28:59,560 - dbcan.IO.gff - INFO - [GFF] Prodigal type detected: skip sorting, use raw order.
+2026-10-18 18:28:59,561 - dbcan.IO.gff - INFO - Loading annotation tables (CAZyme / CGC signatures)
+2026-10-18 18:28:59,561 - dbcan.IO.gff - INFO - Loading CAZyme data from /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/overview.tsv
+2026-10-18 18:28:59,564 - dbcan.IO.gff - INFO - Loading CGC signature data from /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/total_cgc_info.tsv
+2026-10-18 18:28:59,569 - dbcan.IO.gff - INFO - CGC signature chunks read: 1, total rows: 2374; TC rows: 1168
+2026-10-18 18:28:59,569 - dbcan.IO.gff - INFO - Combining CAZyme and CGC signature data
+2026-10-18 18:28:59,588 - dbcan.IO.gff - INFO - Combined annotations: 2219 proteins; with TC: 1168
+2026-10-18 18:28:59,592 - dbcan.IO.gff - INFO - Annotating GFF from: /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/inputs/C14-NMZ.cds.flat.local.gff
+2026-10-18 18:28:59,593 - dbcan.IO.gff - INFO - [Prodigal] BCBio GFF.parse annotator (input 1.8 MiB; threshold 50 MB for auto-streaming).
+2026-10-18 18:28:59,746 - dbcan.IO.gff - INFO - [Prodigal] Written feature lines: 4636
+2026-10-18 18:28:59,754 - dbcan.IO.gff - INFO - GFF processing complete: /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/cgc.gff

@@ -1,0 +1,215 @@
+{
+  "artifacts": [
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/JN1B/metadata/summary/envelope.summarize.json",
+      "role": "envelope",
+      "sha256": null,
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/JN1B/metadata/summary/candidate_evidence.tsv",
+      "role": "scientific_summary",
+      "sha256": "0e3de3658a96979977179958c112dbd6f8d745ec8952afe6cccd64736bfbb0e4",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/JN1B/metadata/summary/class_family_comparison.tsv",
+      "role": "scientific_summary",
+      "sha256": "abd217a68b8fe5a3b5bebe09e1cd5e014d31dbfc205735c71f7f396e66dab4a2",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/JN1B/metadata/summary/domain_instances.tsv",
+      "role": "scientific_summary",
+      "sha256": "2802158a7cace211246fa74e89da330a633e0f7035bc8975fec5f57868a0abd5",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/JN1B/metadata/summary/family_protein_counts.tsv",
+      "role": "scientific_summary",
+      "sha256": "b4bb3e7b6770b1a80a3f31dead124cf73cb0d2f1ee1026ce0a5188d66c9c2c43",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/JN1B/metadata/summary/method_agreement.tsv",
+      "role": "scientific_summary",
+      "sha256": "a62a0c34386b9ff47ac337736bce13f14def9f6b59fba2a3e94f5c3d5ddeecd4",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/JN1B/metadata/summary/protein_family_associations.tsv",
+      "role": "scientific_summary",
+      "sha256": "f23e21a0d195167e58e839642d80ccf56b3fec546b303fd495f4223ef33dbb91",
+      "status": "created",
+      "written": true
+    },
+    {
+      "origin": "tool",
+      "path": "/workspace/scratch/51b8ca04e32d/dbCAN3-remote/evidence/real_runs/JN1B/metadata/summary/summary.json",
+      "role": "scientific_summary",
+      "sha256": "5fa89c2930cd1fe05bf28772438ea63c4ebc45414e9c6ecee91486a1512fadec",
+      "status": "created",
+      "written": true
+    }
+  ],
+  "artifacts_total": 8,
+  "artifacts_truncated": false,
+  "claims": {
+    "may_not_say": [
+      {
+        "anchor": "File presence or declared success is insufficient.",
+        "id": "CL-N1",
+        "source": "SKILL.md",
+        "text": "The run completed successfully or the pipeline executed."
+      },
+      {
+        "anchor": "outside resolved-family counts",
+        "id": "CL-N11",
+        "source": "SKILL.md",
+        "text": "GH0/GT0 or other zero-root labels are resolved families."
+      },
+      {
+        "anchor": "The methods share CAZy-derived information",
+        "id": "CL-N3",
+        "source": "references/reporting.md",
+        "text": "The three methods independently confirm a family; they share CAZy-derived information."
+      },
+      {
+        "anchor": "not query-domain evidence by itself",
+        "id": "CL-N4",
+        "source": "references/reporting.md",
+        "text": "A DIAMOND family on a reference protein proves the query has that domain."
+      },
+      {
+        "anchor": "must not be described as a curated CAZy subfamily",
+        "id": "CL-N5",
+        "source": "references/reporting.md",
+        "text": "A dbCAN-sub _e<number> group is a curated CAZy subfamily."
+      },
+      {
+        "anchor": "experimentally demonstrated activity",
+        "id": "CL-N6",
+        "source": "references/reporting.md",
+        "text": "Substrate or PUL matches demonstrate substrate utilisation or activity."
+      },
+      {
+        "anchor": "bitscore sums are not probabilities",
+        "id": "CL-N7",
+        "source": "references/reporting.md",
+        "text": "Bitscore sums are probabilities."
+      }
+    ],
+    "may_say": [
+      {
+        "anchor": "structurally valid, execution-unattested",
+        "id": "CL-A2",
+        "source": "SKILL.md",
+        "text": "Results are structurally valid; execution is unattested."
+      },
+      {
+        "anchor": "permits structural review without usable execution evidence",
+        "id": "CL-S1",
+        "source": "references/provenance.md",
+        "text": "Output tables are structurally consistent with the supplied FAA/GFF3."
+      }
+    ]
+  },
+  "command": "summarize",
+  "contract_version": 1,
+  "diagnostics": [],
+  "diagnostics_total": 0,
+  "diagnostics_truncated": false,
+  "evidence": {
+    "attestation": "unattested",
+    "structure": "valid"
+  },
+  "exit": {
+    "code": 0,
+    "policy": "strict"
+  },
+  "findings": [],
+  "outcome": {
+    "code": "OK",
+    "kind": "ok",
+    "summary": "The requested operation completed."
+  },
+  "refusal": null,
+  "result": {
+    "candidates_with_at_least_one_resolved_family": 101,
+    "candidates_with_only_unresolved_family_labels": 6,
+    "candidates_with_unresolved_family_labels": 8,
+    "caution": "protein counts, protein-family associations, and domain instances are separate non-equivalent quantities; DIAMOND labels are reference family associations, not query-domain proof.",
+    "family_protein_associations": 103,
+    "overview_candidate_count": 107,
+    "positive_in_at_least_two_methods": 38,
+    "positive_method_count_distribution": {
+      "1": 69,
+      "2": 7,
+      "3": 31
+    },
+    "protein_count": 2266,
+    "proteins_with_resolved_family_agreement": 36,
+    "pseudogene_candidates": [],
+    "pseudogene_cds_count": 7,
+    "query_aligned_domain_instances": 78,
+    "run_dbcan_version_expected": "5.2.9",
+    "sample": "JN1B",
+    "sample_source": "explicit",
+    "substrate_rows": 2,
+    "unique_resolved_family_count": 42,
+    "unresolved_family_associations_by_method": {
+      "DIAMOND": {
+        "GH0": 5,
+        "GT0": 3
+      }
+    }
+  },
+  "run_id": null,
+  "tool": {
+    "name": "dbcan-workflow",
+    "version": "0.3.2"
+  },
+  "trust": {
+    "untrusted_paths": [
+      "/run_id",
+      "/diagnostics",
+      "/refusal/details",
+      "/artifacts/*/path",
+      "/findings/*/location",
+      "/warnings/*/location",
+      "/result",
+      "/failure/diagnostic",
+      "/failure/log_tail",
+      "/failure/log_path",
+      "/failures",
+      "/sample",
+      "/samples",
+      "/input_faa",
+      "/input_gff",
+      "/results_dir",
+      "/metadata_dir",
+      "/stages/*/argv",
+      "/stages/*/log_file",
+      "/stages/*/reason",
+      "/details",
+      "/validation",
+      "/scientific_summary",
+      "/sample_summaries",
+      "/preflight"
+    ]
+  },
+  "warnings": []
+}

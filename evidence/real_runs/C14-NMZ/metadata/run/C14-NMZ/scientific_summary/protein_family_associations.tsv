@@ -1,0 +1,498 @@
+protein_id	method	family	family_class	evidence_type	source_file	raw_labels	domain_boundaries_aa	resolved_family	pseudogene_marked
+OJMJKD_000085	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QIX78980.1|GH13_19		True	False
+OJMJKD_000085	dbCAN-HMM	GH13	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH13_19.hmm	227-605	True	False
+OJMJKD_000085	dbCAN-sub	GH13	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH13_e62	227-605	True	False
+OJMJKD_000385	DIAMOND	GH1	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	ASC76536.1|GH1		True	False
+OJMJKD_000385	dbCAN-HMM	GH1	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH1.hmm	1-460	True	False
+OJMJKD_000385	dbCAN-sub	GH1	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH1_e85	4-460	True	False
+OJMJKD_000445	DIAMOND	GH18	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AXX26606.1|GH18		True	False
+OJMJKD_000445	dbCAN-HMM	GH18	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH18.hmm	158-547	True	False
+OJMJKD_000445	dbCAN-sub	GH18	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH18_e428	158-547	True	False
+OJMJKD_000500	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AXX20576.1|GT2		True	False
+OJMJKD_000500	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	276-445	True	False
+OJMJKD_000500	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	274-648	True	False
+OJMJKD_000505	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ASO85436.1|GT2|2.4.1.12		True	False
+OJMJKD_000510	DIAMOND	GH8	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	UTO01632.1|GH8		True	False
+OJMJKD_000510	dbCAN-HMM	GH8	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH8.hmm	23-342	True	False
+OJMJKD_000510	dbCAN-sub	GH8	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH8_e67	23-342	True	False
+OJMJKD_000550	DIAMOND	GH18	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	ALR09738.1|GH18		True	False
+OJMJKD_000575	DIAMOND	GT0	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QLK59446.1|GT0		False	False
+OJMJKD_000585	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QWA11134.1|GT2		True	False
+OJMJKD_000590	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QAY63367.1|GT2		True	False
+OJMJKD_000610	DIAMOND	GT56	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	APS32646.1|GT56		True	False
+OJMJKD_000610	dbCAN-HMM	GT56	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT56.hmm	1-354	True	False
+OJMJKD_000610	dbCAN-sub	GT56	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT56_e1	1-353	True	False
+OJMJKD_000615	DIAMOND	GT120	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QIX79070.1|GT120		True	False
+OJMJKD_000615	dbCAN-HMM	GT120	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT120.hmm	6-429	True	False
+OJMJKD_000615	dbCAN-sub	GT120	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT120_e0	6-429	True	False
+OJMJKD_000620	DIAMOND	GT26	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE15989.1|GT26		True	False
+OJMJKD_000620	dbCAN-HMM	GT26	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT26.hmm	62-231	True	False
+OJMJKD_000620	dbCAN-sub	GT26	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT26_e141	62-231	True	False
+OJMJKD_001185	DIAMOND	GH1	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CCO12868.1|GH1		True	False
+OJMJKD_001280	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QYU66396.1|GH13_23		True	False
+OJMJKD_001320	DIAMOND	GH1	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAE6201330.1|GH1		True	False
+OJMJKD_001365	dbCAN-HMM	CE1	CE	query-aligned HMM domain	dbCAN_hmm_results.tsv	CE1.hmm	147-373	True	False
+OJMJKD_001375	DIAMOND	GT1	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QND46664.1|GT1		True	False
+OJMJKD_001545	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QYO62262.1|GH13		True	False
+OJMJKD_001660	DIAMOND	CBM50	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	XOB09255.1|CBM50		True	False
+OJMJKD_001660	dbCAN-sub	CBM50	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM50_e126;CBM50_e1378	489-531;554-596	True	False
+OJMJKD_001700	DIAMOND	GT47	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	CAN80640.1|GT47		True	False
+OJMJKD_001785	DIAMOND	CBM50	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	ANF95373.1|CBM50		True	False
+OJMJKD_001900	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ALR08391.1|GT4		True	False
+OJMJKD_001935	DIAMOND	GT50	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT50|26967|Rozal_SC1_GeneCatalog_proteins_20141014.aa.fasta		True	False
+OJMJKD_001975	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AGL64345.1|GT2		True	False
+OJMJKD_002000	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAD7252417.1|GH13_48		True	False
+OJMJKD_002190	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	ASC76851.1|GH13_29		True	False
+OJMJKD_002190	dbCAN-HMM	GH13	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH13_29.hmm	30-371	True	False
+OJMJKD_002190	dbCAN-sub	GH13	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH13_e1	30-371	True	False
+OJMJKD_002195	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QCH95999.1|GH13_29		True	False
+OJMJKD_002210	DIAMOND	GH20	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	ASC76855.1|GH20		True	False
+OJMJKD_002210	dbCAN-HMM	GH20	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH20.hmm	157-587	True	False
+OJMJKD_002210	dbCAN-sub	GH20	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH20_e182	157-586	True	False
+OJMJKD_002270	DIAMOND	AA3	AA	reference-protein family association; query domain not established by this hit alone	diamond.out	AWP09430.1|AA3_2		True	False
+OJMJKD_002270	dbCAN-HMM	AA3	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA3_2.hmm	5-531	True	False
+OJMJKD_002270	dbCAN-sub	AA3	AA	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	AA3_e57	5-530	True	False
+OJMJKD_002280	DIAMOND	GH5	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAG7911095.1|GH5_11		True	False
+OJMJKD_002385	DIAMOND	GT20	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	XNS18357.1|GT20		True	False
+OJMJKD_002385	dbCAN-HMM	GT20	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT20.hmm	26-227	True	False
+OJMJKD_002385	dbCAN-sub	GT20	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT20_e4	25-228	True	False
+OJMJKD_002810	DIAMOND	GH1	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AHC21644.1|GH1		True	False
+OJMJKD_002890	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	CAI2767886.1|GT4		True	False
+OJMJKD_002920	DIAMOND	GH23	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QJU38399.1|GH23		True	False
+OJMJKD_002920	dbCAN-HMM	GH23	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH23.hmm	493-619	True	False
+OJMJKD_002920	dbCAN-sub	GH23	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH23_e96	490-620	True	False
+OJMJKD_003010	DIAMOND	GT1	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT1|201643|Melli1_GeneCatalog_proteins_20150227.aa.fasta		True	False
+OJMJKD_003085	DIAMOND	GT1	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ANM79555.1|GT1		True	False
+OJMJKD_003085	dbCAN-HMM	GT1	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT1.hmm	7-416	True	False
+OJMJKD_003085	dbCAN-sub	GT1	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT1_e514	8-416	True	False
+OJMJKD_003135	DIAMOND	GT28	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AKG14948.1|GT28		True	False
+OJMJKD_003245	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH13_22|GH13_22|GT5|2304|Uncre1_GeneCatalog_proteins_20131024.aa.fasta		True	False
+OJMJKD_003245	DIAMOND	GT5	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GH13_22|GH13_22|GT5|2304|Uncre1_GeneCatalog_proteins_20131024.aa.fasta		True	False
+OJMJKD_003335	DIAMOND	GT119	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QOT97901.1|GT119		True	False
+OJMJKD_003335	dbCAN-HMM	GT119	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT119.hmm	43-387	True	False
+OJMJKD_003335	dbCAN-sub	GT119	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT119_e39	42-387	True	False
+OJMJKD_003340	DIAMOND	GT28	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AUO01402.1|GT28		True	False
+OJMJKD_003340	dbCAN-HMM	GT28	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT28.hmm	185-341	True	False
+OJMJKD_003340	dbCAN-sub	GT28	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT28_e160	185-341	True	False
+OJMJKD_003370	DIAMOND	CE11	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	WIF05988.1|CE11		True	False
+OJMJKD_003370	dbCAN-HMM	CE11	CE	query-aligned HMM domain	dbCAN_hmm_results.tsv	CE11.hmm	4-276	True	False
+OJMJKD_003370	dbCAN-sub	CE11	CE	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CE11_e43	4-276	True	False
+OJMJKD_003505	DIAMOND	GT33	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT33|391379|Krezon1_GeneCatalog_proteins_20220127.aa.fasta		True	False
+OJMJKD_003510	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CCO12112.1|GH13_31		True	False
+OJMJKD_003530	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	XWY09793.1|GH13_3		True	False
+OJMJKD_003650	DIAMOND	CBM50	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	QIO26356.1|CBM50		True	False
+OJMJKD_003650	dbCAN-sub	CBM50	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM50_e1400	77-119	True	False
+OJMJKD_003695	DIAMOND	GH1	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QOV55752.1|GH1		True	False
+OJMJKD_003695	dbCAN-HMM	GH1	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH1.hmm	1-459	True	False
+OJMJKD_003695	dbCAN-sub	GH1	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH1_e194	3-459	True	False
+OJMJKD_003705	DIAMOND	CE0	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	BAB92994.1|CE0		False	False
+OJMJKD_003830	DIAMOND	GH24	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QPJ90168.1|GH24		True	False
+OJMJKD_003830	dbCAN-HMM	GH24	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH24.hmm	29-160	True	False
+OJMJKD_003830	dbCAN-sub	GH24	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH24_e190	29-160	True	False
+OJMJKD_003845	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH13_25|GH133|GH13_25|2142|Fonmo1_GeneCatalog_proteins_20170704.aa.fasta		True	False
+OJMJKD_003845	DIAMOND	GH133	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH13_25|GH133|GH13_25|2142|Fonmo1_GeneCatalog_proteins_20170704.aa.fasta		True	False
+OJMJKD_003885	DIAMOND	GT0	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT0|599368|Decga1_GeneCatalog_proteins_20150425.aa.fasta		False	False
+OJMJKD_003935	DIAMOND	CBM50	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	BBG67997.1|CBM50|GH23		True	False
+OJMJKD_003935	dbCAN-sub	CBM50	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM50_e1175	244-286;298-340	True	False
+OJMJKD_003935	DIAMOND	GH23	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	BBG67997.1|CBM50|GH23		True	False
+OJMJKD_003935	dbCAN-HMM	GH23	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH23.hmm	3-145	True	False
+OJMJKD_003935	dbCAN-sub	GH23	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH23_e819	1-142	True	False
+OJMJKD_004560	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	BFD36069.1|GH13_3		True	False
+OJMJKD_004575	DIAMOND	CBM34	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE16808.1|CBM34|GH13_21		True	False
+OJMJKD_004575	dbCAN-HMM	CBM34	CBM	query-aligned HMM domain	dbCAN_hmm_results.tsv	CBM34.hmm	5-112	True	False
+OJMJKD_004575	dbCAN-sub	CBM34	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM34_e8	5-109	True	False
+OJMJKD_004575	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE16808.1|CBM34|GH13_21		True	False
+OJMJKD_004575	dbCAN-HMM	GH13	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH13_21.hmm	173-489	True	False
+OJMJKD_004575	dbCAN-sub	GH13	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH13_e88	173-488	True	False
+OJMJKD_004580	DIAMOND	GH0	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QIF05881.1|GH0		False	False
+OJMJKD_004760	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT2|5007|Sakvas1_GeneCatalog_proteins_20160730.aa.fasta		True	False
+OJMJKD_004950	DIAMOND	GH152	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAE6179499.1|GH152		True	False
+OJMJKD_005160	DIAMOND	GH27	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAE6076421.1|GH27		True	False
+OJMJKD_005205	DIAMOND	GT83	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	XVN67401.1|GT83		True	False
+OJMJKD_005205	dbCAN-HMM	GT83	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT83.hmm	71-373	True	False
+OJMJKD_005205	dbCAN-sub	GT83	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT83_e18	46-358	True	False
+OJMJKD_005220	dbCAN-HMM	AA6	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA6.hmm	4-181	True	False
+OJMJKD_005340	DIAMOND	GT119	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QHJ33119.1|GT119		True	False
+OJMJKD_005340	dbCAN-HMM	GT119	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT119.hmm	21-363	True	False
+OJMJKD_005340	dbCAN-sub	GT119	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT119_e146	26-362	True	False
+OJMJKD_005345	DIAMOND	GT119	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ASK77786.1|GT119		True	False
+OJMJKD_005375	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AMJ20771.1|GH13_26		True	False
+OJMJKD_005485	DIAMOND	CBM12	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	AIA49895.1|CBM12|GH18		True	False
+OJMJKD_005485	dbCAN-HMM	CBM12	CBM	query-aligned HMM domain	dbCAN_hmm_results.tsv	CBM12.hmm	434-467	True	False
+OJMJKD_005485	dbCAN-sub	CBM12	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM12_e5	434-467	True	False
+OJMJKD_005485	DIAMOND	GH18	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AIA49895.1|CBM12|GH18		True	False
+OJMJKD_005485	dbCAN-HMM	GH18	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH18.hmm	25-268	True	False
+OJMJKD_005485	dbCAN-sub	GH18	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH18_e347	26-315	True	False
+OJMJKD_005500	DIAMOND	CE9	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	QTI62291.1|CE9		True	False
+OJMJKD_005500	dbCAN-HMM	CE9	CE	query-aligned HMM domain	dbCAN_hmm_results.tsv	CE9.hmm	5-376	True	False
+OJMJKD_005500	dbCAN-sub	CE9	CE	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CE9_e0	4-376	True	False
+OJMJKD_005515	DIAMOND	CE8	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	CAE6110940.1|CE8		True	False
+OJMJKD_005530	DIAMOND	GH20	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QPJ90516.1|GH20		True	False
+OJMJKD_005530	dbCAN-HMM	GH20	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH20.hmm	332-765	True	False
+OJMJKD_005530	dbCAN-sub	GH20	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH20_e0	334-765	True	False
+OJMJKD_005560	DIAMOND	CBM48	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	QFG67851.1|CBM48|GH13_9		True	False
+OJMJKD_005560	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QFG67851.1|CBM48|GH13_9		True	False
+OJMJKD_005680	DIAMOND	GT51	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	WGZ68866.1|GT51		True	False
+OJMJKD_005685	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	CAD7280782.1|GT2		True	False
+OJMJKD_005690	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	CAD7280782.1|GT2		True	False
+OJMJKD_005695	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	CAD7280782.1|GT2		True	False
+OJMJKD_005700	DIAMOND	GT22	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QKX60855.1|GT22		True	False
+OJMJKD_005705	DIAMOND	CBM50	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	WMM24312.1|CBM50		True	False
+OJMJKD_005815	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH13_25|GH133|GH13_25|2142|Fonmo1_GeneCatalog_proteins_20170704.aa.fasta		True	False
+OJMJKD_005815	DIAMOND	GH133	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH13_25|GH133|GH13_25|2142|Fonmo1_GeneCatalog_proteins_20170704.aa.fasta		True	False
+OJMJKD_005850	DIAMOND	GH3	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CUS02883.1|GH3		True	False
+OJMJKD_005955	DIAMOND	AA5	AA	reference-protein family association; query domain not established by this hit alone	diamond.out	QRW27311.1|AA5_1		True	False
+OJMJKD_006145	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	XHX63512.1|GH13_3		True	False
+OJMJKD_006295	DIAMOND	GH3	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	XOA72013.1|GH3		True	False
+OJMJKD_006295	dbCAN-HMM	GH3	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH3.hmm	98-319	True	False
+OJMJKD_006295	dbCAN-sub	GH3	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH3_e300	100-319	True	False
+OJMJKD_006410	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AIA49723.1|GH13_5		True	False
+OJMJKD_006410	dbCAN-HMM	GH13	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH13_5.hmm	31-374	True	False
+OJMJKD_006410	dbCAN-sub	GH13	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH13_e245	32-374	True	False
+OJMJKD_006530	DIAMOND	CBM5	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	XAH51323.1|CBM5		True	False
+OJMJKD_006645	dbCAN-HMM	GH179	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH179.hmm	40-274	True	False
+OJMJKD_006645	dbCAN-sub	GH179	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH179_e0	41-277	True	False
+OJMJKD_007115	DIAMOND	AA3	AA	reference-protein family association; query domain not established by this hit alone	diamond.out	CAB3230510.1|AA3		True	False
+OJMJKD_007115	dbCAN-HMM	AA3	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA3_2.hmm	2-533	True	False
+OJMJKD_007115	dbCAN-sub	AA3	AA	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	AA3_e57	3-532	True	False
+OJMJKD_007305	dbCAN-HMM	CE1	CE	query-aligned HMM domain	dbCAN_hmm_results.tsv	CE1.hmm	26-275	True	False
+OJMJKD_007310	DIAMOND	GT1	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	CAG7895893.1|GT1		True	False
+OJMJKD_007360	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	CAG7859579.1|GT4		True	False
+OJMJKD_007460	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QGH59743.1|GT4		True	False
+OJMJKD_007460	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e4132	220-341	True	False
+OJMJKD_007470	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QGH59741.1|GT4		True	False
+OJMJKD_007470	dbCAN-HMM	GT4	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT4.hmm	174-326	True	False
+OJMJKD_007470	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e2495	177-323	True	False
+OJMJKD_007485	dbCAN-sub	GT94	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT94_e13	48-284	True	False
+OJMJKD_007490	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QGH59737.1|GT4		True	False
+OJMJKD_007490	dbCAN-HMM	GT4	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT4.hmm	200-339	True	False
+OJMJKD_007490	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e774	203-339	True	False
+OJMJKD_007495	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AGN91810.2|GT4		True	False
+OJMJKD_007510	DIAMOND	GH39	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QGH64229.1|GH39		True	False
+OJMJKD_007510	dbCAN-HMM	GH39	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH39.hmm	106-400	True	False
+OJMJKD_007510	dbCAN-sub	GH39	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH39_e149	96-396	True	False
+OJMJKD_007555	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QLJ26156.1|GT2		True	False
+OJMJKD_007555	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	14-226	True	False
+OJMJKD_007560	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	WMT17318.1|GT2		True	False
+OJMJKD_007560	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	13-120	True	False
+OJMJKD_007560	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	13-245	True	False
+OJMJKD_007575	dbCAN-HMM	GT137	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT137.hmm	330-847	True	False
+OJMJKD_007575	dbCAN-sub	GT137	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT137_e1	458-756	True	False
+OJMJKD_007575	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	WMT16496.1|GT4		True	False
+OJMJKD_007575	dbCAN-HMM	GT4	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT4.hmm	1066-1215	True	False
+OJMJKD_007575	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e5338	1065-1211	True	False
+OJMJKD_007580	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	WMT16497.1|GT4		True	False
+OJMJKD_007580	dbCAN-HMM	GT4	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT4.hmm	273-418	True	False
+OJMJKD_007580	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e3091	274-416	True	False
+OJMJKD_007590	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	WMT16499.1|GT4		True	False
+OJMJKD_007590	dbCAN-HMM	GT4	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT4.hmm	277-416	True	False
+OJMJKD_007590	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e5977	277-416	True	False
+OJMJKD_007600	DIAMOND	GT30	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	CBA03971.1|GT30		True	False
+OJMJKD_008050	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AGL63717.1|GT4		True	False
+OJMJKD_008095	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AGL63871.1|GT2		True	False
+OJMJKD_008180	DIAMOND	GT121	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	UVO20229.1|GT121		True	False
+OJMJKD_008190	DIAMOND	AA3	AA	reference-protein family association; query domain not established by this hit alone	diamond.out	AA3_2|AA3_2|241791|Aspneoi1_GeneCatalog_proteins_20170406.aa.fasta		True	False
+OJMJKD_008525	dbCAN-HMM	AA6	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA6.hmm	3-196	True	False
+OJMJKD_008525	dbCAN-sub	AA6	AA	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	AA6_e2	3-193	True	False
+OJMJKD_008555	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	BFD36069.1|GH13_3		True	False
+OJMJKD_008640	DIAMOND	CE12	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	QKG20781.1|CE12		True	False
+OJMJKD_008820	DIAMOND	GH186	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE17620.1|GH186		True	False
+OJMJKD_008820	dbCAN-HMM	GH186	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH186.hmm	32-518	True	False
+OJMJKD_008820	dbCAN-sub	GH186	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH186_e11	30-518	True	False
+OJMJKD_008825	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	BBO62479.1|GT2		True	False
+OJMJKD_008825	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	255-437	True	False
+OJMJKD_008825	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	253-585	True	False
+OJMJKD_008845	DIAMOND	GH38	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH38|843|Clagr3_GeneCatalog_proteins_20111121.aa.fasta		True	False
+OJMJKD_009015	DIAMOND	GT57	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT57|1968126|Rhimi59_2_GeneCatalog_proteins_20220409.aa.fasta		True	False
+OJMJKD_009100	DIAMOND	GH3	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE17685.1|GH3		True	False
+OJMJKD_009100	dbCAN-HMM	GH3	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH3.hmm	57-278	True	False
+OJMJKD_009100	dbCAN-sub	GH3	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH3_e19	56-277	True	False
+OJMJKD_009105	DIAMOND	GH3	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	VTO21830.1|GH3		True	False
+OJMJKD_009175	DIAMOND	GH65	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AVM55139.1|GH65		True	False
+OJMJKD_009210	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	CCA14548.1|GT2		True	False
+OJMJKD_009355	DIAMOND	GH63	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	XUU49936.1|GH63		True	False
+OJMJKD_009355	dbCAN-HMM	GH63	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH63.hmm	9-787	True	False
+OJMJKD_009355	dbCAN-sub	GH63	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH63_e1	10-787	True	False
+OJMJKD_009370	DIAMOND	GH2	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AIA49174.1|GH2_10		True	False
+OJMJKD_009370	dbCAN-HMM	GH2	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH2_10.hmm	37-884	True	False
+OJMJKD_009370	dbCAN-sub	GH2	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH2_e230	35-885	True	False
+OJMJKD_009500	DIAMOND	GH0	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGL64700.1|GH0		False	False
+OJMJKD_009580	DIAMOND	GH4	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE17828.1|GH4		True	False
+OJMJKD_009580	dbCAN-HMM	GH4	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH4.hmm	2-181	True	False
+OJMJKD_009580	dbCAN-sub	GH4	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH4_e51	2-180	True	False
+OJMJKD_009645	dbCAN-HMM	AA3	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA3.hmm	3-585	True	False
+OJMJKD_009785	dbCAN-HMM	GH109	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH109.hmm	11-193	True	False
+OJMJKD_009785	dbCAN-sub	GH109	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH109_e2	12-192	True	False
+OJMJKD_009925	DIAMOND	GH32	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE17902.1|GH32		True	False
+OJMJKD_009925	dbCAN-HMM	GH32	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH32.hmm	28-324	True	False
+OJMJKD_009925	dbCAN-sub	GH32	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH32_e0	28-328	True	False
+OJMJKD_009930	DIAMOND	GH36	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	VEB03271.1|GH36		True	False
+OJMJKD_010165	DIAMOND	GH1	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CCO10096.1|GH1		True	False
+OJMJKD_010220	DIAMOND	GH23	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QLB25754.1|GH23		True	False
+OJMJKD_010220	dbCAN-HMM	GH23	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH23.hmm	71-219	True	False
+OJMJKD_010220	dbCAN-sub	GH23	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH23_e1427	69-217	True	False
+OJMJKD_010230	dbCAN-HMM	AA3	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA3.hmm	6-586	True	False
+OJMJKD_010270	DIAMOND	GH28	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAN65674.1|GH28		True	False
+OJMJKD_010340	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QLB25733.1|GT2		True	False
+OJMJKD_010340	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	11-172	True	False
+OJMJKD_010340	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	11-180	True	False
+OJMJKD_010345	DIAMOND	GT83	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AWQ85984.1|GT83		True	False
+OJMJKD_010355	DIAMOND	GT83	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE17988.1|GT83		True	False
+OJMJKD_010355	dbCAN-HMM	GT83	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT83.hmm	6-523	True	False
+OJMJKD_010355	dbCAN-sub	GT83	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT83_e0	8-520	True	False
+OJMJKD_010825	dbCAN-HMM	GH109	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH109.hmm	3-153	True	False
+OJMJKD_010940	DIAMOND	GH3	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE18097.1|GH3		True	False
+OJMJKD_010940	dbCAN-HMM	GH3	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH3.hmm	79-324	True	False
+OJMJKD_010940	dbCAN-sub	GH3	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH3_e152	83-324	True	False
+OJMJKD_011125	DIAMOND	GT44	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QOV52705.1|GT44		True	False
+OJMJKD_011125	dbCAN-sub	GT44	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT44_e13	131-196	True	False
+OJMJKD_011290	DIAMOND	GT119	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ASK77786.1|GT119		True	False
+OJMJKD_011385	dbCAN-HMM	GH109	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH109.hmm	9-153	True	False
+OJMJKD_011385	dbCAN-sub	GH179	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH179_e0	39-196	True	False
+OJMJKD_011500	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	XOB01184.1|GT2		True	False
+OJMJKD_011500	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	8-166	True	False
+OJMJKD_011500	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	8-248	True	False
+OJMJKD_011505	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ASC78558.1|GT4		True	False
+OJMJKD_011505	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e7590	259-433	True	False
+OJMJKD_011595	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CCO12112.1|GH13_31		True	False
+OJMJKD_011690	dbCAN-HMM	GH188	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH188.hmm	13-172	True	False
+OJMJKD_011735	dbCAN-sub	AA12	AA	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	AA12_e20	151-390	True	False
+OJMJKD_011790	DIAMOND	GT1	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QND46664.1|GT1		True	False
+OJMJKD_011800	dbCAN-HMM	CE1	CE	query-aligned HMM domain	dbCAN_hmm_results.tsv	CE1.hmm	201-429	True	False
+OJMJKD_011815	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	UJD75251.1|GH13_3		True	False
+OJMJKD_011820	DIAMOND	CE8	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	CAE6089874.1|CE8		True	False
+OJMJKD_011980	DIAMOND	GH1	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	XOB01093.1|GH1		True	False
+OJMJKD_011980	dbCAN-HMM	GH1	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH1.hmm	2-473	True	False
+OJMJKD_011980	dbCAN-sub	GH1	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH1_e0	3-473	True	False
+OJMJKD_012110	DIAMOND	CE4	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	CE4|118117|Volvo1_GeneCatalog_proteins_20130703.aa.fasta		True	False
+OJMJKD_012125	DIAMOND	GH36	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH36|123061|Acastr1_GeneCatalog_proteins_20160720.aa.fasta		True	False
+OJMJKD_012280	DIAMOND	GH123	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	UTN99358.1|GH123_2		True	False
+OJMJKD_012280	dbCAN-HMM	GH123	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH123_2.hmm	94-511	True	False
+OJMJKD_012280	dbCAN-sub	GH123	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH123_e17	94-511	True	False
+OJMJKD_012305	dbCAN-HMM	GH188	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH188.hmm	15-239	True	False
+OJMJKD_012430	DIAMOND	GH5	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QWW23826.1|GH5_12		True	False
+OJMJKD_012475	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AMJ18631.1|GT2		True	False
+OJMJKD_012975	DIAMOND	GH16	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AWK41762.1|GH16		True	False
+OJMJKD_013080	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AVI59029.1|GT2		True	False
+OJMJKD_013140	DIAMOND	GH23	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAD7252683.1|GH23		True	False
+OJMJKD_013175	DIAMOND	GH18	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	UTN99516.1|GH18		True	False
+OJMJKD_013175	dbCAN-HMM	GH18	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH18.hmm	29-412	True	False
+OJMJKD_013175	dbCAN-sub	GH18	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH18_e527	30-411	True	False
+OJMJKD_013315	DIAMOND	GH103	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QPJ87471.1|GH103		True	False
+OJMJKD_013315	dbCAN-HMM	GH103	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH103.hmm	43-338	True	False
+OJMJKD_013315	dbCAN-sub	GH103	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH103_e57	43-338	True	False
+OJMJKD_013415	DIAMOND	CBM50	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	AXX18474.1|CBM50		True	False
+OJMJKD_013415	dbCAN-sub	CBM50	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM50_e567	99-140	True	False
+OJMJKD_013605	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	UTN99594.1|GT2		True	False
+OJMJKD_013605	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	6-131	True	False
+OJMJKD_013605	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	6-128	True	False
+OJMJKD_013695	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	XWY09793.1|GH13_3		True	False
+OJMJKD_013755	dbCAN-sub	CBM50	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM50_e391	99-147	True	False
+OJMJKD_013920	DIAMOND	CBM16	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	CAE1147068.1|CBM16|GH0		True	False
+OJMJKD_013920	DIAMOND	GH0	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAE1147068.1|CBM16|GH0		False	False
+OJMJKD_013925	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AXK24673.1|GT2		True	False
+OJMJKD_013925	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	5-143	True	False
+OJMJKD_013925	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	5-132	True	False
+OJMJKD_013930	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ALL38637.1|GT4		True	False
+OJMJKD_013930	dbCAN-HMM	GT4	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT4.hmm	177-325	True	False
+OJMJKD_013930	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e607	177-323	True	False
+OJMJKD_013935	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QIO28244.1|GT2		True	False
+OJMJKD_013935	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	4-150	True	False
+OJMJKD_013935	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	4-150	True	False
+OJMJKD_013940	DIAMOND	GT125	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	XOA74186.1|GT125		True	False
+OJMJKD_013940	dbCAN-sub	GT125	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT125_e51	205-322	True	False
+OJMJKD_014165	DIAMOND	GH24	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QWU35627.1|GH24		True	False
+OJMJKD_014165	dbCAN-HMM	GH24	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH24.hmm	29-160	True	False
+OJMJKD_014165	dbCAN-sub	GH24	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH24_e190	29-160	True	False
+OJMJKD_014460	DIAMOND	GH73	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	XOB10751.1|GH73		True	False
+OJMJKD_014460	dbCAN-HMM	GH73	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH73.hmm	163-296	True	False
+OJMJKD_014460	dbCAN-sub	GH73	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH73_e114	161-295	True	False
+OJMJKD_014630	DIAMOND	GH73	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AVU36025.1|GH73		True	False
+OJMJKD_014765	DIAMOND	GH6	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AXG45674.1|GH6		True	False
+OJMJKD_014775	DIAMOND	GH73	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AVU36025.1|GH73		True	False
+OJMJKD_015115	DIAMOND	GH36	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH36|123061|Acastr1_GeneCatalog_proteins_20160720.aa.fasta		True	False
+OJMJKD_015310	DIAMOND	GH6	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AXG45674.1|GH6		True	False
+OJMJKD_015520	DIAMOND	PL9	PL	reference-protein family association; query domain not established by this hit alone	diamond.out	PL9_3|PL9_3|137178|Aspnom1_GeneCatalog_proteins_20160910.aa.fasta		True	False
+OJMJKD_015660	DIAMOND	GH2	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AVU41272.1|GH2_10		True	False
+OJMJKD_015665	DIAMOND	GH2	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QLB24729.1|GH2_10		True	False
+OJMJKD_015665	dbCAN-HMM	GH2	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH2_10.hmm	51-916	True	False
+OJMJKD_015665	dbCAN-sub	GH2	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH2_e230	49-917	True	False
+OJMJKD_015690	dbCAN-HMM	CE19	CE	query-aligned HMM domain	dbCAN_hmm_results.tsv	CE19.hmm	30-174	True	False
+OJMJKD_015750	DIAMOND	AA0	AA	reference-protein family association; query domain not established by this hit alone	diamond.out	AA0|1603|Tolca1_GeneCatalog_proteins_20210310.aa.fasta		False	False
+OJMJKD_015750	dbCAN-sub	AA2	AA	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	AA2_e20	82-178	True	False
+OJMJKD_015980	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AXX18940.1|GT2		True	False
+OJMJKD_015980	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	6-103	True	False
+OJMJKD_015980	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	6-102	True	False
+OJMJKD_016155	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH13_40|GH13_40|2753|Psehu1_GeneCatalog_proteins_20130926.aa.fasta		True	False
+OJMJKD_016225	DIAMOND	GH67	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	UAJ15154.1|GH67		True	False
+OJMJKD_016260	DIAMOND	GH23	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AZV31449.1|GH23		True	False
+OJMJKD_016265	DIAMOND	GH23	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AZV31449.1|GH23		True	False
+OJMJKD_016415	dbCAN-HMM	GH24	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH24.hmm	3-140	True	False
+OJMJKD_016415	dbCAN-sub	GH24	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH24_e26	4-140	True	False
+OJMJKD_016575	DIAMOND	GH38	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH38|5151|Pocchl1_GeneCatalog_proteins_20170916.aa.fasta		True	False
+OJMJKD_016850	DIAMOND	GH103	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AKG15280.1|GH103		True	False
+OJMJKD_017195	DIAMOND	GH103	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AXK25269.1|GH103		True	False
+OJMJKD_017195	dbCAN-HMM	GH103	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH103.hmm	63-353	True	False
+OJMJKD_017195	dbCAN-sub	GH103	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH103_e0	63-354	True	False
+OJMJKD_017285	DIAMOND	CE12	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	ARA85284.1|CE12		True	False
+OJMJKD_017535	DIAMOND	GH65	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AVM55139.1|GH65		True	False
+OJMJKD_017590	DIAMOND	CBM5	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	CAA85292.1|CBM5|GH18|3.2.1.14		True	False
+OJMJKD_017590	dbCAN-sub	CBM5	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM5_e1	453-492	True	False
+OJMJKD_017590	DIAMOND	GH18	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAA85292.1|CBM5|GH18|3.2.1.14		True	False
+OJMJKD_017590	dbCAN-HMM	GH18	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH18.hmm	4-416	True	False
+OJMJKD_017590	dbCAN-sub	GH18	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH18_e121	4-415	True	False
+OJMJKD_017600	DIAMOND	AA10	AA	reference-protein family association; query domain not established by this hit alone	diamond.out	BAA31569.1|AA10		True	False
+OJMJKD_017600	dbCAN-HMM	AA10	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA10.hmm	28-194	True	False
+OJMJKD_017600	dbCAN-sub	AA10	AA	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	AA10_e12	28-194	True	False
+OJMJKD_017845	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CCO12102.1|GH13_31		True	False
+OJMJKD_018025	DIAMOND	CBM91	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	CAD7731929.1|CBM91|GH43_12		True	False
+OJMJKD_018025	DIAMOND	GH43	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAD7731929.1|CBM91|GH43_12		True	False
+OJMJKD_018180	DIAMOND	GH131	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH131|13268|Pensub1_GeneCatalog_proteins_20160929.aa.fasta		True	False
+OJMJKD_018195	DIAMOND	GH31	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	ASC79750.1|GH31_2		True	False
+OJMJKD_018195	dbCAN-HMM	GH31	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH31_2.hmm	238-682	True	False
+OJMJKD_018195	dbCAN-sub	GH31	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH31_e165	238-681	True	False
+OJMJKD_018250	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QYU68416.1|GT2		True	False
+OJMJKD_018315	DIAMOND	GH6	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH6|305562|Cyaste1_GeneCatalog_proteins_20220716.aa.fasta		True	False
+OJMJKD_018355	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AMJ20543.1|GH13_11		True	False
+OJMJKD_018440	DIAMOND	GT1	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT1|2074615|Phoaln1_GeneCatalog_proteins_20160826.aa.fasta		True	False
+OJMJKD_018445	DIAMOND	GH23	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE19543.1|GH23		True	False
+OJMJKD_018445	dbCAN-HMM	GH23	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH23.hmm	314-466	True	False
+OJMJKD_018445	dbCAN-sub	GH23	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH23_e1056	314-466	True	False
+OJMJKD_018520	DIAMOND	GH28	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CAE6204650.1|GH28		True	False
+OJMJKD_018855	DIAMOND	GT1	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ARF89445.1|GT1		True	False
+OJMJKD_018950	DIAMOND	CBM50	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	AGL64353.1|CBM50|GH25		True	False
+OJMJKD_018950	DIAMOND	GH25	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGL64353.1|CBM50|GH25		True	False
+OJMJKD_019025	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AWZ17133.1|GH13_30		True	False
+OJMJKD_019035	DIAMOND	GT19	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ASM22893.1|GT19		True	False
+OJMJKD_019035	dbCAN-HMM	GT19	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT19.hmm	8-365	True	False
+OJMJKD_019035	dbCAN-sub	GT19	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT19_e17	8-365	True	False
+OJMJKD_019140	DIAMOND	GT51	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	XOB08007.1|GT51		True	False
+OJMJKD_019140	dbCAN-HMM	GT51	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT51.hmm	60-210	True	False
+OJMJKD_019140	dbCAN-sub	GT51	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT51_e249	60-209	True	False
+OJMJKD_019225	DIAMOND	GH102	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QPJ88571.1|GH102		True	False
+OJMJKD_019225	dbCAN-HMM	GH102	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH102.hmm	127-258	True	False
+OJMJKD_019225	dbCAN-sub	GH102	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH102_e2	126-258	True	False
+OJMJKD_019580	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT4|406344|Asppari1_GeneCatalog_proteins_20161018.aa.fasta		True	False
+OJMJKD_019590	DIAMOND	CBM50	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	XOB08071.1|CBM50		True	False
+OJMJKD_019590	dbCAN-sub	CBM50	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM50_e1400	49-91	True	False
+OJMJKD_019635	dbCAN-HMM	AA3	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA3.hmm	12-544	True	False
+OJMJKD_019665	DIAMOND	GT119	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QGN28876.1|GT119		True	False
+OJMJKD_019935	DIAMOND	AA3	AA	reference-protein family association; query domain not established by this hit alone	diamond.out	AA3_2|AA3_2|241495|Aspnav1_1_GeneCatalog_proteins_20160309.aa.fasta		True	False
+OJMJKD_019950	DIAMOND	GH36	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH36|123061|Acastr1_GeneCatalog_proteins_20160720.aa.fasta		True	False
+OJMJKD_020135	DIAMOND	GT51	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QLB23933.1|GT51		True	False
+OJMJKD_020135	dbCAN-HMM	GT51	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT51.hmm	212-382	True	False
+OJMJKD_020135	dbCAN-sub	GT51	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT51_e28	213-382	True	False
+OJMJKD_020200	dbCAN-HMM	CE4	CE	query-aligned HMM domain	dbCAN_hmm_results.tsv	CE4.hmm	241-384	True	False
+OJMJKD_020200	dbCAN-sub	CE4	CE	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CE4_e2	242-379	True	False
+OJMJKD_020225	dbCAN-HMM	AA1	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA1.hmm	66-547	True	False
+OJMJKD_020225	dbCAN-sub	AA1	AA	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	AA1_e1	62-290	True	False
+OJMJKD_020280	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AXG42587.1|GH13_3		True	False
+OJMJKD_020425	DIAMOND	GH23	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	ASM32823.1|GH23		True	False
+OJMJKD_020425	dbCAN-HMM	GH23	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH23.hmm	207-353	True	False
+OJMJKD_020425	dbCAN-sub	GH23	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH23_e150	206-353	True	False
+OJMJKD_020500	DIAMOND	CBM32	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	BFE52689.1|CBM32		True	False
+OJMJKD_020545	DIAMOND	GH32	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	BBQ29828.1|GH32		True	False
+OJMJKD_020550	DIAMOND	GH32	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE19958.1|GH32		True	False
+OJMJKD_020550	dbCAN-HMM	GH32	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH32.hmm	31-336	True	False
+OJMJKD_020550	dbCAN-sub	GH32	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH32_e57	31-336	True	False
+OJMJKD_020555	DIAMOND	GH32	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGT25470.1|GH32		True	False
+OJMJKD_020605	DIAMOND	GH23	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QIX78296.1|GH23		True	False
+OJMJKD_020605	dbCAN-HMM	GH23	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH23.hmm	53-199	True	False
+OJMJKD_020605	dbCAN-sub	GH23	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH23_e1427	51-198	True	False
+OJMJKD_020645	dbCAN-HMM	AA1	AA	query-aligned HMM domain	dbCAN_hmm_results.tsv	AA1.hmm	64-287	True	False
+OJMJKD_020865	DIAMOND	GH36	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH36|123061|Acastr1_GeneCatalog_proteins_20160720.aa.fasta		True	False
+OJMJKD_020900	dbCAN-HMM	GH188	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH188.hmm	2-147	True	False
+OJMJKD_021025	DIAMOND	GT51	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ASM18577.1|GT51		True	False
+OJMJKD_021025	dbCAN-HMM	GT51	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT51.hmm	62-229	True	False
+OJMJKD_021025	dbCAN-sub	GT51	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT51_e0	64-228	True	False
+OJMJKD_021335	DIAMOND	GT121	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE20151.1|GT121		True	False
+OJMJKD_021335	dbCAN-sub	GT121	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT121_e378	212-349	True	False
+OJMJKD_021505	DIAMOND	GT1	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QND46664.1|GT1		True	False
+OJMJKD_021585	DIAMOND	PL4	PL	reference-protein family association; query domain not established by this hit alone	diamond.out	CAE6153416.1|PL4_2		True	False
+OJMJKD_021730	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	XOA75680.1|GH13		True	False
+OJMJKD_021730	dbCAN-sub	GH13	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH13_e52	101-170	True	False
+OJMJKD_021825	DIAMOND	GH39	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CUS04494.1|GH39		True	False
+OJMJKD_021865	DIAMOND	GT49	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT49|1599288|Mucci3_GeneCatalog_proteins_20220410.aa.fasta		True	False
+OJMJKD_022105	DIAMOND	CE4	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	CE4|118117|Volvo1_GeneCatalog_proteins_20130703.aa.fasta		True	False
+OJMJKD_022290	DIAMOND	GH4	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE20333.1|GH4		True	False
+OJMJKD_022290	dbCAN-HMM	GH4	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH4.hmm	5-185	True	False
+OJMJKD_022290	dbCAN-sub	GH4	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH4_e47	5-184	True	False
+OJMJKD_022390	DIAMOND	GT51	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QTI65440.1|GT51		True	False
+OJMJKD_022390	dbCAN-HMM	GT51	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT51.hmm	54-229	True	False
+OJMJKD_022390	dbCAN-sub	GT51	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT51_e232	54-229	True	False
+OJMJKD_022500	DIAMOND	GH77	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	ASC80530.1|GH77		True	False
+OJMJKD_022500	dbCAN-HMM	GH77	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH77.hmm	149-688	True	False
+OJMJKD_022500	dbCAN-sub	GH77	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH77_e27	149-687	True	False
+OJMJKD_022505	DIAMOND	GT35	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ALL35559.1|GT35		True	False
+OJMJKD_022505	dbCAN-HMM	GT35	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT35.hmm	92-799	True	False
+OJMJKD_022505	dbCAN-sub	GT35	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT35_e0	92-799	True	False
+OJMJKD_022530	DIAMOND	GH36	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	ATE86697.1|GH36		True	False
+OJMJKD_022535	DIAMOND	GT35	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	BBO65265.1|GT35		True	False
+OJMJKD_022535	dbCAN-HMM	GT35	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT35.hmm	101-811	True	False
+OJMJKD_022535	dbCAN-sub	GT35	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT35_e0	101-811	True	False
+OJMJKD_022540	DIAMOND	GT5	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	XOB13697.1|GT5		True	False
+OJMJKD_022540	dbCAN-HMM	GT5	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT5.hmm	2-474	True	False
+OJMJKD_022540	dbCAN-sub	GT5	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT5_e31	2-474	True	False
+OJMJKD_022545	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	VDZ68364.1|GH13_11		True	False
+OJMJKD_022550	DIAMOND	CBM48	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	XUU47847.1|CBM48|GH13_11		True	False
+OJMJKD_022550	dbCAN-HMM	CBM48	CBM	query-aligned HMM domain	dbCAN_hmm_results.tsv	CBM48.hmm	10-99	True	False
+OJMJKD_022550	dbCAN-sub	CBM48	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM48_e98	7-101	True	False
+OJMJKD_022550	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	XUU47847.1|CBM48|GH13_11		True	False
+OJMJKD_022550	dbCAN-HMM	GH13	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH13_11.hmm	173-523	True	False
+OJMJKD_022550	dbCAN-sub	GH13	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH13_e328	172-523	True	False
+OJMJKD_022555	DIAMOND	CBM48	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	AIA46109.1|CBM48|GH13_9		True	False
+OJMJKD_022555	dbCAN-HMM	CBM48	CBM	query-aligned HMM domain	dbCAN_hmm_results.tsv	CBM48.hmm	124-211	True	False
+OJMJKD_022555	dbCAN-sub	CBM48	CBM	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	CBM48_e134	124-216	True	False
+OJMJKD_022555	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AIA46109.1|CBM48|GH13_9		True	False
+OJMJKD_022555	dbCAN-HMM	GH13	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH13_9.hmm	274-574	True	False
+OJMJKD_022555	dbCAN-sub	GH13	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH13_e200	274-574	True	False
+OJMJKD_022615	dbCAN-sub	GH177	GH	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GH177_e7	3-297	True	False
+OJMJKD_022615	dbCAN-HMM	GH188	GH	query-aligned HMM domain	dbCAN_hmm_results.tsv	GH188.hmm	4-158	True	False
+OJMJKD_022650	DIAMOND	GH28	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH28|1540|Ompol1_GeneCatalog_proteins_20130516.aa.fasta		True	False
+OJMJKD_022820	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	GT2|20375|Synps1_GeneCatalog_proteins_20160128.aa.fasta		True	False
+OJMJKD_022850	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	BBF72686.1|GT2		True	False
+OJMJKD_022965	DIAMOND	CE9	CE	reference-protein family association; query domain not established by this hit alone	diamond.out	XHX66747.1|CE9		True	False
+OJMJKD_023045	DIAMOND	GH0	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH0|5622|Ustvir1_GeneCatalog_proteins_20170701.aa.fasta		False	False
+OJMJKD_023235	DIAMOND	GH92	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	ALR09732.1|GH92		True	False
+OJMJKD_023280	DIAMOND	GH47	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	GH47|510492|Cyapal1_GeneCatalog_proteins_20220714.aa.fasta		True	False
+OJMJKD_023420	DIAMOND	GT9	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	BBO65430.1|GT9		True	False
+OJMJKD_023420	dbCAN-HMM	GT9	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT9.hmm	69-306	True	False
+OJMJKD_023420	dbCAN-sub	GT9	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT9_e84	69-307	True	False
+OJMJKD_023425	DIAMOND	GT9	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	XUU48004.1|GT9		True	False
+OJMJKD_023425	dbCAN-HMM	GT9	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT9.hmm	77-301	True	False
+OJMJKD_023425	dbCAN-sub	GT9	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT9_e71	78-299	True	False
+OJMJKD_023430	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QLB27777.1|GT4		True	False
+OJMJKD_023430	dbCAN-HMM	GT4	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT4.hmm	181-305	True	False
+OJMJKD_023430	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e4379	181-303	True	False
+OJMJKD_023435	DIAMOND	GT121	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ASL95021.1|GT121		True	False
+OJMJKD_023435	dbCAN-HMM	GT121	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT121.hmm	193-344	True	False
+OJMJKD_023435	dbCAN-sub	GT121	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT121_e153	196-343	True	False
+OJMJKD_023440	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QJU42454.1|GT2		True	False
+OJMJKD_023440	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	9-131	True	False
+OJMJKD_023440	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	9-137	True	False
+OJMJKD_023445	DIAMOND	GT9	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AIA46272.1|GT9		True	False
+OJMJKD_023445	dbCAN-HMM	GT9	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT9.hmm	103-330	True	False
+OJMJKD_023445	dbCAN-sub	GT9	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT9_e213	103-329	True	False
+OJMJKD_023450	DIAMOND	GT9	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	BCQ47528.1|GT9		True	False
+OJMJKD_023455	DIAMOND	GT9	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE20551.1|GT9		True	False
+OJMJKD_023455	dbCAN-HMM	GT9	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT9.hmm	62-294	True	False
+OJMJKD_023455	dbCAN-sub	GT9	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT9_e18	63-296	True	False
+OJMJKD_023460	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QLB27771.1|GT4		True	False
+OJMJKD_023460	dbCAN-HMM	GT4	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT4.hmm	201-337	True	False
+OJMJKD_023460	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e5679	203-338	True	False
+OJMJKD_023465	DIAMOND	GT4	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	QLB27770.1|GT4		True	False
+OJMJKD_023465	dbCAN-HMM	GT4	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT4.hmm	198-342	True	False
+OJMJKD_023465	dbCAN-sub	GT4	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT4_e2866	199-340	True	False
+OJMJKD_023470	DIAMOND	GT9	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	ANM77076.1|GT9		True	False
+OJMJKD_023470	dbCAN-HMM	GT9	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT9.hmm	82-323	True	False
+OJMJKD_023470	dbCAN-sub	GT9	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT9_e314	80-321	True	False
+OJMJKD_023475	DIAMOND	GT30	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	UUW18266.1|GT30		True	False
+OJMJKD_023475	dbCAN-HMM	GT30	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT30.hmm	33-211	True	False
+OJMJKD_023475	dbCAN-sub	GT30	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT30_e102	34-211	True	False
+OJMJKD_023480	DIAMOND	GT2	GT	reference-protein family association; query domain not established by this hit alone	diamond.out	AGE20556.1|GT2		True	False
+OJMJKD_023480	dbCAN-HMM	GT2	GT	query-aligned HMM domain	dbCAN_hmm_results.tsv	GT2.hmm	8-140	True	False
+OJMJKD_023480	dbCAN-sub	GT2	GT	query-aligned subfamily domain	dbCANsub_hmm_results.tsv	GT2	8-130	True	False
+OJMJKD_023775	DIAMOND	GH5	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	QXF31783.1|GH5_18		True	False
+OJMJKD_023780	DIAMOND	GH85	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	AXG45416.1|GH85		True	False
+OJMJKD_023845	DIAMOND	CBM48	CBM	reference-protein family association; query domain not established by this hit alone	diamond.out	CBM48|GH13_8|GH13_8|842486|Thiar1_GeneCatalog_proteins_20131210.aa.fasta		True	False
+OJMJKD_023845	DIAMOND	GH13	GH	reference-protein family association; query domain not established by this hit alone	diamond.out	CBM48|GH13_8|GH13_8|842486|Thiar1_GeneCatalog_proteins_20131210.aa.fasta		True	False

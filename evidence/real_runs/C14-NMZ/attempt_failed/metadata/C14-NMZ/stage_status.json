@@ -1,0 +1,114 @@
+{
+  "database_expected_manifest_sha256": "0f20c1986c32df59723cffc20b677789ed0c12819cd0939e16788f58dea406d2",
+  "database_snapshot": "db_v5-2-9_5-5-2026",
+  "failure": {
+    "code": "STAGE_FAILED",
+    "diagnostic": "C14-NMZ CAZyme_annotation failed with exit code 1; see /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/logs/01_cazyme.stdout.log",
+    "ended_utc": "2026-10-18T09:02:45+00:00",
+    "exit_code": 1,
+    "kind": "failed",
+    "log_path": "/workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/logs/01_cazyme.stdout.log",
+    "log_tail": "  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/annotation/pyhmmer_search.py\", line 615, in run\n    raise RuntimeError(\nRuntimeError: dbCAN-sub HMM search failed; empty output was generated for downstream compatibility\n2026-10-18 18:02:45,793 - root - INFO - Created empty dbCAN-sub raw file (not in methods) -> dbCANsub_hmm_raw.tsv\n2026-10-18 18:02:45,793 - root - INFO - generate overview of CAZymes...\n2026-10-18 18:02:45,799 - dbcan.IO.OverviewGenerator - INFO - Loaded 241 rows from diamond results\n2026-10-18 18:02:45,801 - dbcan.IO.OverviewGenerator - INFO - Loaded 0 rows from dbcan_sub results\n2026-10-18 18:02:45,802 - dbcan.IO.OverviewGenerator - INFO - Loaded 0 rows from dbcan_hmm results\n2026-10-18 18:02:45,808 - dbcan.IO.OverviewGenerator - INFO - Aggregated overview saved to: /workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/overview.tsv\n2026-10-18 18:02:45,809 - root - INFO - CAZyme overview generated\nTraceback (most recent call last):\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/run_dbcan\", line 8, in <module>\n    sys.exit(cli())\n             ^^^^^\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/rich_click/rich_command.py\", line 378, in __call__\n    return super().__call__(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/core.py\", line 1631, in __call__\n    return self.main(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/rich_click/rich_command.py\", line 166, in main\n    rv = self.invoke(ctx)\n         ^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/core.py\", line 2032, in invoke\n    return _process_result(sub_ctx.command.invoke(sub_ctx))\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/core.py\", line 1415, in invoke\n    return ctx.invoke(self.callback, **ctx.params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/core.py\", line 910, in invoke\n    return callback(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/click/decorators.py\", line 34, in new_func\n    return f(get_current_context(), *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/main.py\", line 105, in cazyme_annotation_cmd\n    run_dbCAN_CAZyme_annotation(diamond_config, pyhmmer_config, dbcansubconfig, overviewconfig, methods_option)\n  File \"/workspace/scratch/51b8ca04e32d/c14-runtime/env/lib/python3.12/site-packages/dbcan/core.py\", line 163, in run_dbCAN_CAZyme_annotation\n    raise RuntimeError(\nRuntimeError: CAZyme annotation completed with failed step(s): HMMER dbCAN: process PID not found (pid=9); dbCAN-sub HMM: dbCAN-sub HMM search failed; empty output was generated for downstream compatibility\n",
+    "log_tail_truncated": true,
+    "message": "An external stage failed; inspect its log and rerun into fresh directories.",
+    "sample": "C14-NMZ",
+    "stage": "CAZyme_annotation"
+  },
+  "input_faa": "/workspace/scratch/51b8ca04e32d/c14-run/inputs/original/C14-NMZ.faa",
+  "input_faa_sha256": "955a8af2a91fd2411774ee1c1c4a8bb178c1f733d37aa8a5f6ac35b358e2b09f",
+  "input_gff": "/workspace/scratch/51b8ca04e32d/c14-run/inputs/original/C14-NMZ.gff3",
+  "input_gff_sha256": "db64878de9dc8005240946288f28c2bf1532ad10d9b10a51a61c03ee15d7d3cc",
+  "metadata_dir": "/workspace/scratch/51b8ca04e32d/c14-run/metadata/C14-NMZ",
+  "profile": "sandbox",
+  "results_dir": "/workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ",
+  "run": {
+    "state": "failed"
+  },
+  "run_dbcan_version": "5.2.9",
+  "run_id": "dbcan-20261018T090208Z-5422a1ba",
+  "sample": "C14-NMZ",
+  "schema_version": 2,
+  "stages": {
+    "CAZyme_annotation": {
+      "argv": [
+        "/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/python",
+        "/workspace/scratch/51b8ca04e32d/c14-runtime/env/bin/run_dbcan",
+        "CAZyme_annotation",
+        "--mode",
+        "protein",
+        "--input_raw_data",
+        "/workspace/scratch/51b8ca04e32d/c14-run/inputs/original/C14-NMZ.faa",
+        "--output_dir",
+        "/workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ",
+        "--db_dir",
+        "/tmp/dbcan-c14-database",
+        "--methods",
+        "diamond,hmm,dbCANsub",
+        "--threads",
+        "4",
+        "--log-level",
+        "INFO",
+        "--log-file",
+        "/workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/logs/01_cazyme.log"
+      ],
+      "ended_utc": "2026-10-18T09:02:45+00:00",
+      "exit_code": 1,
+      "log_file": "/workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/logs/01_cazyme.stdout.log",
+      "output_sha256": {
+        "dbCAN_hmm_results.tsv": "be183a0e25462947c7623c343dfff5cf12b7d6fd0f424eb989026bc42971ede8",
+        "dbCANsub_hmm_raw.tsv": "be183a0e25462947c7623c343dfff5cf12b7d6fd0f424eb989026bc42971ede8",
+        "dbCANsub_hmm_results.tsv": "dbcda9e9990a44193e4231aa4313781846eca14db44e5f41fd7fba56f100c8c8",
+        "diamond.out": "b3fe331cb90d6ce4f429db9956cd331c8be329ed1611b74dc4d6155920809ed1",
+        "inputs/C14-NMZ.cds.flat.local.gff": "34bea1d9fba3a131d45e79e99716f9b2ab83cb38403205705cf836e6e7e652bc",
+        "inputs/C14-NMZ.local_gff_validation.json": "7e22b5f1bbb569a4dc3c4500d398fde69de558efc5c6c355cc2374fdd9bde012",
+        "logs/01_cazyme.log": "583acfefba1bac3b71bbd4b238cb0e268150fd7d84c96073dcbe806f98d2f9d2",
+        "logs/01_cazyme.stdout.log": "eadfe834dbc26b9d8191975b03a52b6b10ec29b20f7e2ce06ef47e9bd87f8e1d",
+        "overview.tsv": "bd8599cb728ef76a1c8d988aab0dbd9693fcb6594f786570ba926c3cd32dd501",
+        "uniInput.faa": "12e79e908793a8f65851036478c210785a8fbe7794f4e1b34dbceac1567b5814"
+      },
+      "reason": "dbCAN stage returned a nonzero exit code",
+      "resources_after": {
+        "cgroup_or_scheduler_cpu_limit": 8,
+        "cpu_affinity_count": 9,
+        "disk_free_bytes_by_path": {},
+        "effective_cpu_allocation": 8,
+        "logical_cpu_count": 9,
+        "memory_limit_bytes": 8589934592,
+        "memory_source": "/sys/fs/cgroup/memory.max"
+      },
+      "resources_before": {
+        "cgroup_or_scheduler_cpu_limit": 8,
+        "cpu_affinity_count": 9,
+        "disk_free_bytes_by_path": {},
+        "effective_cpu_allocation": 8,
+        "logical_cpu_count": 9,
+        "memory_limit_bytes": 8589934592,
+        "memory_source": "/sys/fs/cgroup/memory.max"
+      },
+      "started_utc": "2026-10-18T09:02:14+00:00",
+      "state": "failed",
+      "status": "failed"
+    },
+    "cgc_finder": {
+      "exit_code": null,
+      "reason": "an earlier preflight or stage failed",
+      "state": "skipped",
+      "status": "skipped"
+    },
+    "gff_process": {
+      "exit_code": null,
+      "reason": "an earlier preflight or stage failed",
+      "state": "skipped",
+      "status": "skipped"
+    },
+    "substrate_prediction": {
+      "exit_code": null,
+      "reason": "an earlier preflight or stage failed",
+      "state": "skipped",
+      "status": "skipped"
+    }
+  },
+  "started_utc": "2026-10-18T09:02:14+00:00",
+  "status": "failed",
+  "threads": 4
+}

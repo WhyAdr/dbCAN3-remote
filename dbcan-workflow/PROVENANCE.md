@@ -70,3 +70,15 @@ The following records are historical, not reproducible from this repository.
 - Release checks: 56 standard-library tests pass, including the original 30 unchanged tests. CLI probes cover deliberate refusals, usage, negative data, database mismatch, valid zero hits, controlled subprocess failures, and unexpected defects. Tests exercise both exit policies, path collisions, persistence, legacy/v2 status binding, claim restrictions, aliases and command discovery.
 
 - A fresh-context skill trial used the supplied unbound fixture template, reported ATTESTATION_REJECTED, followed the sanctioned structural-only remedy, and distinguished zero-hit file observations from execution and biological absence. It used the explicit isolate label and did not modify source or fetch dependencies.
+
+## Authorized evidence publication (2026-10-18)
+
+The maintainer subsequently authorized publishing JN1B/JN4 and a new C14-NMZ
+run separately from this portable package. The repository's `evidence/real_runs`
+contains the versioned index, original-byte checksums and replay envelopes.
+JN1B/JN4 remain execution-unattested historical cloud-sandbox results. C14's
+new cloud execution uses the explicitly documented dbCAN 5.2.9 procfs-PID
+runtime patch; it does not establish an unmodified HPC deployment. The optional
+`test_evidence_bundle.py` suite replays the repository bundle, or skips when the
+separately distributed data are absent. Historical statements above describe
+their original scope and are retained as such.

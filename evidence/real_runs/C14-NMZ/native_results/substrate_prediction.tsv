@@ -1,0 +1,15 @@
+#cgcid	PULID	dbCAN-PUL substrate	bitscore	signature pairs	dbCAN-sub substrate	dbCAN-sub substrate score
+contig_1|CGC11	PUL0531	chitin	3072.0	TC-TC;TC-TC;CAZyme-CAZyme;TF-TF;null-null		
+contig_1|CGC1	PUL0041	cellobiose	1535.0	TC-TC;CAZyme-CAZyme		
+contig_1|CGC25	PUL0137	galactan	580.0	STP-TF;CAZyme-CAZyme		
+contig_1|CGC34	PUL0006	galactan	561.0	STP-TF;CAZyme-CAZyme		
+contig_1|CGC45	PUL0307	chitin	2686.0	TC-TC;TC-TC;TC-TC;CAZyme-CAZyme;STP-TF;CAZyme-CAZyme	chitin	2.0
+contig_1|CGC41	PUL0225	agarose	596.6	CAZyme-CAZyme;TC-null		
+contig_1|CGC58	PUL0729	cellobiose	602.2	TC-TC;TC-TC;CAZyme-CAZyme		
+contig_1|CGC59	PUL0605	glycogen	4810.0	CAZyme-CAZyme;CAZyme-CAZyme;null-null;CAZyme-CAZyme;CAZyme-CAZyme;CAZyme-CAZyme	alpha-glucan	3.0
+contig_1|CGC15	PUL0586	chitin	2967.0	TC-TC;null-null;CAZyme-CAZyme	chitin,hostglycan	2.0
+contig_1|CGC54	PUL0373	starch	2318.0	STP-STP;TC-TC;CAZyme-CAZyme;TF-TF		
+contig_1|CGC6	PUL0048	trehalose	959.0	CAZyme-CAZyme;TC-TC		
+contig_1|CGC2	PUL0144	chitin	728.0	CAZyme-CAZyme;TC-TC;TC-TC;TC-TC;TC-TC		
+contig_1|CGC3	PUL0311	cellulose	3780.0	CAZyme-CAZyme;TC-TC;CAZyme-CAZyme;TC-TC		
+contig_1|CGC27	PUL0351	starch	859.0	CAZyme-CAZyme;TC-TC		

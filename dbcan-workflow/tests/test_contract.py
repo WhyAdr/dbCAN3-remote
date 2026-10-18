@@ -207,6 +207,7 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(public['result'], json.loads(shim.stdout)['result'])
         alias = self.call(['audit-circular', *[x.replace('--out-json','--json').replace('--out-tsv','--tsv') for x in audit_args]])
         self.assertEqual({x['code'] for x in alias['warnings']}, {'DEPRECATED_FLAG_JSON', 'DEPRECATED_FLAG_TSV'})
+        self.assertEqual(len(alias['warnings']), 2)
         args = ['--processed-gff',str(self.fx/'results/cgc.gff'),'--native-members',str(self.fx/'results/cgc_standard_out.tsv'),
             '--native-summary',str(self.fx/'results/cgc_standard_out_summary.tsv'),
             '--corrected-members',str(self.root/'overlay/members.tsv'),'--corrected-summary',str(self.root/'overlay/summary.tsv'),

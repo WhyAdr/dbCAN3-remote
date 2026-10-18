@@ -1,0 +1,30 @@
+{
+  "candidates_with_at_least_one_resolved_family": 177,
+  "candidates_with_only_unresolved_family_labels": 6,
+  "candidates_with_unresolved_family_labels": 7,
+  "caution": "protein counts, protein-family associations, and domain instances are separate non-equivalent quantities; DIAMOND labels are reference family associations, not query-domain proof.",
+  "family_protein_associations": 182,
+  "overview_candidate_count": 183,
+  "positive_in_at_least_two_methods": 59,
+  "positive_method_count_distribution": {
+    "1": 124,
+    "2": 16,
+    "3": 43
+  },
+  "protein_count": 3730,
+  "proteins_with_resolved_family_agreement": 58,
+  "pseudogene_candidates": [],
+  "pseudogene_cds_count": 10,
+  "query_aligned_domain_instances": 120,
+  "run_dbcan_version_expected": "5.2.9",
+  "sample": "JN4",
+  "sample_source": "explicit",
+  "unique_resolved_family_count": 67,
+  "unresolved_family_associations_by_method": {
+    "DIAMOND": {
+      "AA0": 1,
+      "GH0": 3,
+      "GT0": 3
+    }
+  }
+}

@@ -1,0 +1,8 @@
+2026-10-18 18:29:00,160 - dbcan.annotation.CGCFinder - INFO - Reading GFF file: /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/cgc.gff
+2026-10-18 18:29:00,183 - dbcan.annotation.CGCFinder - INFO - Loaded 4636 records from GFF file after filtering
+2026-10-18 18:29:00,186 - dbcan.annotation.CGCFinder - INFO - Marked signatures: core=113, additional=1168
+2026-10-18 18:29:00,186 - dbcan.annotation.CGCFinder - INFO - Finding CGC clusters using no distance, null genes; max null genes: 2, bp distance: N/A; extension: none
+2026-10-18 18:29:00,606 - dbcan.annotation.CGCFinder - INFO - Found 60 CGC clusters
+2026-10-18 18:29:00,609 - dbcan.annotation.CGCFinder - INFO - CGC clusters have been written to /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/cgc_standard_out.tsv
+2026-10-18 18:29:00,630 - dbcan.annotation.CGCFinder - INFO - CGC summary has been written to /workspace/scratch/51b8ca04e32d/c14-run/results-atomic/C14-NMZ/cgc_standard_out_summary.tsv
+2026-10-18 18:29:00,630 - dbcan.annotation.CGCFinder - INFO - CGCFinder run completed

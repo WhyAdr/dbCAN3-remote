@@ -1,0 +1,8 @@
+{
+  "reason": "Linux execution namespace PID differs from the PID exposed by the mounted procfs; monitor the actual current process in that procfs view. No search/scoring logic modified.",
+  "package": "dbcan",
+  "version": "5.2.9",
+  "modified_file": "dbcan/utils/memory_monitor.py",
+  "before_sha256": "aa53765fca0d5ad359a948c6c8c4350cc03b4fba76730d608e5bba707286ead5",
+  "after_sha256": "61223fcec2b3a19d5ad0a1507e1434735d718edaad6356c8ec87abd5370edcbe"
+}

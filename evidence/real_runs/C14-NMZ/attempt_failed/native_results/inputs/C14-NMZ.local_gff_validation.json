@@ -1,0 +1,30 @@
+{
+  "adapter": "Bakta CDS rows are emitted as standalone features; only Parent attributes are removed",
+  "cds_count": 4636,
+  "contigs": [
+    {
+      "is_circular": true,
+      "length": 5050553,
+      "seqid": "contig_1"
+    }
+  ],
+  "created_utc": "2026-10-18T09:02:14+00:00",
+  "exact_id_set_match": true,
+  "faa_sha256": "955a8af2a91fd2411774ee1c1c4a8bb178c1f733d37aa8a5f6ac35b358e2b09f",
+  "gff_sha256": "db64878de9dc8005240946288f28c2bf1532ad10d9b10a51a61c03ee15d7d3cc",
+  "gff_type": "prodigal",
+  "input_faa": "/workspace/scratch/51b8ca04e32d/c14-run/inputs/original/C14-NMZ.faa",
+  "input_gff": "/workspace/scratch/51b8ca04e32d/c14-run/inputs/original/C14-NMZ.gff3",
+  "local_gff_sha256": "34bea1d9fba3a131d45e79e99716f9b2ab83cb38403205705cf836e6e7e652bc",
+  "organism": "Serratia nematodiphila C14-NMZ",
+  "origin_spanning_cds": [],
+  "output_gff": "/workspace/scratch/51b8ca04e32d/c14-run/results/C14-NMZ/inputs/C14-NMZ.cds.flat.local.gff",
+  "protein_count": 4636,
+  "pseudogene_cds_ids": [
+    "OJMJKD_002410",
+    "OJMJKD_007135",
+    "OJMJKD_010260",
+    "OJMJKD_012060",
+    "OJMJKD_020450"
+  ]
+}

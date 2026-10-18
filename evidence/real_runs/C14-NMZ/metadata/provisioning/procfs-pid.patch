@@ -1,0 +1,20 @@
+--- dbcan/utils/memory_monitor.py.before
++++ dbcan/utils/memory_monitor.py.after
+@@ -1,7 +1,7 @@
+ """Memory monitoring utilities for dbcan."""
+ import logging
+ import psutil
+-import os
++from pathlib import Path
+ import time
+ from typing import Optional, Dict, List
+ from contextlib import contextmanager
+@@ -22,7 +22,7 @@
+         """
+         self.max_memory_usage = max_memory_usage
+         self.check_interval = check_interval
+-        self.process = psutil.Process(os.getpid())
++        self.process = psutil.Process(int(Path("/proc/self/stat").read_text().split(" ", 1)[0]))
+         self._initial_memory = self.get_memory_info()
+         self._memory_history: List[Dict] = []
+         self._peak_memory: Optional[Dict] = None

@@ -1,0 +1,51 @@
+2026-10-03 16:56:53,000 - dbcan.IO.fasta - INFO - Processing protein sequences
+2026-10-03 16:56:53,000 - dbcan.IO.fasta - INFO - Reading protein sequences from /workspace/scratch/f8e8c66e6055/work/package/inputs/original/JN1B.faa
+2026-10-03 16:56:53,023 - dbcan.IO.fasta - INFO - Processed 2266 protein sequences to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/uniInput.faa
+2026-10-03 16:56:53,027 - root - INFO - DIAMOND CAZy...
+2026-10-03 16:56:53,171 - dbcan.annotation.diamond - INFO - Running DIAMOND BLASTp: diamond blastp --db /workspace/scratch/f8e8c66e6055/work/db/CAZy.dmnd --query /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/uniInput.faa --out /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out --outfmt 6 --evalue 1e-102 --max-target-seqs 1 --threads 6 --quiet
+2026-10-03 16:57:06,069 - dbcan.annotation.diamond - INFO - DIAMOND BLASTp completed in 12.90s
+2026-10-03 16:57:06,073 - dbcan.annotation.diamond - INFO - Results formatted and saved to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/diamond.out
+2026-10-03 16:57:06,073 - root - INFO - DIAMOND CAZy done
+2026-10-03 16:57:06,073 - root - INFO - pyhmmer vs dbCAN-HMM...
+2026-10-03 16:57:06,082 - dbcan.utils.memory_monitor - INFO - Memory status [Before HMM search]: RSS=108.2MB, Available=8855.7MB, Usage=11.2%
+2026-10-03 16:57:06,082 - dbcan.annotation.pyhmmer_search - INFO - Running HMM search: hmm=dbCAN.hmm input=uniInput.faa out=dbCAN_hmm_results.tsv evalue=1e-15 cov=0.35 cpus=6
+2026-10-03 16:57:07,078 - dbcan.annotation.pyhmmer_search - INFO - Using fixed HMMER Z=875 for dbCAN.hmm
+2026-10-03 16:57:07,078 - dbcan.annotation.pyhmmer_search - INFO - Input size: 0.7MB, HMM size: 123.8MB, Available: 8855.7MB, large_mode=False, preload_targets=True, preload_hmms=True, force_batching=False, csv_buffer_size=5000, retry=0/3
+2026-10-03 16:57:07,078 - dbcan.annotation.pyhmmer_search - INFO - Pre-loading all HMMs into memory for speed...
+2026-10-03 16:57:07,078 - dbcan.annotation.pyhmmer_search - INFO - Estimated HMM memory: 619.1MB
+2026-10-03 16:57:08,077 - dbcan.annotation.pyhmmer_search - INFO - Loaded 875 HMMs into memory.
+2026-10-03 16:57:09,639 - dbcan.utils.memory_monitor - INFO - Memory report [HMM search]: Initial=108.2MB, Current=390.5MB, Peak=390.5MB (After HMM search), Increase=282.3MB, Usage=14.0%, Checkpoints=1, Elapsed=3.6s
+2026-10-03 16:57:09,639 - dbcan.annotation.pyhmmer_search - INFO - dbCAN.hmm search completed. Hits: 78, Sequences: 0, Batches: 0, Time: 3.56s, Retries: 0, Memory warnings: 0
+2026-10-03 16:57:09,641 - dbcan.process.process_utils - INFO - process_results loaded 78 hits from temp file /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/dbCAN_hmm_results.tsv.raw.tsv in 0.00s
+2026-10-03 16:57:09,644 - dbcan.process.process_utils - INFO - filter_overlaps: processing 78 rows across 36 targets (avg 2.2 hits/target)
+2026-10-03 16:57:09,647 - dbcan.process.process_utils - INFO - filter_overlaps: reduced 78 rows to 37 rows across 36 targets in 0.00s
+2026-10-03 16:57:09,648 - dbcan.process.process_utils - INFO - process_results: filtered overlaps from 78 to 37 rows in 0.01s
+2026-10-03 16:57:09,649 - dbcan.process.process_utils - INFO - process_results: wrote filtered results to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/dbCAN_hmm_results.tsv
+2026-10-03 16:57:09,652 - root - INFO - HMMER dbCAN done
+2026-10-03 16:57:09,652 - root - INFO - pyhmmer vs dbCAN-sub-HMM...
+2026-10-03 16:57:09,652 - dbcan.annotation.pyhmmer_search - INFO - Starting PyHMMERDBCANSUBProcessor.run()
+2026-10-03 16:57:09,653 - dbcan.utils.memory_monitor - INFO - Memory status [Before HMM search]: RSS=391.9MB, Available=8574.7MB, Usage=14.0%
+2026-10-03 16:57:09,653 - dbcan.annotation.pyhmmer_search - INFO - Running HMM search: hmm=dbCAN-sub.hmm input=uniInput.faa out=dbCANsub_hmm_raw.tsv evalue=1e-15 cov=0.35 cpus=6
+2026-10-03 16:57:49,384 - dbcan.annotation.pyhmmer_search - INFO - Using fixed HMMER Z=53411 for dbCAN-sub.hmm
+2026-10-03 16:57:49,385 - dbcan.annotation.pyhmmer_search - INFO - Input size: 0.7MB, HMM size: 4894.7MB, Available: 8574.7MB, large_mode=False, preload_targets=True, preload_hmms=False, force_batching=False, csv_buffer_size=5000, retry=0/3
+2026-10-03 16:59:14,791 - dbcan.utils.memory_monitor - INFO - Memory report [HMM search]: Initial=391.9MB, Current=413.4MB, Peak=413.4MB (After HMM search), Increase=21.6MB, Usage=13.7%, Checkpoints=1, Elapsed=125.1s
+2026-10-03 16:59:14,791 - dbcan.annotation.pyhmmer_search - INFO - dbCAN-sub.hmm search completed. Hits: 16750, Sequences: 0, Batches: 0, Time: 125.14s, Retries: 0, Memory warnings: 0
+2026-10-03 16:59:14,806 - dbcan.process.process_utils - INFO - process_results loaded 16750 hits from temp file /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/dbCANsub_hmm_raw.tsv.raw.tsv in 0.01s
+2026-10-03 16:59:14,813 - dbcan.process.process_utils - INFO - filter_overlaps: processing 16750 rows across 38 targets (avg 440.8 hits/target)
+2026-10-03 16:59:15,263 - dbcan.process.process_utils - INFO - filter_overlaps: reduced 16750 rows to 41 rows across 38 targets in 0.45s
+2026-10-03 16:59:15,265 - dbcan.process.process_utils - INFO - process_results: filtered overlaps from 16750 to 41 rows in 0.45s
+2026-10-03 16:59:15,265 - dbcan.process.process_utils - INFO - process_results: wrote filtered results to /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/dbCANsub_hmm_raw.tsv
+2026-10-03 16:59:15,267 - dbcan.annotation.pyhmmer_search - INFO - HMM search completed successfully
+2026-10-03 16:59:15,267 - dbcan.annotation.pyhmmer_search - INFO - Calling process_dbcan_sub() to process results
+2026-10-03 16:59:15,267 - dbcan.process.process_dbcan_sub - INFO - Starting dbCAN-sub processing. Input: /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/dbCANsub_hmm_raw.tsv, Output: /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/dbCANsub_hmm_results.tsv
+2026-10-03 16:59:15,267 - dbcan.process.process_dbcan_sub - INFO - DBCAN_SUB_COLUMN_NAMES found: 14 columns: ['Subfam Name', 'Subfam Composition', 'Subfam EC', 'Substrate', 'HMM Length']...
+2026-10-03 16:59:15,284 - dbcan.process.process_dbcan_sub - INFO - Successfully processed dbCAN-sub results (41 entries) -> dbCANsub_hmm_results.tsv
+2026-10-03 16:59:15,284 - dbcan.process.process_dbcan_sub - INFO - Output file exists: /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/dbCANsub_hmm_results.tsv (size: 4714 bytes)
+2026-10-03 16:59:15,284 - dbcan.annotation.pyhmmer_search - INFO - PyHMMERDBCANSUBProcessor.run() completed
+2026-10-03 16:59:15,284 - root - INFO - dbCAN-sub HMM done
+2026-10-03 16:59:15,284 - root - INFO - generate overview of CAZymes...
+2026-10-03 16:59:15,286 - dbcan.IO.OverviewGenerator - INFO - Loaded 102 rows from diamond results
+2026-10-03 16:59:15,288 - dbcan.IO.OverviewGenerator - INFO - Loaded 41 rows from dbcan_sub results
+2026-10-03 16:59:15,289 - dbcan.IO.OverviewGenerator - INFO - Loaded 37 rows from dbcan_hmm results
+2026-10-03 16:59:15,303 - dbcan.IO.OverviewGenerator - INFO - Aggregated overview saved to: /workspace/scratch/f8e8c66e6055/work/package/results/JN1B/overview.tsv
+2026-10-03 16:59:15,304 - root - INFO - CAZyme overview generated
