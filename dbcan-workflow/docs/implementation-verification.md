@@ -1,4 +1,4 @@
-# Contract-v1 implementation verification
+# Contract-v1 implementation verification — v0.3.2
 
 ## Current verification
 

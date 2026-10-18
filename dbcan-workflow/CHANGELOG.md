@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.2
+
+### Behavior changes
+
+- Outcome summaries, refusal/finding messages and warning text are registry-only. External text remains bounded, sanitized, explicitly untrusted diagnostic data.
+- Exit/outcome mapping and contract version 1 are unchanged. Unparseable invocations have `command: null`.
+- New required envelope fields: `diagnostics`, `diagnostics_total`, `diagnostics_truncated`, `trust`, `artifacts_total`, `artifacts_truncated`. Artifact entries add `status` and `origin`.
+- Explicit and inferred labels must match the shared 1–128 character safe-label rule; unsafe inferred stems are refused, recoverable with `--sample-id`.
+- Artifact indexing covers operation-owned outputs and referenced native inventories, capped at 100; unrelated directory contents are excluded.
+- Persistence failure retains a completed outcome, adds ENVELOPE_PERSIST_FAILED, and declines the envelope artifact, including for explicit destinations.
+- CL-N1 excludes prepare, cgc-overlay and audit-circular as well as describe/verify-db, per maintainer decision. Claims carry literal source anchors; CL-D1 uses validated facts with static text.
+- Algorithm ValueError defects reach INTERNAL_ERROR; malformed numeric input remains STRUCTURE_INVALID through narrow parser helpers.
+
+Added adversarial data-flow tests, registry enforcement, targeted static checks, operation-scope probes and CI lint. The original native fixture, reference manifests, dependency lock, attestation binding and scientific counting semantics are preserved. MCP remains excluded.
+
 ## 0.3.1
 
 - Implement Phase 4 W4.1/W4.2; the MCP entry point is excluded.
