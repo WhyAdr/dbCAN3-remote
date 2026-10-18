@@ -49,6 +49,7 @@ REGISTRY = {
     [remedy('COMPATIBLE_VERSION', 'Use the overlay only for corroborated dbCAN 5.2.9 results.', ['--dbcan-version'])]),
  'STRUCTURE_INVALID': entry('negative', 'The supplied data are structurally inconsistent.'),
  'DB_MISMATCH': entry('negative', 'The cache does not match the expected manifest.'),
+ 'PREFLIGHT_UNMET': entry('negative', 'Preflight report completed; satisfy every failed or skipped requirement before running.'),
  'STAGE_FAILED': entry('failed', 'An external stage failed; inspect its log and rerun into fresh directories.'),
  'INTERNAL_ERROR': entry('error', 'An unexpected tool defect occurred; report the stderr traceback.'),
 }
@@ -109,6 +110,10 @@ class CommandResult:
         elif exc.kind == 'negative':
             cr.evidence['structure'] = 'invalid'
             cr.findings.append({'code': exc.code, 'message': str(exc), 'location': None})
+        if hasattr(exc, 'preflight_report'):
+            cr.result = exc.preflight_report
+        elif exc.kind == 'failed' and exc.details:
+            cr.result = dict(exc.details)
         return cr
 
 

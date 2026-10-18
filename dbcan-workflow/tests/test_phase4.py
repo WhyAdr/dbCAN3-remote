@@ -241,4 +241,65 @@ class Phase4Tests(unittest.TestCase):
         with patch.object(w.subprocess, 'run', side_effect=RuntimeError('synthetic defect')):
             with self.assertRaisesRegex(RuntimeError, 'synthetic defect'): self.collect()
 
+    def preflight_args(self):
+        return ['preflight', '--faa', str(self.inputs/'alpha.faa'), '--gff', str(self.inputs/'alpha.gff3'),
+            '--env-dir', str(self.env), '--db-dir', str(self.db), '--expected-manifest', str(self.manifest),
+            '--threads', '1', '--profile', 'sandbox', '--results-dir', str(self.results), '--metadata-dir', str(self.metadata)]
+
+    def invoke(self, args):
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr): code = cli.main(args)
+        data = json.loads(stdout.getvalue()); check_envelope(self, data)
+        self.assertEqual(code, data['exit']['code'])
+        return data, stderr.getvalue()
+
+    def test_cli_preflight_unmet_reports_checks_under_both_exit_policies(self):
+        self.ready_environment(); (self.env/'bin/diamond').unlink()
+        before = w._hash_tree(self.root)
+        for policy, exit_code in [('strict', 4), ('semantic-zero', 0)]:
+            with patch.object(w.subprocess, 'run', side_effect=self.runtime_probe):
+                data, stderr = self.invoke(self.preflight_args()+['--exit-policy', policy])
+            self.assertEqual(data['outcome']['code'], 'PREFLIGHT_UNMET')
+            self.assertEqual(data['outcome']['kind'], 'negative')
+            self.assertEqual(data['exit']['code'], exit_code)
+            self.assertIsNone(data['refusal'])
+            self.assertEqual(data['evidence']['structure'], 'not_assessed')
+            self.assertTrue(data['findings'])
+            self.assertIn('CL-N1', [claim['id'] for claim in data['claims']['may_not_say']])
+            self.assertNotIn('CL-N0', [claim['id'] for claim in data['claims']['may_not_say']])
+            self.assertEqual(before, w._hash_tree(self.root))
+            self.assertFalse(self.results.exists()); self.assertFalse(self.metadata.exists())
+            self.assertNotIn('Traceback', stderr)
+
+    def test_cli_preflight_report_can_be_persisted_explicitly(self):
+        self.ready_environment(); (self.env/'bin/diamond').unlink()
+        output = self.root/'diagnostics/preflight.json'
+        with patch.object(w.subprocess, 'run', side_effect=self.runtime_probe):
+            data, _ = self.invoke(self.preflight_args()+['--envelope-out', str(output)])
+        self.assertEqual(data['outcome']['code'], 'PREFLIGHT_UNMET')
+        self.assertEqual(json.loads(output.read_text())['result']['checks'], data['result']['checks'])
+        self.assertFalse(self.metadata.exists()); self.assertFalse(self.results.exists())
+
+    def test_run_refuses_failed_preflight_without_creating_results_or_events(self):
+        self.ready_environment(); (self.env/'bin/diamond').unlink()
+        args = ['run', '--input-dir', str(self.inputs.parent), '--results-dir', str(self.results), '--metadata-dir', str(self.metadata),
+            '--env-dir', str(self.env), '--db-dir', str(self.db), '--expected-manifest', str(self.manifest), '--samples', 'alpha', '--threads', '1', '--profile', 'sandbox']
+        with patch.object(w.subprocess, 'run', side_effect=self.runtime_probe), patch.object(w, 'stage_commands') as stages:
+            data, stderr = self.invoke(args)
+        self.assertEqual(data['outcome']['kind'], 'refused')
+        self.assertEqual(data['outcome']['code'], 'ENV_UNMET')
+        self.assertEqual(data['exit']['code'], 3)
+        self.assertTrue(any(row['state']=='fail' for row in data['result']['checks']))
+        self.assertFalse(self.results.exists()); self.assertFalse(self.metadata.exists())
+        self.assertTrue(all(not artifact['written'] for artifact in data['artifacts']))
+        stages.assert_not_called(); self.assertNotIn('Traceback', stderr)
+
+    def test_run_rechecks_structured_gate_even_if_ready_is_true(self):
+        preflight = {**self.preflight, 'ready': True, 'checks': [{'id': 'database', 'state': 'skipped', 'detail': {}}]}
+        with patch.object(w, 'run_preflight', return_value=preflight), patch.object(w, 'stage_commands') as stages:
+            with self.assertRaises(Refusal):
+                w.run_workflow(self.inputs.parent, self.results, self.metadata, self.root/'db', self.manifest,
+                    self.root/'env', ['alpha'], 1, 'sandbox')
+        self.assertFalse(self.results.exists()); self.assertFalse(self.metadata.exists()); stages.assert_not_called()
+
 if __name__ == '__main__': unittest.main()

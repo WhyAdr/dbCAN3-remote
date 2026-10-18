@@ -1214,6 +1214,9 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
     shared_preflight = run_preflight(input_dir / "original" / f"{samples[0]}.faa",
         input_dir / "original" / f"{samples[0]}.gff3", env_python, run_dbcan_path, diamond_path,
         db_dir, expected_manifest, threads, profile, results_dir, metadata_dir)
+    if "checks" in shared_preflight:
+        from dbcan_preflight import require_preflight
+        require_preflight(shared_preflight)
     preflights = {sample: {**shared_preflight,
         "protein_count": len(paired_inputs[sample]["proteins"]),
         "contig_count": len(paired_inputs[sample]["annotation"]["seq_regions"])} for sample in samples}
@@ -1334,8 +1337,8 @@ COMMAND_METADATA = {
     'validate': {'summary': 'Validate the exact native results and optional execution attestation.', 'writes': ['output_validation.json', 'results_observed.sha256 (or --observed-manifest)', 'envelope.validate.json']},
     'summarize': {'summary': 'Write overlap-aware scientific evidence tables.', 'writes': ['summary.json', 'protein_family_associations.tsv', 'domain_instances.tsv', 'method_agreement.tsv', 'family_protein_counts.tsv', 'class_family_comparison.tsv', 'candidate_evidence.tsv', 'envelope.summarize.json']},
     'verify-db': {'summary': 'Compare a supplied cache with every expected path and digest.', 'writes': ['--observed-manifest', '--diff-out (optional)']},
-    'preflight': {'summary': 'Check input, runtime, resource and database requirements.', 'writes': []},
-    'run': {'summary': 'Run four stages only after confirmed preflight into fresh roots.', 'writes': ['native results', 'logs/*', 'inputs/*', 'stage_status.json', 'output_validation.json', 'results_observed.sha256', 'scientific_summary/*', 'completion.json', 'workflow_summary.json', 'envelope.run.json']},
+    'preflight': {'summary': 'Report every safe readiness check; unmet requirements are a negative result.', 'writes': []},
+    'run': {'summary': 'Run four stages only after confirmed preflight into fresh roots.', 'writes': ['native results', 'logs/*', 'inputs/*', 'stage_status.json', 'output_validation.json', 'results_observed.sha256', 'scientific_summary/*', 'completion.json', 'workflow_summary.json', 'events.jsonl (per sample)', 'envelope.run.json']},
     'audit-circular': {'summary': 'Audit circular terminal windows against original topology.', 'writes': ['--out-json', '--out-tsv']},
     'cgc-overlay': {'summary': 'Write a derived exact-category comparison without modifying native tables.', 'writes': ['--corrected-members', '--corrected-summary', '--changes', '--report']},
     'describe': {'summary': 'Describe arguments, effects and the contract without executing work.', 'writes': []},

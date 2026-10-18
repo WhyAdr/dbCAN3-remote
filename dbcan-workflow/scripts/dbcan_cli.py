@@ -37,7 +37,7 @@ def dispatch(r):
         data['max_listed'] = r.max_listed
     elif r.command == 'preflight':
         env = r.env_dir.resolve()
-        data = w.run_preflight(r.faa, r.gff, env/'bin/python', env/'bin/run_dbcan', env/'bin/diamond',
+        data = w.collect_preflight(r.faa, r.gff, env/'bin/python', env/'bin/run_dbcan', env/'bin/diamond',
             r.db_dir, r.expected_manifest, r.threads, r.profile, r.results_dir, r.metadata_dir)
     elif r.command == 'audit-circular':
         from audit_circular_windows import audit
@@ -73,6 +73,10 @@ def dispatch(r):
         if cr.evidence['attestation'] == 'attested':
             cr.run_id = data['run_id']
         cr.summary = 'Structurally valid; execution %s.' % cr.evidence['attestation']
+    if r.command == 'preflight' and not data['ready']:
+        cr.kind, cr.code, cr.summary = 'negative', 'PREFLIGHT_UNMET', 'Preflight report completed; required checks did not all pass.'
+        cr.findings = [{'code': row['detail']['code'], 'message': row['detail']['message'], 'location': row['id']}
+            for row in data['checks'] if row['state']=='fail']
     if r.command == 'verify-db' and not data['match']:
         cr.kind, cr.code, cr.summary = 'negative', 'DB_MISMATCH', 'Database cache does not match the expected manifest.'
     if r.command == 'run':
@@ -301,6 +305,7 @@ def describe_commands():
         if name == 'verify-db': codes += ['DB_MISMATCH', 'DB_UNVERIFIED', 'INPUT_MISSING']
         if name in {'preflight', 'run'}: codes += ['ENV_UNMET', 'DB_UNVERIFIED', 'THREADS_EXCEED_ALLOCATION', 'INPUT_MISMATCH']
         if name == 'run': codes += ['SAMPLE_ID_UNSAFE', 'STAGE_FAILED']
+        if name == 'preflight': codes = ['OK', 'USAGE_INVALID', 'PATHS_OVERLAP', 'PREFLIGHT_UNMET', 'INTERNAL_ERROR']
         commands[name] = {**w.COMMAND_METADATA[name], 'args': arguments,
             'writes': w.COMMAND_METADATA[name]['writes']+['--envelope-out (optional)'],
             'reads_db': name in {'verify-db','preflight','run'}, 'requires_user_confirmation': name=='run',

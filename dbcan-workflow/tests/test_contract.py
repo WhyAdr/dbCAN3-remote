@@ -336,7 +336,8 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(env['outcome']['code'],'DB_UNVERIFIED')
         pre=['preflight',*self.common,'--env-dir',str(self.root/'env'),'--db-dir',str(db),'--expected-manifest',str(manifest),
             '--threads','1','--profile','sandbox','--results-dir',str(self.root/'future-results'),'--metadata-dir',str(self.root/'future-metadata')]
-        env=self.call(pre);self.assertEqual(env['outcome']['code'],'ENV_UNMET')
+        env=self.call(pre);self.assertEqual(env['outcome']['code'],'PREFLIGHT_UNMET')
+        self.assertTrue(any(row['state']=='fail' and row['detail']['code']=='ENV_UNMET' for row in env['result']['checks']))
         with patch.object(w,'effective_resources',return_value={'effective_cpu_allocation':1}),self.assertRaises(Refusal) as caught:
             w.run_preflight(self.fx/'inputs/sample.faa',self.fx/'inputs/sample.gff3',self.root/'env/bin/python', self.root/'env/bin/run_dbcan',self.root/'env/bin/diamond',db,manifest,2,'sandbox',self.root/'r',self.root/'m')
         self.assertEqual(caught.exception.code,'THREADS_EXCEED_ALLOCATION')

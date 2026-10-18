@@ -85,8 +85,8 @@ Read `references/reporting.md` for scientific counting rules, `references/proven
 | `validate` | Validate the exact native results and optional execution attestation. | output_validation.json, results_observed.sha256 (or --observed-manifest), envelope.validate.json, --envelope-out (optional) |
 | `summarize` | Write overlap-aware scientific evidence tables. | summary.json, protein_family_associations.tsv, domain_instances.tsv, method_agreement.tsv, family_protein_counts.tsv, class_family_comparison.tsv, candidate_evidence.tsv, envelope.summarize.json, --envelope-out (optional) |
 | `verify-db` | Compare a supplied cache with every expected path and digest. | --observed-manifest, --diff-out (optional), --envelope-out (optional) |
-| `preflight` | Check input, runtime, resource and database requirements. | --envelope-out (optional) |
-| `run` | Run four stages only after confirmed preflight into fresh roots. | native results, logs/*, inputs/*, stage_status.json, output_validation.json, results_observed.sha256, scientific_summary/*, completion.json, workflow_summary.json, envelope.run.json, --envelope-out (optional) |
+| `preflight` | Report every safe readiness check; unmet requirements are a negative result. | --envelope-out (optional) |
+| `run` | Run four stages only after confirmed preflight into fresh roots. | native results, logs/*, inputs/*, stage_status.json, output_validation.json, results_observed.sha256, scientific_summary/*, completion.json, workflow_summary.json, events.jsonl (per sample), envelope.run.json, --envelope-out (optional) |
 | `audit-circular` | Audit circular terminal windows against original topology. | --out-json, --out-tsv, --envelope-out (optional) |
 | `cgc-overlay` | Write a derived exact-category comparison without modifying native tables. | --corrected-members, --corrected-summary, --changes, --report, --envelope-out (optional) |
 | `describe` | Describe arguments, effects and the contract without executing work. | --envelope-out (optional) |
@@ -119,6 +119,7 @@ Required database assets for a new search:
 | `VERSION_UNSUPPORTED` | refused | Use the overlay only for corroborated dbCAN 5.2.9 results. | — |
 | `STRUCTURE_INVALID` | negative | The supplied data are structurally inconsistent. | — |
 | `DB_MISMATCH` | negative | The cache does not match the expected manifest. | — |
+| `PREFLIGHT_UNMET` | negative | Preflight report completed; satisfy every failed or skipped requirement before running. | — |
 | `STAGE_FAILED` | failed | An external stage failed; inspect its log and rerun into fresh directories. | — |
 | `INTERNAL_ERROR` | error | An unexpected tool defect occurred; report the stderr traceback. | — |
 <!-- END GENERATED:recovery -->
