@@ -9,9 +9,10 @@ from its own location.
 from __future__ import annotations
 
 from dbcan_outcomes import (Refusal, MissingPathRefusal, ExistingPathRefusal, RuntimeRefusal,
-                            NegativeResult, MissingDataResult, StageFailure, structure_reader)
+                            NegativeResult, MissingDataResult, StageFailure, structure_reader, REGISTRY)
 
 from dbcan_events import append_event, failure_context
+from dbcan_trust import sanitize_text
 
 import argparse
 import csv
@@ -84,7 +85,7 @@ SAMPLE_ID_RE = re.compile(r'[A-Za-z0-9_.-]{1,128}')
 def validate_sample_id(value):
     """Validate a plain bounded label before it can become an output path."""
     if not isinstance(value, str) or value in {'.', '..'} or not SAMPLE_ID_RE.fullmatch(value):
-        raise Refusal('SAMPLE_ID_UNSAFE', 'provide unique sample names containing only letters, digits, period, underscore, or hyphen')
+        raise Refusal('SAMPLE_ID_UNSAFE', f'provide unique sample names containing only letters, digits, period, underscore, or hyphen; rejected {value!r}')
     return value
 
 
@@ -1313,7 +1314,8 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
             append_event(events_file, run_id, sample, None, "run_succeeded")
         except Exception as exc:
             context = dict(exc.details) if isinstance(exc, StageFailure) else {}
-            failures.append({"sample": sample, "error": str(exc), **context})
+            failures.append({"sample": sample, "error": REGISTRY[getattr(exc, "code", "INTERNAL_ERROR")]["summary"],
+                "diagnostic": sanitize_text(str(exc))[0], **context})
             (sample_meta / "completion.json").unlink(missing_ok=True)
             try:
                 current = json.loads(status_file.read_text(encoding="utf-8"))
@@ -1327,7 +1329,8 @@ def run_workflow(input_dir: Path, results_dir: Path, metadata_dir: Path, db_dir:
                             "reason": "an earlier preflight or stage failed"}
                 current["status"] = "failed"
                 current["run"] = {"state": "failed"}
-                current["failure"] = {"message": str(exc), "ended_utc": utc_now(),
+                current["failure"] = {"message": REGISTRY[getattr(exc, "code", "INTERNAL_ERROR")]["summary"],
+                    "diagnostic": sanitize_text(str(exc))[0], "ended_utc": utc_now(),
                     "kind": getattr(exc, 'kind', 'error'), "code": getattr(exc, 'code', 'INTERNAL_ERROR'), **context}
                 write_json_atomic(status_file, _v2_status_document(current))
             except Exception:

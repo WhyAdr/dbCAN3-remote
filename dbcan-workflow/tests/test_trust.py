@@ -33,3 +33,58 @@ class TrustTests(unittest.TestCase):
         with self.assertRaises(TrustViolation):
             cli.build_envelope('describe',CommandResult(findings=[{'code':'STRUCTURE_INVALID','message':'hostile'}]),'strict')
         self.assertEqual(cli.build_envelope('describe',CommandResult(summary='dynamic'),'strict')['outcome']['summary'],REGISTRY['OK']['summary'])
+
+class SinkTests(unittest.TestCase):
+    from test_hardening_032 import tc
+    setUp=tc.ContractTests.setUp
+    bound_status=tc.ContractTests.bound_status
+
+    def test_failure_annotation_is_not_an_attestation_input(self):
+        path=self.bound_status(True)
+        import json
+        from test_hardening_032 import w
+        original=w.validate_outputs(self.fx/'inputs/sample.faa',self.fx/'inputs/sample.gff3',self.fx/'results',status_file=path)
+        data=json.loads(path.read_text());data['failure']={'message':'CANARY_REPLACED','kind':'error','code':'INTERNAL_ERROR'}
+        path.write_text(json.dumps(data))
+        self.assertEqual(original,w.validate_outputs(self.fx/'inputs/sample.faa',self.fx/'inputs/sample.gff3',self.fx/'results',status_file=path))
+
+    def test_log_tail_and_event_details_sanitized_at_source(self):
+        import json
+        from dbcan_events import failure_context,append_event
+        log=self.root/'log';log.write_text('\x1b[31mCANARY\u202e\x00\x1b[0m')
+        context=failure_context('sample','stage',7,log)
+        self.assertEqual(context['log_tail'],'CANARY')
+        event=self.root/'events.jsonl';append_event(event,'run','sample',None,'failed',log_path='\x1b[31mCANARY\u202e')
+        self.assertEqual(json.loads(event.read_text())['details']['log_path'],'CANARY')
+
+    def test_refusal_details_are_allowlisted_sanitized_and_bounded(self):
+        import contextlib,io,json
+        from unittest.mock import patch
+        from test_hardening_032 import cli
+        args=['run','--input-dir',str(self.root/'i'),'--results-dir',str(self.root/'r'),'--metadata-dir',str(self.root/'m'),
+              '--db-dir',str(self.root/'d'),'--env-dir',str(self.root/'e'),'--expected-manifest',str(self.root/'manifest'),
+              '--samples',*[str(i) for i in range(32)],'--threads','1','--profile','sandbox']
+        def refusing(r):
+            r.secret_extra='CANARY_SECRET'
+            raise cli.Refusal('ENV_UNMET','hostile')
+        out=io.StringIO()
+        with patch.object(cli,'dispatch',side_effect=refusing),contextlib.redirect_stdout(out):cli.main(args)
+        details=json.loads(out.getvalue())['refusal']['details']
+        self.assertNotIn('secret_extra',details)
+        self.assertEqual(len(details['samples']),17)
+        self.assertEqual(details['samples'][-1],'…(16 more)')
+
+class PersistedSinkTests(unittest.TestCase):
+    import test_phase4 as ph
+    setUp=ph.Phase4Tests.setUp
+    commands=ph.Phase4Tests.commands
+    run_batch=ph.Phase4Tests.run_batch
+    def test_failure_messages_static_and_diagnostics_separate(self):
+        import json
+        result=self.run_batch('alpha')
+        failure=result['failures'][0]
+        self.assertEqual(failure['error'],REGISTRY['STAGE_FAILED']['summary'])
+        self.assertIn('alpha',failure['diagnostic'])
+        status=json.loads((self.metadata/'alpha/stage_status.json').read_text())
+        self.assertEqual(status['failure']['message'],REGISTRY['STAGE_FAILED']['summary'])
+        self.assertIn('alpha',status['failure']['diagnostic'])

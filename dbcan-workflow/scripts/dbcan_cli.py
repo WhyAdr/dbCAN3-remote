@@ -11,7 +11,7 @@ import dbcan_workflow as w
 from dbcan_outcomes import (CommandResult, Refusal, MissingPathRefusal, EXIT_CODES,
                             REGISTRY, WorkflowOutcome, UsageError)
 from dbcan_claims import derive_claims
-from dbcan_trust import (assert_trusted, bound_diagnostics, UNTRUSTED_PATHS, WARNINGS_REGISTRY)
+from dbcan_trust import (assert_trusted, bound_diagnostics, UNTRUSTED_PATHS, WARNINGS_REGISTRY, bounded_details)
 
 
 def dispatch(r):
@@ -312,7 +312,16 @@ def main(argv=None):
     except WorkflowOutcome as exc:
         cr = CommandResult.from_exception(exc)
         if cr.refusal is not None and r is not None:
-            cr.refusal['details'].update({key: str(value) if isinstance(value, Path) else value for key,value in vars(r).items() if isinstance(value, (Path, int, bool)) or key in {'sample_id', 'samples'}})
+            names = ('faa', 'gff', 'input_dir', 'results_dir', 'metadata_dir', 'db_dir',
+                'env_dir', 'expected_manifest', 'observed_manifest', 'status_file', 'threads',
+                'profile', 'allow_unattested', 'sample_id', 'samples')
+            details = {key: str(getattr(r,key)) if isinstance(getattr(r,key),Path) else getattr(r,key)
+                       for key in names if hasattr(r,key)}
+            if exc.code == 'SAMPLE_ID_UNSAFE':
+                details.pop('sample_id',None);details.pop('samples',None)
+            cr.refusal['details'].update(bounded_details(details, max_items=32))
+            if 'samples' in details:
+                cr.refusal['details']['samples'] = bounded_details(details['samples'])
     except Exception:
         traceback.print_exc(file=sys.stderr)
         cr = CommandResult(kind='error', code='INTERNAL_ERROR', summary=REGISTRY['INTERNAL_ERROR']['summary'])

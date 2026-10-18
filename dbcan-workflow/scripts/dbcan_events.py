@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+from dbcan_trust import sanitize_text, bounded_details
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,7 +17,7 @@ def append_event(path: Path, run_id: str, sample: str, stage: str | None,
     record = {"ts": datetime.now(timezone.utc).isoformat(timespec="microseconds"),
               "run_id": run_id, "sample": sample, "stage": stage, "event": event}
     if details:
-        record["details"] = details
+        record["details"] = bounded_details(details)
     payload = json.dumps(record, sort_keys=True, allow_nan=False) + "\n"
     with path.open("a", encoding="utf-8") as handle:
         handle.write(payload)
@@ -45,7 +46,7 @@ def failure_context(sample: str, stage: str, exit_code: int | None,
             or len(encoded) > LOG_TAIL_BYTES)
         if len(encoded) > LOG_TAIL_BYTES:
             excerpt = encoded[-LOG_TAIL_BYTES:].decode("utf-8", errors="ignore")
-        context["log_tail"] = excerpt
+        context["log_tail"] = sanitize_text(excerpt, LOG_TAIL_BYTES)[0]
     except OSError:
         context["log_tail_error"] = "The stage log is unavailable or unreadable."
     return context
