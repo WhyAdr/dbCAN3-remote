@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Refresh or check the complete portable skill's SHA256 inventory."""
+"""Refresh or check portable source checksums, excluding host-managed UI metadata."""
 from __future__ import annotations
 import argparse
 import hashlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# The skill host materializes these UI files independently on every save.
+HOST_UI_FILES = {'agents/openai.yaml', 'assets/icon.svg'}
 
 
 def manifest_text(root):
@@ -14,7 +16,7 @@ def manifest_text(root):
         relative = path.relative_to(root)
         if not path.is_file() or '__pycache__' in relative.parts or '.git' in relative.parts:
             continue
-        if relative.as_posix() == 'FILES.sha256' or path.suffix in {'.pyc', '.tmp'}:
+        if relative.as_posix() in HOST_UI_FILES | {'FILES.sha256'} or path.suffix in {'.pyc', '.tmp'}:
             continue
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         rows.append('%s  %s\n' % (digest, relative.as_posix()))

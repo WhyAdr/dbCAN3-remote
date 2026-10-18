@@ -43,3 +43,5 @@ Stage logs stay in `results/<sample>/logs/`. Envelopes index them with artifact 
 `log_tail` retains at most 40 lines and 8192 UTF-8 bytes. Reading is bounded to 8193 source bytes, even for huge logs or individual lines. A truncated excerpt can begin mid-line; inspect the full log when needed. JSON escaping can expand transport size beyond the plain-text field limit.
 
 Journals are diagnostics, not execution-attestation substitutes. They live outside native results, so appending a diagnostic record does not change the native hash inventory. Path guards prevent an explicit envelope from replacing journals, status ledgers or scientific summaries. Native fixtures and scientific counting rules remain unchanged.
+
+The source checksum inventory excludes exactly `agents/openai.yaml` and `assets/icon.svg`, which the skill host regenerates independently on save. Other agent configurations and assets remain covered. The portable repository contains neither host-managed file.
