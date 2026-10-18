@@ -9,11 +9,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def recovery_table():
-    lines = ['| Code | Kind | Sanctioned remediation | Forbidden workarounds |', '|---|---|---|---|']
+    lines = ['| Code | Kind | What it means | Sanctioned remediation | Flags | Claim effects | Forbidden workarounds |', '|---|---|---|---|---|---|---|']
     for code, info in REGISTRY.items():
-        remedies = ' '.join(r['text'] for r in info['remediation']) or info['summary']
+        remedies = ' '.join(r['text'] for r in info['remediation']) or '—'
+        flags = ', '.join('`'+flag+'`' for r in info['remediation'] for flag in r['flags']) or '—'
+        effects = ', '.join('`'+claim+'`' for r in info['remediation'] for claim in r['claim_effects']) or '—'
         banned = ' '.join(r['text'] for r in info['forbidden']) or '—'
-        lines.append('| `%s` | %s | %s | %s |' % (code, info['kind'], remedies, banned))
+        lines.append('| `%s` | %s | %s | %s | %s | %s | %s |' % (code, info['kind'], info['summary'], remedies, flags, effects, banned))
     return '\n'.join(lines)
 
 

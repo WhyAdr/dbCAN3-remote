@@ -56,3 +56,17 @@ TODO(maintainer): record the full case identities and externally retained source
 | Unattested | Results lack usable execution evidence; successful structural review alone does not establish execution. |
 | Rejected | A supplied status record is malformed, incomplete, failed or mismatched and cannot be bypassed by `--allow-unattested`. |
 | Claim ledger | `claims.may_say` and `claims.may_not_say` guide reporting from structured evidence, with source provenance; they are not a security boundary. |
+
+## Historical implementation verification notes
+
+The following records are historical, not reproducible from this repository.
+
+- **77 standard-library tests pass**, including the original 30 unchanged tests. New coverage exercises multi-sample journals, original stage-log paths, byte/line-capped excerpts, missing/unreadable logs, stages that cannot start, skipped dependencies, independent preflight failures, strict/semantic-zero exits, false readiness flags, event-write defects and cross-artifact path collisions.
+
+- A fresh-context skill trial inspected a missing runtime and empty cache. It reported `negative/PREFLIGHT_UNMET`, all 646 missing cache files, the independent runtime/database blockers and dependent skipped probes. It distinguished path layout from installed software, free-space observations from capacity guarantees, and readiness from search execution. Future result/metadata destinations remained absent. No install, download or sequence search occurred.
+
+- Baseline `0b1bcc0`: all 30 original tests passed; original manifests verified. See the retained baseline raise inventory and acceptance-probe record.
+
+- Release checks: 56 standard-library tests pass, including the original 30 unchanged tests. CLI probes cover deliberate refusals, usage, negative data, database mismatch, valid zero hits, controlled subprocess failures, and unexpected defects. Tests exercise both exit policies, path collisions, persistence, legacy/v2 status binding, claim restrictions, aliases and command discovery.
+
+- A fresh-context skill trial used the supplied unbound fixture template, reported ATTESTATION_REJECTED, followed the sanctioned structural-only remedy, and distinguished zero-hit file observations from execution and biological absence. It used the explicit isolate label and did not modify source or fetch dependencies.
