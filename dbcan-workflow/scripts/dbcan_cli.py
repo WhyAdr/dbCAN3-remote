@@ -208,22 +208,21 @@ def guard_cli_outputs(r):
 
 def observed_artifacts(r, before):
     paths = planned_outputs(r)
-    if getattr(r, 'metadata_dir', None) and r.command in {'summarize', 'run'}:
-        for p in r.metadata_dir.rglob('*'):
-            if p.is_file(): paths.setdefault(str(p.resolve()), 'event_log' if p.name == 'events.jsonl' else 'metadata')
     if r.command == 'run':
-        for p in r.results_dir.rglob('*'):
-            if p.is_file(): paths.setdefault(str(p.resolve()), 'stage_log' if p.parent.name == 'logs' else 'native_result')
-        for status_path in r.metadata_dir.glob('*/stage_status.json'):
+        for sample in r.samples:
+            try: w.validate_sample_id(sample)
+            except Refusal: continue
+            status_path = r.metadata_dir/sample/'stage_status.json'
+            if not status_path.is_file(): continue
             try:
                 status = json.loads(status_path.read_text())
                 if not isinstance(status, dict): raise ValueError('invalid status document')
             except (OSError, ValueError):
                 r._artifact_warnings = [{'code': 'STATUS_UNREADABLE', 'message': WARNINGS_REGISTRY['STATUS_UNREADABLE'], 'location': None}]
                 continue
-            root = (r.results_dir/status_path.parent.name/'logs').resolve()
+            root = (r.results_dir/sample/'logs').resolve()
             for stage in status.get('stages', {}).values():
-                if stage.get('log_file'):
+                if isinstance(stage,dict) and isinstance(stage.get('log_file'),str):
                     log = Path(stage['log_file']).resolve()
                     if root in log.parents: paths.setdefault(str(log), 'stage_log')
     artifacts = []
@@ -231,8 +230,25 @@ def observed_artifacts(r, before):
         p = Path(path)
         written = p.is_file() and before.get(path) != (p.stat().st_mtime_ns, p.stat().st_size)
         artifacts.append({'role': role, 'path': path, 'written': written,
-                          'sha256': w.sha256_file(p) if written else None})
+                          'sha256': w.sha256_file(p) if written else None,
+                          'status': ('modified' if path in before else 'created') if written else ('unchanged' if p.is_file() else 'declined'),
+                          'origin': 'tool'})
+    if r.command in {'validate','run'}:
+        manifests = [Path(path) for path,role in paths.items() if role=='observed_manifest']
+        for manifest in manifests:
+            if manifest.is_file() and str(manifest) not in before:
+                artifacts.append({'role':'native_inventory','path':str(manifest),'written':False,
+                    'sha256':None,'status':'validated','origin':'referenced'})
     return artifacts
+
+
+def artifact_priority(row):
+    priority = 0 if row.get('status') == 'declined' or row['role']=='stage_log' else 1 if row['role']=='envelope' else 2 if row['role']=='scientific_summary' else 3
+    return priority,row['role'],row['path']
+
+
+def bound_artifacts(rows):
+    return sorted(rows,key=artifact_priority)[:100]
 
 
 def build_envelope(command, cr, policy):
@@ -244,7 +260,8 @@ def build_envelope(command, cr, policy):
         'outcome': {'kind': cr.kind, 'code': cr.code, 'summary': REGISTRY[cr.code]['summary']},
         'exit': {'code': code, 'policy': policy}, 'evidence': cr.evidence,
         'result': sanitize_data(cr.result), 'refusal': cr.refusal, 'findings': cr.findings,
-        'warnings': cr.warnings, 'artifacts': cr.artifacts,
+        'warnings': cr.warnings, 'artifacts': bound_artifacts(cr.artifacts),
+        'artifacts_total': len(cr.artifacts), 'artifacts_truncated': len(cr.artifacts)>100,
         'claims': derive_claims(command, {'kind': cr.kind, 'code': cr.code}, cr.evidence, cr.result),
         'diagnostics': diagnostics, 'diagnostics_total': total, 'diagnostics_truncated': truncated,
         'trust': {'untrusted_paths': list(UNTRUSTED_PATHS)}}
@@ -262,9 +279,12 @@ def persist_envelope(env, r, explicit_safe):
     for path in dict.fromkeys(p.resolve() for p in destinations):
         artifact = next((a for a in env['artifacts'] if a['path'] == str(path)), None)
         if artifact is None:
-            artifact = {'role': 'envelope', 'path': str(path), 'written': True, 'sha256': None}
+            artifact = {'role': 'envelope', 'path': str(path), 'written': True, 'sha256': None, 'status': 'created', 'origin': 'tool'}
             env['artifacts'].append(artifact)
-        artifact.update(written=True, sha256=None)
+        artifact.update(written=True, sha256=None, status='modified' if path.is_file() else 'created', origin='tool')
+    env['artifacts_total'] = max(env['artifacts_total'], len(env['artifacts']))
+    env['artifacts'] = bound_artifacts(env['artifacts'])
+    env['artifacts_truncated'] = env['artifacts_total'] > len(env['artifacts'])
     for path in dict.fromkeys(p.resolve() for p in destinations): w.write_json_atomic(path, env)
     for artifact in env['artifacts']:
         if artifact['role'] == 'envelope' and artifact['written']:
@@ -298,8 +318,6 @@ def main(argv=None):
         guard_cli_outputs(r)
         explicit_safe = True
         paths = planned_outputs(r)
-        if getattr(r, 'metadata_dir', None) and r.metadata_dir.exists():
-            paths.update({str(p.resolve()): 'metadata' for p in r.metadata_dir.rglob('*') if p.is_file()})
         before = {p: (Path(p).stat().st_mtime_ns, Path(p).stat().st_size) for p in paths if Path(p).is_file()}
         for name in ('processed_gff', 'native_members', 'native_summary'):
             path = getattr(r, name, None)
@@ -328,7 +346,7 @@ def main(argv=None):
     try:
         if r is not None:
             if cr.kind in {'refused', 'usage'}:
-                cr.artifacts = [{'role': role, 'path': path, 'written': False, 'sha256': None} for path,role in sorted(planned_outputs(r).items())]
+                cr.artifacts = [{'role': role, 'path': path, 'written': False, 'sha256': None, 'status': 'declined', 'origin': 'tool'} for path,role in sorted(planned_outputs(r).items())]
             else: cr.artifacts = observed_artifacts(r, before)
             cr.warnings.extend(getattr(r, '_artifact_warnings', []))
         env = build_envelope(command, cr, policy)
@@ -344,7 +362,7 @@ def main(argv=None):
         traceback.print_exc(file=sys.stderr)
         env['warnings'].append({'code': 'ENVELOPE_PERSIST_FAILED', 'message': WARNINGS_REGISTRY['ENVELOPE_PERSIST_FAILED'], 'location': None})
         for artifact in env['artifacts']:
-            if artifact['role'] == 'envelope': artifact.update(written=False, sha256=None)
+            if artifact['role'] == 'envelope': artifact.update(written=False, sha256=None, status='declined')
     try:
         payload = json.dumps(env, indent=2, sort_keys=True, allow_nan=False) + '\n'
     except (ValueError, TypeError):

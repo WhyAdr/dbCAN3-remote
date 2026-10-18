@@ -19,7 +19,9 @@
     "diagnostics",
     "diagnostics_total",
     "diagnostics_truncated",
-    "trust"
+    "trust",
+    "artifacts_total",
+    "artifacts_truncated"
   ],
   "additionalProperties": false,
   "properties": {
@@ -171,7 +173,8 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/artifact"
-      }
+      },
+      "maxItems": 100
     },
     "claims": {
       "$ref": "#/$defs/claims"
@@ -233,6 +236,13 @@
           }
         }
       }
+    },
+    "artifacts_total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "artifacts_truncated": {
+      "type": "boolean"
     }
   },
   "allOf": [
@@ -327,6 +337,21 @@
         },
         "written": {
           "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "created",
+            "modified",
+            "validated",
+            "declined",
+            "unchanged"
+          ]
+        },
+        "origin": {
+          "enum": [
+            "tool",
+            "referenced"
+          ]
         }
       }
     },

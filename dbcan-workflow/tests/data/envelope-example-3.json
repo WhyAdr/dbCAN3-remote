@@ -46,7 +46,9 @@
       "role": "observed_manifest",
       "path": "<observed-manifest>",
       "sha256": null,
-      "written": true
+      "written": true,
+      "status": "created",
+      "origin": "tool"
     }
   ],
   "claims": {
@@ -90,5 +92,7 @@
       "/sample_summaries",
       "/preflight"
     ]
-  }
+  },
+  "artifacts_total": 1,
+  "artifacts_truncated": false
 }

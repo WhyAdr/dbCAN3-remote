@@ -43,19 +43,25 @@
       "role": "output_validation",
       "path": "<metadata-dir>/output_validation.json",
       "sha256": null,
-      "written": true
+      "written": true,
+      "status": "created",
+      "origin": "tool"
     },
     {
       "role": "observed_manifest",
       "path": "<metadata-dir>/results_observed.sha256",
       "sha256": null,
-      "written": true
+      "written": true,
+      "status": "created",
+      "origin": "tool"
     },
     {
       "role": "envelope",
       "path": "<metadata-dir>/envelope.validate.json",
       "sha256": null,
-      "written": true
+      "written": true,
+      "status": "created",
+      "origin": "tool"
     }
   ],
   "claims": {
@@ -115,5 +121,7 @@
       "/sample_summaries",
       "/preflight"
     ]
-  }
+  },
+  "artifacts_total": 3,
+  "artifacts_truncated": false
 }

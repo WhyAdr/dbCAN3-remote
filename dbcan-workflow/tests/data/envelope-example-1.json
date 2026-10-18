@@ -98,5 +98,7 @@
       "/sample_summaries",
       "/preflight"
     ]
-  }
+  },
+  "artifacts_total": 0,
+  "artifacts_truncated": false
 }
